@@ -1,0 +1,170 @@
+\chapter{Specyfika danych tabelarycznych i stan badań}
+\label{chap:stan-badan}
+
+\section{Definicja zadania i właściwości danych}
+\label{sec:definicja-tabel}
+
+W~pracy przyjęto, że obserwacja jest opisana ustalonym zestawem cech, a~celem klasyfikacji jest przewidywanie jednej z~dopuszczalnych etykiet. Zbiór uczący dostarcza opisów obserwacji wraz z~etykietami, natomiast podczas predykcji etykieta nowego przypadku nie jest znana. Liczbę obserwacji oznaczono przez $n$, liczbę cech przez $d$, a~liczbę klas przez $K$. Rozróżnienie tych wielkości jest istotne: zadania o~tej samej liczbie wierszy mogą stawiać różne wymagania w~zależności od liczby i~typu kolumn oraz liczności poszczególnych klas.
+
+Cecha numeryczna reprezentuje wielkość, dla której działania arytmetyczne mają uzasadnioną interpretację. W~przypadku cechy nominalnej znaczenie mają kategorie, lecz ich porządek i~odległości nie są określone. Cecha porządkowa ma ustaloną kolejność wartości, która nie musi oznaczać jednakowych odstępów. Zapis kategorii jako liczby całkowitej nie zmienia automatycznie jej charakteru. Przykładowo kod identyfikujący zawód nie staje się miarą ilościową wskutek użycia cyfr~\cite{borisov2022survey}.
+
+Należy również rozdzielić kolumny predykcyjne i~metadane. Identyfikator pacjenta może być potrzebny do utworzenia rozłącznych grup, lecz nie powinien z~tego powodu automatycznie stać się predyktorem. Znacznik czasu może określać moment dostępności cech lub zasady podziału. Znaczenie tych kolumn wynika z~definicji zadania, a~nie wyłącznie z~ich typu w~pliku. Tabela~\ref{tab:role-kolumn} porządkuje podstawowe role.
+
+\begin{table}[tbp]
+\centering
+\caption{Typy i role kolumn istotne w projektowaniu klasyfikacji. Zestawienie pojęciowe, nie opis konkretnego zbioru.}
+\label{tab:role-kolumn}
+\small
+\begin{tabularx}{\textwidth}{@{}P{0.22\textwidth}YY@{}}
+\toprule
+Typ lub rola & Znaczenie & Konsekwencja dla oceny \\
+\midrule
+Cecha numeryczna & Wielkość o uzasadnionej skali & Skala może wpływać na optymalizację i odległości. \\
+Cecha nominalna & Kategoria bez naturalnego porządku & Kodowanie nie powinno narzucać nieuzasadnionych odległości. \\
+Cecha porządkowa & Kategoria z kolejnością & Trzeba uzasadnić sposób wykorzystania porządku. \\
+Identyfikator grupy & Powiązanie obserwacji & Może wymagać rozłączności grup między częściami danych. \\
+Czas obserwacji & Pozycja względem momentu predykcji & Pozwala ocenić dostępność cech i adekwatność podziału. \\
+Etykieta docelowa & Wynik przewidywany & Nie jest dostępna jako cecha podczas predykcji. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Reprezentacja danych i założenia indukcyjne}
+\label{sec:reprezentacja-zalozenia}
+
+\subsection{Znaczenie reprezentacji kolumn}
+
+Założenia indukcyjne określają, jakie rozwiązania procedura uczenia może łatwiej odnajdywać lub preferować. W~przypadku tabel każda kolumna może reprezentować inne pojęcie. Nie można zatem bez uzasadnienia przyjmować, że sąsiednie kolumny mają relację analogiczną do sąsiedztwa pikseli lub że przesunięcie wartości między kolumnami zachowuje sens obserwacji. W~przeglądzie Borisova i~współautorów heterogeniczność i~zależność od przetwarzania wstępnego stanowią istotne elementy wyjaśnienia trudności tej dziedziny~\cite{borisov2022survey}.
+
+Reprezentacja wpływa na problem otrzymywany przez model. Kodowanie zero-jedynkowe pozwala rozróżniać kategorie bez przypisania im porządku, lecz może znacznie poszerzyć wejście. Uczone osadzenie przypisuje kategorii wektor parametrów, którego użyteczność zależy od procesu uczenia. Skalowanie cech numerycznych zmienia z~kolei relacje odległości i~warunki optymalizacji. Dlatego identyczne pliki wejściowe nie gwarantują identycznej reprezentacji między metodami.
+
+\subsection{Informacyjność cech i nieregularne zależności}
+
+Grinsztajn i~współautorzy~\cite{grinsztajn2022trees} badali różnice między sieciami i~drzewami przez kontrolowane przekształcenia danych. Wskazali wrażliwość badanych sieci na cechy nieinformatywne, orientację układu współrzędnych i~nieregularność zależności docelowych. Znaczenie tych wyników wykracza poza samo uporządkowanie metod: pokazują one, jak badać określone własności przy zachowaniu kontroli nad interwencją.
+
+Ustalenia te należy ograniczyć do zakresu analizowanych modeli i~danych. Nie dowodzą one, że każda architektura neuronowa ma jednakową wrażliwość ani że wszystkie niepowodzenia sieci wynikają z~tej samej przyczyny. W~niniejszej pracy nie przewidziano osobnych eksperymentów rotacji lub dodawania cech losowych. Związki obserwowane między naturalnymi właściwościami wybranych zbiorów i~jakością będą zatem opisowe.
+
+\subsection{Braki i informacje niedostępne przy predykcji}
+
+Brak wartości nie jest tym samym co zero ani nowa kategoria występująca po raz pierwszy podczas predykcji. Procedura musi określać, jak te sytuacje reprezentuje. Jeżeli imputacja lub kodowanie uczą się statystyk, ich dopasowanie powinno respektować granicę między treningiem i~oceną. Włączenie etykiety do kodowania kategorii wymaga szczególnej ostrożności, ponieważ statystyka może ujawnić informację, której model nie otrzyma dla nowego przypadku~\cite{prokhorenkova2018catboost}.
+
+Poprawna obsługa techniczna braków nie wystarcza do stwierdzenia poprawności zadania. Cecha zarejestrowana dopiero po wystąpieniu przewidywanego zdarzenia może zapewniać wysoką jakość bez użyteczności w~zadanym momencie predykcji. W~tej pracy dostępność informacji i~role cech muszą zostać ustalone w~audycie źródeł, przed interpretacją wyników.
+
+\section{Trudne reżimy klasyfikacji}
+\label{sec:trudne-rezimy}
+
+\subsection{Mała liczba przykładów i wysoka wymiarowość}
+
+Pojęcie małego zbioru jest zależne od zadania. Znaczenie ma nie tylko całkowita liczba wierszy, lecz także liczba przykładów faktycznie dostępnych do uczenia, liczność każdej klasy i~złożoność reprezentacji. Dla modelu operującego na rozszerzonym kodowaniu wejście może być znacznie szersze niż surowa tabela. W~opisie własnych eksperymentów potrzebne będą zatem rzeczywiste liczności treningu i~liczby cech po przekształceniach.
+
+Zmniejszanie liczby przykładów przy stałym zbiorze cech zmienia warunki dopasowania. Jeżeli jednocześnie zmieniałyby się walidacja lub test, obserwowana różnica mogłaby odzwierciedlać także zmianę ocenianej populacji. Przyjęte badanie generalizacji zachowa te populacje i~ograniczy podpróbkowanie do treningu. Analiza będzie dotyczyć wrażliwości na liczność treningu, a~nie całkowitego budżetu oznaczania, ponieważ etykiety walidacyjne nadal są wykorzystywane.
+
+W~tym kontekście istotne są wyniki Kadry i~współautorów~\cite{kadra2021regularization}, którzy oceniali zadaniowo dobierane kombinacje technik regularyzacji na 40 zbiorach. Praca ta uzasadnia traktowanie receptury uczenia jako ważnego składnika porównania. Nie pozwala jednak przypisać wyniku całego zestawu pojedynczemu regularyzatorowi. Własne badanie ograniczy się do usuwania jednego składnika ustalonego MLP.
+
+\subsection{Niezrównoważenie i rozpoznawanie rzadkiej klasy}
+
+Przy nierównych licznościach klas wysoka accuracy może wynikać głównie z~poprawnego rozpoznawania klasy większościowej. Ocena powinna wskazywać, która klasa jest przedmiotem zainteresowania. Nie musi ona mieć kodu~1 w~surowych danych ani po ich przekształceniu. Saito i~Rehmsmeier~\cite{saito2015pr} pokazują, dlaczego relacja precyzji i~czułości jest istotnym uzupełnieniem ROC w~zadaniach silnie niezrównoważonych.
+
+Jakość uporządkowania i~jakość decyzji progowej to różne właściwości. Model może przypisywać zdarzeniom rzadkim wyższe wyniki niż pozostałym, a~jednocześnie nie wskazywać ich przy domyślnym progu. Ważenie klas modyfikuje udział przykładów w~funkcji uczenia, natomiast zmiana progu modyfikuje sposób uzyskania decyzji z~już wyznaczonych wyników. W~badaniu własnym oba aspekty zostaną rozdzielone: oprócz AP rzadkiej klasy będą oceniane precyzja i~czułość przy progach wybranych na walidacji.
+
+AP podsumowuje relację precyzji i~czułości przy kolejnych poziomach wyników. Nie należy bez sprawdzenia definicji utożsamiać tej miary z~polem wyznaczonym trapezami pod narysowaną krzywą. Również porównanie między różnymi zadaniami wymaga znajomości częstości zdarzenia: poziom odniesienia i~znaczenie uzyskanej precyzji zależą od ocenianej populacji.
+
+\subsection{Wieloklasowość i jakość prawdopodobieństw}
+
+Przy wielu klasach pojedyncza liczba poprawnych decyzji nie opisuje całego zachowania klasyfikatora. Rozkład błędów może być nierówny, a~model może przypisywać błędnej klasie bardzo wysoką pewność. Log loss uwzględnia prawdopodobieństwo nadane rzeczywistej etykiecie i~odróżnia predykcje o~różnym stopniu pewności. W~planowanym porównaniu będzie metryką główną zadań wieloklasowych, zgodnie z~przyjętą adaptacją protokołu TabArena~\cite{erickson2025tabarena}.
+
+Przygotowanie zadania wymaga zachowania spójnej kolejności klas między uczeniem, predykcją i~obliczaniem metryk. Wykonalność w~zadaniu binarnym nie potwierdza automatycznie obsługi zadania o~stu klasach. Z~tego powodu kwalifikacja metod i~raportowanie niepowodzeń są częścią projektu, a~nie wyłącznie problemem administracji eksperymentem.
+
+\subsection{Zależności między obserwacjami i zmiana rozkładu}
+
+Powtarzające się obserwacje tej samej osoby mogą naruszać interpretację losowego podziału jako oceny nowych osób. Podobnie losowe przemieszanie danych z~różnych okresów nie musi odpowiadać przewidywaniu przyszłości. Rubachev i~współautorzy~\cite{rubachev2025tabred} wskazali znaczenie podziałów czasowych w~TabReD, obejmującym osiem przemysłowych zbiorów z~rozbudowanymi cechami. Zmiana sposobu podziału wpływała na względną ocenę metod.
+
+W~tej pracy Diabetes będzie oceniany z~rozłącznością pacjentów, lecz nie przewidziano osobnego porównania czasowego. Wynik nie będzie więc interpretowany jako dowód odporności na dryf. Pozostałe źródła również wymagają audytu zależności przed ostatecznym uzasadnieniem przyjętej populacji testowej.
+
+\section{Rozwój podejść neuronowych}
+\label{sec:rozwoj-podejsc}
+
+Rozwiązania neuronowe można porządkować według tego, na którym poziomie ingerują w~procedurę predykcji. Zmiana reprezentacji przygotowuje wejście dla modelu, zmiana architektury określa sposób łączenia informacji, a~receptura uczenia wpływa na odnajdywane parametry. Podział ten jest użyteczny, lecz nie jest rozłączny: jedna metoda może łączyć kilka takich elementów~\cite{borisov2022survey}.
+
+Przyjęty dobór obejmuje także podejście oparte na sąsiedztwie i~model wykorzystujący wiedzę nabytą przed otrzymaniem badanego zadania. Ich obecność rozszerza porównanie poza klasyczny schemat trenowania niezależnej sieci od początku na każdym zbiorze. Podział na modele neuronowe i~konwencjonalne pozostaje przydatny organizacyjnie, ale nie wyczerpuje różnic między procedurami.
+
+Na rysunku~\ref{fig:mapa-podejsc} przewidziano mapę ról wybranych metod. Schemat nie będzie przedstawiał rankingu ani sugerował, że nowszy algorytm musi być lepszy. Wyjaśnienie mechanizmów znajduje się w~rozdziale~\ref{chap:metody}.
+
+\plannedfigure
+    {figures/ch02/mapa-podejsc.pdf}
+    {Role wybranych podejść w badaniu. Opracowanie własne; schemat nie przedstawia wyników ani rozłącznej klasyfikacji architektur.}
+    {fig:mapa-podejsc}
+    {Mapa siedmiu metod neuronowych oraz czterech odniesień. Kategorie mają opisywać role: model bazowy, specjalizacja, receptura, sąsiedztwo, zespoły i pretrenowanie.}
+
+\section{Badania porównawcze}
+\label{sec:benchmarki}
+
+Przegląd ma charakter narracyjny. Jego rdzeń odnosi się do korpusu przyjętego przy doborze metod, z~granicą czasową 27 października 2026 roku; źródła ponownie sprawdzono 6 listopada 2026 roku. Jawnie wskazano wersje preprintów, ponieważ zakresy późniejszych rewizji mogą się różnić. Nie deklaruje się systematycznego przeszukania wszystkich publikacji z~tej dziedziny.
+
+\subsection{Od porównania architektur do analizy warunków}
+
+Gorishniy i~współautorzy~\cite{gorishniy2021revisiting} zestawili modele na jedenastu zadaniach klasyfikacji i~regresji, podkreślając znaczenie mocnych prostych odniesień. Grinsztajn i~współautorzy~\cite{grinsztajn2022trees} połączyli benchmark 45 zbiorów z~badaniem kontrolowanych przekształceń. Ich główny reżim ograniczał liczność treningu, usuwał braki, równoważył klasyfikację i~ograniczał zakres wymiarowości oraz kategorii. Nie odpowiada zatem bezpośrednio na pytania o~naturalne rzadkie klasy lub bardzo małe zbiory.
+
+McElfresh i~współautorzy~\cite{mcelfresh2024tabzilla} porównali 19 algorytmów na 176 zbiorach klasyfikacji. Analizowali także znaczenie strojenia i~związki wyników z~metacechami. Poszczególne analizy nie zawsze obejmują identyczny komplet zadań. Wyniki dotyczące wczesnego TabPFN, częściowo ocenianego przy ograniczonym treningu, nie są dowodem o~lokalnym checkpointcie TabPFN-3.5 wybranym w~tej pracy.
+
+\subsection{Receptury, szersze benchmarki i utrzymanie porównań}
+
+Holzmüller i~współautorzy~\cite{holzmueller2024realmlp} rozdzielili rozwój ustawień domyślnych na 118 zbiorach od oceny na 90 zbiorach meta-test. To rozróżnienie ma znaczenie dla interpretacji konfiguracji domyślnej: może ona zawierać wiedzę wynikającą z~wcześniejszej optymalizacji. Oceniając koszt lokalny, nie należy utożsamiać braku strojenia na zadaniu z~brakiem jakiegokolwiek wcześniejszego wyszukiwania.
+
+Wersja~4 pracy Ye i~współautorów~\cite{ye2025talent} przedstawia porównanie 40 metod w~TALENT na 300 bazowych zbiorach oraz rozszerzenia. Baza obejmuje klasyfikację binarną, wieloklasową i~regresję. Główny protokół wykorzystuje stały podział 64/16/20 i~100 prób strojenia; walidacja krzyżowa jest analizowana oddzielnie. Agregatu obejmującego regresję nie można bezpośrednio odczytywać jako odpowiedzi o~samej klasyfikacji.
+
+TabArena~\cite{erickson2025tabarena} traktuje benchmark jako utrzymywany i~wersjonowany system. Początkowa kolekcja obejmuje 51 zbiorów; istotnymi elementami są kuracja danych, walidacja wewnętrzna, strojenie, łączenie konfiguracji i~metadane wykonania. Przyjęte tutaj dwanaście zadań i~ograniczony protokół stanowią własną adaptację. Nie są pełnym oficjalnym benchmarkiem ani reprodukcją jego wyników.
+
+\begin{table}[tbp]
+\centering
+\caption{Wybrane badania porównawcze i ich znaczenie dla projektu pracy. Liczby dotyczą wskazanych publikacji lub wersji, a nie jednego wspólnego benchmarku. Opracowanie własne na podstawie cytowanych źródeł.}
+\label{tab:benchmarki}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}P{0.25\textwidth}P{0.22\textwidth}Y@{}}
+\toprule
+Praca & Zakres & Zasadnicza granica przenoszenia wniosków \\
+\midrule
+RTDL~\cite{gorishniy2021revisiting} & 11 zadań & Klasyfikacja i regresja; starsze modele i inny protokół. \\
+Grinsztajn i in.~\cite{grinsztajn2022trees} & 45 zbiorów & Kontrolowany reżim nie zachowuje wszystkich trudności danych źródłowych. \\
+TabZilla~\cite{mcelfresh2024tabzilla} & 176 zbiorów klasyfikacji & Mianowniki analiz i ustawienia historycznych modeli wymagają kontroli. \\
+RealMLP~\cite{holzmueller2024realmlp} & 118 meta-train, 90 meta-test & Rozwój receptury jest odrębny od oceny i kosztów zadaniowych. \\
+TALENT v4~\cite{ye2025talent} & 300 zbiorów bazowych i rozszerzenia & Mieszane typy zadań i inna walidacja. \\
+TabArena~\cite{erickson2025tabarena} & 51 zbiorów początkowych & Zespoły, wersje i zasoby są częścią ocenianej procedury. \\
+TabReD~\cite{rubachev2025tabred} & 8 zbiorów przemysłowych & Podziały czasowe nie odpowiadają standardowemu IID. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Zgodności, rozbieżności i ograniczenia syntezy}
+\label{sec:synteza-literatury}
+
+Przywołane prace nie składają się na jeden eksperyment o~wspólnej populacji. Różnią się doborem danych, wersjami metod, metrykami i~budżetem. Część ocenia pojedyncze konfiguracje, inne uwzględniają zespoły. Różnica wyników publikacji nie musi być sprzecznością: może odpowiadać innemu pytaniu. Nie przeprowadzono tu metaanalizy, która wyznaczałaby wspólną wielkość przewagi na podstawie niezgodnych protokołów.
+
+Ważną osią porównywalności jest oddzielenie selekcji od oceny. Cawley i~Talbot~\cite{cawley2010selection} pokazują, że dopasowywanie się do skończonej próby walidacyjnej może obciążać ocenę wybranej procedury. Wspólna walidacja nie daje zatem prawa do wielokrotnego projektowania zmian na podstawie testu. Etykiety testowe nie powinny służyć wyborowi konfiguracji, progu, zespołu ani zakresu prezentowanych porównań.
+
+Drugą osią jest jednostka wnioskowania. Porównanie między zbiorami różni się od analizy powtórzeń na jednym zbiorze~\cite{demsar2006comparisons}. W~niniejszym badaniu foldy i~konfiguracje nie będą traktowane jako nowe niezależne zadania. Rangi zostaną uzupełnione wynikami zadaniowymi, ponieważ pomijają wielkość różnicy. Ponadto brak informacji o~pokryciu danych rozwoju metod nie będzie zastępowany założeniem, że wszystkie wybrane zadania są całkowicie nowe dla ich twórców.
+
+\section{Uzasadnienie własnego projektu}
+\label{sec:uzasadnienie-projektu}
+
+Zakres tej pracy nie ma odtwarzać liczby zbiorów ani kosztu największych benchmarków. Przyjęto ograniczone porównanie kompletnych procedur, uzupełnione dwiema interwencjami odpowiadającymi wymaganiom tematu. Tabela~\ref{tab:problem-dowod} rozdziela własne dowody od problemów omawianych wyłącznie jako kontekst.
+
+\begin{table}[tbp]
+\centering
+\caption{Relacja problemów do planowanych dowodów własnych. Zestawienie projektu badania, nie rezultat eksperymentów.}
+\label{tab:problem-dowod}
+\small
+\begin{tabularx}{\textwidth}{@{}P{0.26\textwidth}YY@{}}
+\toprule
+Problem & Planowany dowód & Granica interpretacji \\
+\midrule
+Jakość i koszt potoków & Wspólne testy, D/T/T+E & Bez izolacji pojedynczej architektury. \\
+Rzadkie klasy & Ważenie i kontrola progów & Efekt przy ustalonych pozostałych ustawieniach. \\
+Mało danych i regularyzacja & Zagnieżdżone treningi, ablacje MLP & Bez pełnej analizy interakcji mechanizmów. \\
+Wymiarowość i typy cech & Zróżnicowane naturalne zadania & Związek opisowy, nie kontrolowany efekt jednej cechy. \\
+Szum, rotacje, dryf & Omówienie literatury i audyt & Brak własnego testu odporności w tych reżimach. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Tak określony wkład nie wymaga twierdzenia, że ważenia lub regularyzacji nigdy wcześniej nie badano. Wartość własnego porównania będzie wynikała ze spójności projektu, kontroli informacji i~jawnego powiązania wniosków z~artefaktami. Na tej podstawie w~kolejnym rozdziale przedstawiono mechanizmy i~role wybranych metod.

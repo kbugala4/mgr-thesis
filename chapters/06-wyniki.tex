@@ -1,0 +1,111 @@
+\chapter{Wyniki badania porównawczego}
+\label{chap:wyniki}
+
+\textbf{Status rozdziału: szkielet do uzupełnienia po eksperymentach.} Nie zawiera wyników końcowej kampanii. Tabele są pustymi formularzami prezentacji, a~ramki wskazują docelowe ścieżki wykresów. Brak wartości nie oznacza zera, awarii ani niewykrycia różnicy. Po wykonaniu badania należy zastąpić instrukcje redakcyjne opisem obserwacji i~podać identyfikator uruchomienia oraz wersję analizy.
+
+\section{Kompletność wykonania i odstępstwa}
+\label{sec:wyniki-kompletnosc}
+
+\textbf{Do uzupełnienia:} daty kampanii, tożsamość źródeł, sprzętu i~danych oraz liczby wykonanych, udanych, nieudanych i~przerwanych prób. Punktem odniesienia są nominalne liczby z~sekcji~\ref{sec:koszt-metodyka}, a~nie założenie pełnego sukcesu. Tabelę~\ref{tab:wyniki-pokrycie} należy rozwinąć dla każdej pary zbiór--metoda. Osobno wskazać stały TabPFN, dla którego planowana jest jedna konfiguracja i~wyłącznie D.
+
+\begin{table}[tbp]
+\centering\small
+\caption{Formularz kompletności kampanii; brak danych z~końcowego wykonania. Liczba kandydatów dotyczy różnych konfiguracji, a~nie liczby ponowionych prób.}
+\label{tab:wyniki-pokrycie}
+\begin{tabularx}{\linewidth}{YYYYY}
+\toprule
+Zbiór i~metoda & Planowane konfiguracje & Udane konfiguracje & Awarie i~przerwania & Dostępne warunki \\
+\midrule
+\multicolumn{5}{c}{Do uzupełnienia na podstawie indeksu, statusów i~historii prób.} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Należy opisać przyczyny braków, powtórzenia i~odstępstwa od zamrożonego protokołu. Nie zastępować braków arbitralnie niską metryką. Dla każdej analizy na podzbiorze kompletnych par podać jego skład oraz mianownik; wskazać, czy wykluczenia koncentrują się na trudniejszych zadaniach.
+
+\section{Jakość na poszczególnych zadaniach}
+\label{sec:wyniki-zadania}
+
+\textbf{Do uzupełnienia:} wyniki wszystkich jedenastu procedur, bez wyboru przedstawiciela rodziny według testu. Panel główny obejmie T oraz odrębnie oznaczony stały TabPFN, zgodnie z~sekcją~\ref{sec:analiza-plan}. Tabele~\ref{tab:wyniki-binarne} i~\ref{tab:wyniki-wieloklasowe} celowo rozdzielają metryki o~różnych skalach i~kierunkach poprawy. Pełne D, T i~T+E oraz metryki pomocnicze należy udostępnić w~załączniku.
+
+\begin{table}[tbp]
+\centering\small
+\caption{Formularz wyników dziewięciu zadań binarnych. ROC AUC: większa wartość oznacza lepszą jakość. Brak pomiarów.}
+\label{tab:wyniki-binarne}
+\begin{tabularx}{\linewidth}{YYYY}
+\toprule
+Zbiór & Metoda i~warunek & Testowe ROC AUC & Liczba obserwacji testowych \\
+\midrule
+\multicolumn{4}{c}{Do uzupełnienia z~wyrównanych predykcji i~raportu kampanii.} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[tbp]
+\centering\small
+\caption{Formularz wyników Covertype, Diabetes i~Heleny. Strata logarytmiczna: mniejsza wartość oznacza lepszą jakość. Brak pomiarów.}
+\label{tab:wyniki-wieloklasowe}
+\begin{tabularx}{\linewidth}{YYYY}
+\toprule
+Zbiór & Metoda i~warunek & Testowa strata logarytmiczna & Liczba obserwacji testowych \\
+\midrule
+\multicolumn{4}{c}{Do uzupełnienia; zachować mapowanie i~kolejność klas.} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Uprzednio ustalone kontrasty}
+\label{sec:wyniki-kontrasty}
+
+\textbf{Do uzupełnienia po zamrożeniu analizy:} różnice RealMLP--CatBoost, TabM--CatBoost i~ModernNCA--KNN na każdym zadaniu, z~kierunkiem korzyści ustalonym w~sekcji~\ref{sec:analiza-plan}. Wskazać zakres niepewności, remisy, braki i~liczbę kompletnych porównań. Jeżeli zastosowano testy, podać wartości surowe i~skorygowane oraz uzasadnienie ich założeń. Nie interpretować braku istotności jako równoważności.
+
+\plannedfigure
+{figures/ch06/kontrasty.pdf}
+{Miejsce na wykres uprzednio ustalonych kontrastów; wyniki nie zostały jeszcze uzyskane.}
+{fig:wyniki-kontrasty}
+{Oddzielne panele różnic AUC i~straty, trzy pary metod, dodatni kierunek korzyści pierwszej metody. Przedziały wyłącznie po zamrożeniu i~wykonaniu analizy.}
+
+\section{Wpływ strojenia i łączenia konfiguracji}
+\label{sec:wyniki-strojenie}
+
+\textbf{Do uzupełnienia:} zmiana D--T i~T--T+E na teście, liczba skutecznych kandydatów oraz koszt ich znalezienia. Pokazać również pogorszenia. Oddzielić wynik wyboru na OOF od jego skutku testowego i~nie wybierać lepszego warunku po obejrzeniu testu. Nie tworzyć nieistniejących T i~T+E dla TabPFN.
+
+\plannedfigure
+{figures/ch06/strojenie-i-zespoly.pdf}
+{Miejsce na porównanie D, T i~T+E; wyniki nie zostały jeszcze uzyskane.}
+{fig:wyniki-strojenie}
+{Pokazać sparowane zmiany na tych samych zadaniach. Rozdzielić AUC i~stratę, wskazać liczbę udanych konfiguracji i~jawnie oznaczyć wyjątek TabPFN.}
+
+\section{Zróżnicowanie wyników między zadaniami}
+\label{sec:wyniki-heterogenicznosc}
+
+\textbf{Do uzupełnienia:} opis wyników w~odniesieniu do audytowanych właściwości danych. Przypadki małe, szerokie, kategoryczne, niezrównoważone i~wieloklasowe mogą się nakładać; nie są niezależnymi grupami kontrolnymi. Oddzielić obserwowany wzorzec od hipotezy o~jego przyczynie. Dwanaście punktów nie uzasadnia rozbudowanego modelu wyjaśniającego przewagę architektur. Uwzględnić wyniki sprzeczne z~oczekiwaniami.
+
+\section{Koszt i wykonalność}
+\label{sec:wyniki-koszt}
+
+\textbf{Do uzupełnienia:} pomiary zgodne z~granicami sekcji~\ref{sec:koszt-metodyka}. W~tabeli~\ref{tab:wyniki-koszt} czas wyszukiwania, wybranych konfiguracji i~predykcji pozostają odrębne. Zarejestrowaną sumę przebiegów predykcji należy tak nazwać; pełną latencję zespołu można podać tylko po jej niezależnym pomiarze. Pamięć i~awarie zasobów wymagają identyfikowalnego źródła, a~brak odczytu nie oznacza braku zużycia.
+
+\begin{table}[tbp]
+\centering\small
+\caption{Formularz kosztów procedur; brak pomiarów. Jednostką czasu będą sekundy, a~pamięci --- jawnie wskazane MiB lub GiB.}
+\label{tab:wyniki-koszt}
+\begin{tabularx}{\linewidth}{YYYYY}
+\toprule
+Zadanie, metoda i~warunek & Koszt wyszukiwania & Dopasowanie wybranych konfiguracji & Zapisany koszt predykcji & Sprzęt i~pamięć \\
+\midrule
+\multicolumn{5}{c}{Do uzupełnienia z~artefaktów i~zakwalifikowanych pomiarów zasobów.} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\plannedfigure
+{figures/ch06/jakosc-koszt.pdf}
+{Miejsce na wykres kompromisu jakości i~kosztu w~obrębie zadań; brak pomiarów.}
+{fig:wyniki-koszt}
+{Osobny panel dla zadania. Zdefiniować oś kosztu i~warunek, oznaczyć CPU/GPU. Nie sumować kosztów D, T i~T+E jako niezależnych wyszukiwań.}
+
+\section{Odpowiedzi na pytania PB1, PB2 i PB5}
+\label{sec:wyniki-odpowiedzi}
+
+\textbf{Do uzupełnienia po analizie:} trzy osobne odpowiedzi oparte na numerach tabel i~rysunków, wielkości efektów oraz pokryciu. Dla PB1 określić, w~jakich zadaniach i~warunkach wystąpiły różnice; dla PB2 oddzielić strojenie od łączenia konfiguracji; dla PB5 wskazać jakość wraz z~kosztem i~ograniczeniami sprzętowymi. Interpretacja literaturowa i~ogólne ograniczenia należą do końcowej dyskusji.

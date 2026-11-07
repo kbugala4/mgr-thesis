@@ -1,0 +1,53 @@
+\chapter{Wstęp}
+\label{chap:wstep}
+
+\section{Motywacja i znaczenie problemu}
+\label{sec:motywacja}
+
+Dane opisujące transakcje, pacjentów, klientów lub wyniki pomiarów często mają postać tabeli, w~której każdej obserwacji odpowiada wiersz, a~poszczególnym właściwościom --- kolumny. W~zadaniu klasyfikacji na podstawie takiego opisu należy przewidzieć etykietę należącą do skończonego zbioru klas. Przykładami są wykrywanie nadużyć, ocena ryzyka kredytowego i~przewidywanie ponownej hospitalizacji. Wspólna organizacja danych nie oznacza jednak jednorodności problemów: kolumny mogą mieć różne typy, skale i~znaczenie, a~obserwacje mogą być ze sobą powiązane~\cite{borisov2022survey}.
+
+Możliwość zastosowania sieci neuronowej do tabeli nie rozstrzyga, czy jest to rozwiązanie uzasadnione pod względem jakości i~kosztu. Obok modeli neuronowych dostępne są metody liniowe, sąsiedztwa i~zespoły drzew. W~porównaniu istotne są nie tylko nazwy algorytmów, lecz także przygotowanie danych, ustawienia uczenia, dobór hiperparametrów oraz sposób wykorzystania walidacji. W~literaturze zwracano uwagę zarówno na znaczenie mocnych prostych odniesień, jak i~na trudności porównywania metod ocenianych według różnych procedur~\cite{gorishniy2021revisiting}.
+
+Motywacją niniejszej pracy jest uporządkowanie tego porównania w~ściśle określonym zakresie. Szczególne znaczenie mają sytuacje, w~których zbiorcza ocena poprawności predykcji może pomijać istotne ograniczenia: niewielka liczba przykładów, wiele cech względem dostępnego treningu oraz rzadka klasa. Dobra jakość rozpoznawania zdarzeń częstych nie musi oznaczać użyteczności w~wykrywaniu zdarzenia rzadkiego. Podobnie niski błąd treningowy nie jest wystarczającym dowodem zdolności uogólniania.
+
+\section{Cel i zakres pracy}
+\label{sec:cel-zakres}
+
+Celem pracy jest zbadanie przydatności znanych z~literatury metod głębokiego uczenia do klasyfikacji danych tabelarycznych. Ocena będzie oparta na porównaniu z~wybranymi algorytmami konwencjonalnymi oraz na badaniach mechanizmów uwrażliwiania na rzadkie klasy i~ograniczania nadmiernego dopasowania. Praca ma charakter badawczy; nie zakłada konieczności skonstruowania nowej architektury ani wykazania przewagi określonej rodziny metod.
+
+Przyjęto siedem metod neuronowych: MLP, TabNet, FT-Transformer, RealMLP, ModernNCA, TabM i~TabPFN-3.5. Cztery odniesienia konwencjonalne stanowią regresja logistyczna, KNN, XGBoost i~CatBoost. Dobór pozwala zestawić sieć bazową, rozwiązania specjalizowane dla tabel, rozwinięte receptury uczenia, uczone sąsiedztwo, efektywne zespoły i~model pretrenowany. Metody nie są traktowane jako jedenaście wariantów tej samej procedury; ich różnice obejmują również reprezentację danych i~zasoby wykorzystane przed adaptacją do konkretnego zadania.
+
+Badanie obejmie dwanaście zbiorów: Adult, Covertype, Credit Card Fraud, HIGGS w~wybranej wersji podzbioru, Amazon Employee Access, Santander Customer Satisfaction, Online Shoppers Purchasing Intention, Diabetes 130-US Hospitals, Helena, Statlog German Credit, Ionosphere i~Bioresponse. Zachowano zadania klasyfikacji binarnej i~wieloklasowej. Zbiory dobrano celowo, aby uwzględnić zróżnicowane liczności, typy cech i~rozkłady klas; nie stanowią one losowej próby wszystkich zastosowań uczenia maszynowego.
+
+Porównanie główne będzie uzupełnione dwoma badaniami kontrolowanymi. Pierwsze dotyczy ważenia klas przy niezmienionych pozostałych hiperparametrach. Drugie obejmuje usuwanie wybranych składników regularyzacji MLP przy różnych liczbach przykładów treningowych. Aktywne uczenie pozostaje kierunkiem możliwego rozszerzenia, a~nie częścią wymaganą do udzielenia odpowiedzi na przyjęte pytania.
+
+\section{Pytania badawcze}
+\label{sec:pytania-badawcze}
+
+Przyjęty cel uszczegółowiono w~pięciu pytaniach. Każde odnosi się do zadeklarowanych danych i~warunków oceny, a~nie do wszystkich możliwych modeli i~zastosowań.
+
+\begin{enumerate}
+    \item \textbf{PB1:} Jak wybrane procedury neuronowe wypadają na tle metod konwencjonalnych w~dwunastu zadaniach klasyfikacji? Podstawą odpowiedzi będą wyniki poszczególnych zadań i~różnice między procedurami ocenianymi na wspólnych populacjach testowych.
+    \item \textbf{PB2:} Jak strojenie hiperparametrów i~łączenie konfiguracji zmieniają jakość oraz koszt? Porównanie obejmie konfigurację domyślną, konfigurację wybraną na walidacji oraz zespół konfiguracji. Warunki te pozostaną rozdzielone w~raportowaniu.
+    \item \textbf{PB3:} Jak ważenie klas wpływa na rozpoznawanie zadeklarowanej rzadkiej klasy? Oceniane będą jakość uporządkowania przykładów oraz precyzja i~czułość przy progach wyznaczonych bez dostępu do etykiet testowych.
+    \item \textbf{PB4:} Jak dropout i~zanik wag wpływają na generalizację MLP przy różnej liczbie przykładów treningowych? Odpowiedź wymaga porównań z~ustaloną recepturą odniesienia, wspólnych podzbiorów i~kontroli pozostałych ustawień.
+    \item \textbf{PB5:} Jaki kompromis jakości, czasu i~pamięci uzyskują badane procedury na zadeklarowanym sprzęcie? Koszt znalezienia rozwiązania zostanie oddzielony od kosztu wykorzystania wybranych modeli i~wykonania predykcji.
+\end{enumerate}
+
+Nie zakłada się, że każda interwencja przyniesie poprawę. Wynik przeciwny oczekiwaniom, brak rozstrzygającej różnicy lub ograniczenie wykonalności również dostarczają informacji. W~szczególności brak statystycznego potwierdzenia różnicy nie będzie utożsamiany z~równoważnością metod.
+
+\section{Wkład własny i granice wnioskowania}
+\label{sec:wklad}
+
+Wkład własny obejmuje syntezę literatury, uzasadnienie doboru metod i~zadań, projekt porównania oraz integrację odtwarzalnego środowiska eksperymentalnego. Zaimplementowano główną ścieżkę uruchamiania metod, zapisu predykcji i~odtwarzania raportów. Integracja korzysta z~istniejących bibliotek i~implementacji; nie oznacza autorstwa oryginalnych algorytmów. Jej poprawność należy rozpatrywać oddzielnie od empirycznej skuteczności metod.
+
+Planowany wkład empiryczny obejmuje porównanie jakości i~kosztu oraz oba badania mechanizmów. Na etapie przygotowania tego tekstu końcowa kampania nie została wykonana. Dostępne sprawdzenia infrastruktury nie są przedstawiane jako wyniki naukowego porównania. Wnioski dotyczące skuteczności zostaną sformułowane dopiero na podstawie zidentyfikowanych artefaktów eksperymentów.
+
+Porównanie kompletnych rozwiązań nie pozwala samo w~sobie przypisać różnicy jakości pojedynczej warstwie, reprezentacji lub regularyzatorowi. Taki wniosek wymaga odpowiednio dopasowanej interwencji. Podobnie jeden podział zewnętrzny nie opisuje zmienności między wszystkimi możliwymi podziałami, a~foldy walidacji wewnętrznej nie zwiększają liczby niezależnych zbiorów w~porównaniu między zadaniami~\cite{demsar2006comparisons}.
+
+\section{Organizacja pracy}
+\label{sec:organizacja}
+
+Rozdział~\ref{chap:stan-badan} przedstawia właściwości danych tabelarycznych, trudne reżimy klasyfikacji oraz stan badań porównawczych. Wyjaśnia, jakie informacje wynikają z~benchmarków, a~jakie wymagają badań kontrolowanych. W~rozdziale~\ref{chap:metody} opisano mechanizmy wybranych metod i~uzasadniono ich role w~porównaniu.
+
+Dalsza część pracy zostanie poświęcona metodyce badań i~środowisku eksperymentalnemu. Następnie przewidziano wspólną prezentację wyników metod neuronowych i~konwencjonalnych oraz osobną analizę obu badań mechanizmów. Dyskusja końcowa odniesie obserwacje do literatury, określi ograniczenia i~przedstawi rekomendacje warunkowe. Taki układ oddziela podstawy wyboru metod, projekt oceny, obserwacje i~ich interpretację.
