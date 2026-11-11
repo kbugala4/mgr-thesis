@@ -1,14 +1,16 @@
-\chapter{Badania mechanizmów uwrażliwiania na rzadkie klasy i ograniczania nadmiernego dopasowania}
+\clearpage
+\section{Badania mechanizmów uwrażliwiania na rzadkie klasy i ograniczania nadmiernego dopasowania}
 \label{chap:mechanizmy}
+\sectionmark{Badania ważenia klas i regularyzacji}
 
 \textbf{Status rozdziału: szkielet do uzupełnienia po implementacji i~wykonaniu badań A oraz B.} Nie zawiera wyników interwencji ani dowodu ich skuteczności. Projekt opisano w~sekcjach~\ref{sec:projekt-wazenie} i~\ref{sec:projekt-regularyzacja}. Poniższe instrukcje określają wymagany materiał wynikowy; nie zastępują jeszcze niezamrożonych ustawień.
 
-\section{Wykonane warunki i zgodność kontroli}
+\subsection{Wykonane warunki i zgodność kontroli}
 \label{sec:mechanizmy-kontrole}
 
-\textbf{Do uzupełnienia:} identyfikatory badań, kompletność warunków, trzy ziarna uczenia, rzeczywiste indeksy foldów i~podzbiorów, etykiety rzadkie oraz wybrane konfiguracje. Dla A potwierdzić wyliczenie wag wyłącznie z~treningu i~brak innych zmian hiperparametrów. Dla B podać pochodzenie niezależnej receptury, wartości dropoutu i~zaniku wag, liczbę przykładów każdej klasy, reguły zatrzymania i~wyboru epoki. Każde odstępstwo trzeba opisać przed interpretacją efektu. Wynik bez dowodu dopasowania kontroli nie jest izolowaną oceną interwencji.
+\textbf{Do uzupełnienia:} identyfikatory badań, kompletność warunków, trzy ziarna uczenia, rzeczywiste indeksy foldów i~podzbiorów, etykiety rzadkie oraz wybrane konfiguracje. Dla A potwierdzić wyliczenie wag wyłącznie z~treningu i~brak innych zmian hiperparametrów. Dla B podać pochodzenie niezależnej receptury, wartości dropoutu i~zaniku wag, liczbę przykładów każdej klasy, reguły zatrzymania i~wyboru epoki. Każde odstępstwo trzeba opisać przed interpretacją efektu. Jeżeli warunki różniły się również innymi ustawieniami, nie można przypisać całej różnicy wyników badanemu mechanizmowi.
 
-\section{Ważenie klas a jakość uporządkowania}
+\subsection{Ważenie klas a jakość uporządkowania}
 \label{sec:mechanizmy-ap}
 
 \textbf{Do uzupełnienia:} AP rzadkiej klasy dla obu warunków, osobno dla zbioru, metody i~ziarna. Tabelę~\ref{tab:mechanizmy-ap} należy uzupełnić wynikami sparowanymi, a~następnie średnią różnicą i~zakresem trzech różnic. Podać surową etykietę rzadką, częstość i~liczbę jej przykładów testowych. ROC AUC oraz strata logarytmiczna pozostają ocenami uzupełniającymi; poprawa jednej miary nie przesądza o~pozostałych.
@@ -32,7 +34,7 @@ Zbiór i~metoda & Ziarno & AP bez wag & AP z~wagami & Sparowana różnica \\
 {fig:mechanizmy-pr}
 {Pokazać obie interwencje i~wszystkie trzy ziarna. Zdefiniować klasę rzadką; zaznaczyć jej częstość. AP liczyć z~predykcji, bez utożsamiania z~trapezowym polem.}
 
-\section{Ważenie, próg i punkt pracy}
+\subsection{Ważenie, próg i punkt pracy}
 \label{sec:mechanizmy-progi}
 
 \textbf{Do uzupełnienia:} zamrożona reguła progowania, progi wybrane na OOF oraz testowe precyzja, czułość, FP, FN i~udział alarmów. Należy potwierdzić, że etykiety testowe nie uczestniczyły w~wyborze. W~tabeli~\ref{tab:mechanizmy-progi} każda komórka musi identyfikować warunek i~ziarno. Jeżeli punkt pracy poprawił czułość kosztem liczby alarmów, należy przedstawić obie zmiany. Zmiana progu i~zmiana jakości uporządkowania są odrębnymi wynikami.
@@ -52,7 +54,7 @@ Zadanie, metoda, warunek i~ziarno & Próg OOF & Precyzja & Czułość & FP i~FN 
 
 W~interpretacji trzeba uwzględnić liczebność rzadkich zdarzeń, ewentualną zmianę jakości prawdopodobieństw i~ograniczenia przenoszenia progu z~OOF na średnią modeli foldów. Bez zadanych kosztów błędów nie można uznać konkretnego punktu pracy za optymalny wdrożeniowo.
 
-\section{Liczność treningu i ablacje regularyzacji MLP}
+\subsection{Liczność treningu i ablacje regularyzacji MLP}
 \label{sec:mechanizmy-licznosc}
 
 \textbf{Do uzupełnienia:} wyniki pełnej receptury, wariantu bez dropoutu i~wariantu bez zaniku wag przy 25\%, 50\% i~100\% treningu. W~tabeli~\ref{tab:mechanizmy-ablacje} należy pokazać każde ziarno, rzeczywiste liczności treningowe i~różnice względem pełnej receptury dla tych samych indeksów. Potwierdzić zagnieżdżenie podzbiorów oraz niezmienność walidacji i~testu. Liczności poszczególnych foldów można rozwinąć w~załączniku; nie wolno zastąpić ich jedną pozornie wspólną liczbą.
@@ -76,7 +78,7 @@ Zbiór, udział i~ziarno & Rzeczywiste liczności & Wariant receptury & Testowe 
 {fig:mechanizmy-licznosc}
 {Osobne panele German Credit, Ionosphere i~Bioresponse; trzy receptury i~trzy ziarna. Nie przedstawiać zakresu trzech ziaren jako przedziału ufności.}
 
-\section{Dynamika uczenia i luka generalizacji}
+\subsection{Dynamika uczenia i luka generalizacji}
 \label{sec:mechanizmy-luki}
 
 \textbf{Do uzupełnienia:} historie nieważonej straty treningowej i~walidacyjnej tej samej sieci, obliczone w~trybie ewaluacji. Podać definicję luki, wybrane epoki i~regułę agregowania. Krzywe należy oprzeć na zapisanych epokach, a~nie na interpolowanych wynikach końcowych. Nie wybierać do prezentacji wyłącznie ziarna z~największą różnicą; selekcja paneli musi zostać uzasadniona i~zapewniać dostęp do pozostałych przebiegów.
@@ -87,9 +89,9 @@ Zbiór, udział i~ziarno & Rzeczywiste liczności & Wariant receptury & Testowe 
 {fig:mechanizmy-luki}
 {Porównywać tę samą nieważoną stratę dla jednej sieci foldu z~wyłączonym dropoutem. Podać fold, ziarno, podzbiór i~epokę. Nie łączyć treningu sieci z~testem zespołu.}
 
-Zmniejszenie luki należy ocenić razem z~poziomem straty i~jakością na teście. Pogorszenie dopasowania treningowego przy niezmienionym lub gorszym teście nie jest dowodem skutecznego ograniczenia nadmiernego dopasowania w~znaczeniu poprawy generalizacji. Zróżnicowanie między ziarnami musi pozostać widoczne.
+Zmniejszenie luki należy ocenić razem z~poziomem straty i~jakością na teście. Pogorszenie dopasowania treningowego przy niezmienionej lub gorszej jakości na zbiorze testowym nie jest dowodem skutecznego ograniczenia nadmiernego dopasowania w~znaczeniu poprawy generalizacji. Zróżnicowanie między ziarnami musi pozostać widoczne.
 
-\section{Odpowiedzi na pytania PB3 i PB4}
+\subsection{Odpowiedzi na pytania PB3 i PB4}
 \label{sec:mechanizmy-odpowiedzi}
 
 \textbf{Do uzupełnienia po analizie:} osobne odpowiedzi określające kierunek, wielkość i~warunki obserwowanego efektu. PB3 wymaga rozdzielenia AP, punktu pracy i~jakości prawdopodobieństw. PB4 wymaga powiązania ablacji z~licznością treningu, zmianą jakości i~luką. Należy uwzględnić przypadki braku poprawy i~przeciwne kierunki między zadaniami. Zakres odpowiedzi obejmuje po trzy celowo wybrane zbiory, ustalone receptury i~trzy ziarna; nie jest ogólnym twierdzeniem o~ważeniu lub regularyzacji dla wszystkich tabel.

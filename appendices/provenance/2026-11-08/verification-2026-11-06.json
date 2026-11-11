@@ -1,0 +1,191 @@
+{
+  "container": {
+    "definition": "GPU reservation, user-owned data/results mounts, source installed after copy, build-input allowlist",
+    "executed": false,
+    "reason": "Docker daemon permission denied; Docker Compose plugin unavailable"
+  },
+  "date": "2026-11-06",
+  "git": "Source hash includes untracked implementation files; commit/push the reviewed revision before remote cloning",
+  "gpu": {
+    "compiled_architectures": [
+      "sm_75",
+      "sm_80",
+      "sm_86",
+      "sm_90",
+      "sm_100",
+      "sm_120"
+    ],
+    "diagnostic": "RuntimeError: CUDA was requested but is unavailable. Check the NVIDIA driver and container GPU access, or explicitly select runtime.device=cpu.",
+    "execution": "blocked on this host; requested CUDA fails explicitly",
+    "installed_cuda_runtime": "13.0"
+  },
+  "not_performed": [
+    "full twelve-source scientific audit",
+    "real GPU training/timing",
+    "actual pinned TabPFN inference/access qualification",
+    "full container execution",
+    "full main matrix",
+    "required targeted study execution",
+    "final confirmatory statistical analysis"
+  ],
+  "packaging": {
+    "contains_dependency_lock": true,
+    "standalone_configuration": "passed outside checkout; 11 methods and 12 datasets",
+    "wheel_sha256": "ebaad4c145c1b3d909c35af82b5de81b6e7518b21a7d244298c7bec809a9d94d",
+    "yaml_count": 24
+  },
+  "real_data_pilot": {
+    "directory": "/tmp/mgr-verified-pilot/runs/thesis-lite/b28b2ab5f9e4d501db3d262bcce56f2de2108cae053f95d815bfbfb5d8789f27",
+    "jobs": 4,
+    "fold_fits": 32,
+    "report_rows": 6,
+    "conditions": [
+      "default",
+      "tuned",
+      "tuned_ensemble"
+    ],
+    "resume": "same directory; unchanged records, predictions, attempts and completion hashes",
+    "temporary_fit_files_removed": true,
+    "source": {
+      "packages": {
+        "autogluon.core": "1.6.3b20260918",
+        "autogluon.tabular": "1.6.3b20260918",
+        "catboost": "1.2.10",
+        "category-encoders": "2.11.2",
+        "data-foundry": "0.0.6.dev20261105151637",
+        "numpy": "2.4.6",
+        "openml": "0.15.1",
+        "pandas": "2.3.3",
+        "pyarrow": "24.0.0",
+        "pytabkit": "1.8.0",
+        "pytorch-tabnet": "4.1.0",
+        "rtdl-num-embeddings": "0.0.12",
+        "rtdl-revisiting-models": "0.0.2",
+        "scikit-learn": "1.9.0",
+        "scipy": "1.17.1",
+        "tabarena": "0.1.0",
+        "tabm": "0.0.3",
+        "tabpfn": "9.2.0",
+        "tabular-thesis": "0.1.0",
+        "torch": "2.13.0",
+        "xgboost": "3.2.0"
+      },
+      "source": "1211aa0b054fd3a1f543ad7e9b2f579d76c005883fb4e8b6f8e53b4a8b539591"
+    },
+    "host": {
+      "cpu": "x86_64",
+      "cpu_count": 8,
+      "cuda_runtime": "13.0",
+      "driver": null,
+      "gpu": null,
+      "gpu_memory_bytes": null,
+      "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+      "python": "3.11.13",
+      "ram_bytes": 16644382720,
+      "torch": "2.13.0+cu130"
+    }
+  },
+  "real_diabetes_inner_validation": {
+    "all_classes_in_every_partition": true,
+    "each_development_row_validated_once": true,
+    "group_overlap": 0,
+    "inner_folds": 8,
+    "outer_test_rows": 33922,
+    "outer_training_rows": 67844,
+    "repeats": 1
+  },
+  "scope": "Infrastructure/interface qualification; no final thesis performance or GPU-hour estimate",
+  "source": {
+    "source": "1211aa0b054fd3a1f543ad7e9b2f579d76c005883fb4e8b6f8e53b4a8b539591",
+    "packages": {
+      "tabular-thesis": "0.1.0",
+      "numpy": "2.4.6",
+      "pandas": "2.3.3",
+      "scipy": "1.17.1",
+      "xgboost": "3.2.0",
+      "catboost": "1.2.10",
+      "pyarrow": "24.0.0",
+      "openml": "0.15.1",
+      "data-foundry": "0.0.6.dev20261105151637",
+      "rtdl-num-embeddings": "0.0.12",
+      "category-encoders": "2.11.2",
+      "tabarena": "0.1.0",
+      "autogluon.core": "1.6.3b20260918",
+      "autogluon.tabular": "1.6.3b20260918",
+      "torch": "2.13.0",
+      "scikit-learn": "1.9.0",
+      "pytorch-tabnet": "4.1.0",
+      "rtdl-revisiting-models": "0.0.2",
+      "tabpfn": "9.2.0",
+      "pytabkit": "1.8.0",
+      "tabm": "0.0.3"
+    }
+  },
+  "tests": {
+    "bootstrap_cpu": "passed; frozen environment and actual CPU doctor",
+    "format": "53 files already formatted",
+    "foundation_api": "constructor keyword and absolute-checkpoint resolution verified without weights/inference",
+    "make_dry_run": "passed",
+    "result": "71 passed, 45 warnings in 63.28s (0:01:03)",
+    "ruff": "passed"
+  },
+  "verified_sources": {
+    "diabetes": {
+      "archive_sha256": "f82ac129da2ddd2299391ff6fbae3a6a58b3edcf59ac9d7bd480c00fe453112a",
+      "classes": [
+        "<30",
+        ">30",
+        "NO"
+      ],
+      "groups": 71518,
+      "outer_development_rows": 67844,
+      "outer_group_overlap": 0,
+      "outer_test_rows": 33922,
+      "predictors": 47,
+      "prepared_sha256": "997f015483810babd4436e5c297155d76f0e514f940fefae102127917898b81c",
+      "rows": 101766
+    },
+    "german_credit": {
+      "archive_sha256": "e12d9d5def6845c0622634a1cd2ab87fa470668c4298f1ec52a4e403376a435b",
+      "classes": [
+        "1",
+        "2"
+      ],
+      "groups": null,
+      "outer_development_rows": 666,
+      "outer_group_overlap": null,
+      "outer_test_rows": 334,
+      "predictors": 20,
+      "prepared_sha256": "73bdbf84442910ba90fbdf70b8b9592fe490166f0577f67b0d4ab46b865c032d",
+      "rows": 1000
+    },
+    "ionosphere": {
+      "archive_sha256": "4d218ece62756c99659011a13052d06464f13cb2b3d0410ce2aef16de1403860",
+      "classes": [
+        "b",
+        "g"
+      ],
+      "groups": null,
+      "outer_development_rows": 234,
+      "outer_group_overlap": null,
+      "outer_test_rows": 117,
+      "predictors": 34,
+      "prepared_sha256": "98d2eff5684d08889682336e23d934359efa9bd954e8441613c842aec6e31ef7",
+      "rows": 351
+    },
+    "online_shoppers": {
+      "archive_sha256": "2972e6184d3ad7beaaa831d9fc2b059dc3ee29df69d1ec593c466a5cd8485d14",
+      "classes": [
+        "False",
+        "True"
+      ],
+      "groups": null,
+      "outer_development_rows": 8220,
+      "outer_group_overlap": null,
+      "outer_test_rows": 4110,
+      "predictors": 17,
+      "prepared_sha256": "5211a0802383611a0a09515b25ebc91ed2aa8d29ae8377e1afc13d29e4a92c86",
+      "rows": 12330
+    }
+  }
+}

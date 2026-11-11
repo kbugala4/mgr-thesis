@@ -1,21 +1,22 @@
-\chapter{Środowisko eksperymentalne i odtwarzalność}
+\clearpage
+\section{Środowisko eksperymentalne i odtwarzalność}
 \label{chap:srodowisko}
 
-Środowisko ma przełożyć metodykę z~rozdziału~\ref{chap:metodyka} na kontrolowane wykonanie i~zapis dowodów. Przedmiotem niniejszego opisu jest zaimplementowana główna ścieżka lokalna oraz jej ograniczenia. Implementacja interfejsu, test infrastruktury i~kwalifikacja pełnego eksperymentu stanowią różne poziomy potwierdzenia poprawności. W~szczególności obecność klasy modelu w~katalogu nie dowodzi skutecznego wykonania wszystkich par zbiór--metoda.
+Na potrzeby badania przygotowano środowisko, które uruchamia modele według wspólnego protokołu, zapisuje predykcje i~odtwarza raporty. Zaimplementowano porównanie główne; moduły badań ważenia klas i~regularyzacji pozostają do wykonania. W~rozdziale opisano strukturę programu, zabezpieczenia danych oraz dotychczasowe sprawdzenia jego działania.
 
-\section{Wymagania wynikające z metodyki}
+\subsection{Wymagania wynikające z metodyki}
 \label{sec:wymagania-platformy}
 
 Platforma musi zapewniać spójne mapowanie danych i~klas, kontrolę podziałów, odtwarzalne generowanie konfiguracji oraz wybór modeli bez korzystania z~etykiet testowych. Powinna ponadto umożliwiać przerwanie długiej kampanii, rozpoznanie kompletnych wyników i~odtworzenie raportów bez ponownego uczenia. Te wymagania wynikają z~liczby konfiguracji i~z~konieczności przypisania każdej obserwacji naukowej do konkretnego wykonania.
 
-Przyjęto lokalne, sekwencyjne uruchamianie konfiguracji i~foldów w~jednym procesie sterującym. Nie jest potrzebna zdalna usługa parametrów ani rozproszony harmonogram. Ustawienia rozwiązuje jeden centralny moduł typowanej konfiguracji YAML. Zachowano obiektowe adaptery modeli oraz wspólny kontrakt predykcji prawdopodobieństw. Umożliwia to współistnienie lokalnych implementacji, natywnych modeli bibliotecznych i~stałego modelu pretrenowanego.
+Przyjęto lokalne, sekwencyjne uruchamianie konfiguracji i~foldów w~jednym procesie sterującym. Ustawienia z~plików YAML są odczytywane i~sprawdzane przez centralny moduł konfiguracji. Zachowano obiektowe adaptery modeli oraz wspólny kontrakt predykcji prawdopodobieństw. Umożliwia to współistnienie lokalnych implementacji, natywnych modeli bibliotecznych i~stałego modelu pretrenowanego.
 
 Wymaganiem naukowym jest również jawność niepowodzeń. Awaria nie może zostać przekształcona w~nieoznaczony brak lub pozornie niski koszt. Zapis próby obejmuje stan, czas i~diagnostykę, natomiast reguły raportowania odróżniają jawnie nieudaną próbę od nieukończonego zadania.
 
-\section{Architektura i integracje}
+\subsection{Architektura i integracje}
 \label{sec:architektura-platformy}
 
-System korzysta z~przypiętych bibliotek TabArena i~AutoGluon jako lokalnego backendu. Nie jest zdalnym klientem usługi ewaluacyjnej ani odtworzeniem całego oficjalnego benchmarku TabArena. Własny zakres obejmuje dwanaście wybranych zadań, jedenaście metod i~opisane wcześniej wyjątki. Autorstwo integracji należy oddzielić od autorstwa algorytmów oraz kodu bibliotek.
+Za uruchamianie modeli i~walidację odpowiadają biblioteki TabArena i~AutoGluon w~ustalonych wersjach. Własny kod łączy je z~konfiguracją badania, obsługą danych oraz zapisem wyników. Zakres tej integracji i~odpowiedzialność poszczególnych modułów przedstawia tabela~\ref{tab:warstwy-platformy}.
 
 \begin{table}[tbp]
 \centering\small
@@ -25,22 +26,22 @@ System korzysta z~przypiętych bibliotek TabArena i~AutoGluon jako lokalnego bac
 \toprule
 Warstwa & Główne moduły & Odpowiedzialność \\
 \midrule
-Konfiguracja & \path{configuration.py}, \path{configs/} & Typy, walidacja, nadpisania i~rozwiązany zestaw ustawień \\
+Konfiguracja & \path{configuration.py}, \path{configs/} & Typy, walidacja i~łączenie ustawień z~plików oraz nadpisań \\
 Dane & \path{data/tasks.py} & Przygotowanie, manifesty, mapowanie klas i~zewnętrzne podziały \\
 Katalog i~przestrzenie & \path{catalog.py}, \path{specification.py} & Możliwości metod i~losowanie konfiguracji \\
 Wykonanie & \path{backend.py}, adaptery modeli & Uczenie foldów, OOF i~prawdopodobieństwa testowe \\
 Zasoby & \path{runtime.py} & Walidacja urządzenia, wątki i~kontekst dopasowania \\
-Trwałość & \path{runner.py}, \path{artifacts.py} & Tożsamość, blokady, próby, integralność i~wznowienie \\
+Zapis i~wznawianie & \path{runner.py}, \path{artifacts.py} & Tożsamość, blokady, próby, integralność i~wznowienie \\
 Raportowanie & \path{reporting.py}, \path{evaluation/metrics.py} & Wybór OOF, zespoły oraz raporty JSON i~CSV \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-Główna ścieżka wykorzystuje sześć lokalnych integracji: MLP, TabNet, FT-Transformer, regresję logistyczną, XGBoost i~CatBoost. KNN, RealMLP, ModernNCA oraz TabM są uruchamiane przez natywne ścieżki przypiętych bibliotek. Osobny adapter obsługuje stały TabPFN. Lokalny plik \path{models/registry.py} zawiera siedem wrapperów i~nie stanowi kompletnego katalogu uczestników badania. Bez rozróżnienia tych poziomów można błędnie uznać metodę za nieobecną albo przypisać jej inną implementację niż faktycznie używana.
+Główna ścieżka wykorzystuje sześć lokalnych integracji: MLP, TabNet, FT-Transformer, regresję logistyczną, XGBoost i~CatBoost. KNN, RealMLP, ModernNCA oraz TabM są uruchamiane przez natywne ścieżki przypiętych bibliotek. Osobny adapter obsługuje stały TabPFN. Lokalny plik \path{models/registry.py} zawiera siedem klas opakowujących modele i~nie stanowi kompletnego katalogu uczestników badania. Pełny zestaw metod określa katalog eksperymentów, który uwzględnia także integracje biblioteczne.
 
 Wejście backendu zachowuje role surowych cech. Automatyczne wspólne przygotowanie cech jest wyłączone, a~za przekształcenia odpowiada właściwa integracja. Przy GPU pomiar dopasowania i~predykcji jest otoczony synchronizacją urządzenia. Ogranicza to błąd wynikający z~asynchronicznego wykonania operacji, ale nie zastępuje pilotażu i~precyzyjnego określenia granic czasu.
 
-Schemat~\ref{fig:architektura} przedstawi zależności komponentów i~oddzielenie uczenia od wtórnego odczytu zapisanych predykcji. Interfejs wiersza poleceń znajduje się w~\path{experiments/cli.py}; konfiguracja jest rozwiązywana przed wywołaniem właściwego polecenia. Nie zastosowano osobnego sieciowego serwera konfiguracji.
+Schemat~\ref{fig:architektura} przedstawi zależności komponentów i~oddzielenie uczenia od wtórnego odczytu zapisanych predykcji. Interfejs wiersza poleceń znajduje się w~\path{experiments/cli.py}; konfiguracja jest rozwiązywana przed wywołaniem właściwego polecenia.
 
 \plannedfigure
 {figures/ch05/architektura.pdf}
@@ -48,21 +49,21 @@ Schemat~\ref{fig:architektura} przedstawi zależności komponentów i~oddzieleni
 {fig:architektura}
 {Pokazać konfigurację, dane, katalog, backend i~adaptery, zapis predykcji oraz niezależne raportowanie. Oznaczyć istniejący runner główny i~niezaimplementowane badania mechanizmów.}
 
-\section{Izolacja informacji i identyfikowalność danych}
+\subsection{Izolacja informacji i identyfikowalność danych}
 \label{sec:izolacja-platformy}
 
 Przygotowane dane są przechowywane jako plik Parquet z~manifestem i~sumami kontrolnymi. Źródła OpenML mają określone identyfikatory i~wersje; pobierane archiwa UCI wymagają dodatkowego zamrożenia zawartości. Santander jest odczytywany z~oficjalnego lokalnego pliku treningowego. Zgodność schematu i~hashu chroni przed niezamierzoną podmianą danych, lecz nie rozstrzyga problemów populacji, przecieku lub duplikatów wskazanych w~sekcji~\ref{sec:dane-audyt}.
 
 Zewnętrzne podziały zachowują identyfikatory wierszy, etykiety i~grupy pacjentów. Kolumny grupujące nie wchodzą do predyktorów. Backend zapisuje rzeczywiste indeksy walidacji wewnętrznej, co umożliwia późniejszą kontrolę pokrycia OOF i~rozłączności pacjentów. Zdefiniowane są także zastrzeżone nazwy pomocniczych kolumn; konflikt z~danymi wejściowymi jest odrzucany zamiast prowadzić do cichego nadpisania cechy.
 
-Raportowanie porównuje kolejność klas, identyfikatory wierszy i~etykiety między konfiguracjami. Sprawdza rozmiar macierzy prawdopodobieństw, skończoność elementów, zakres oraz sumy wierszy. Dopuszczalne odchylenia numeryczne mogą być normalizowane; błędna macierz nie staje się poprawną predykcją przez bezwarunkowe przeskalowanie. Przy konstruowaniu zespołu ta kontrola jest konieczna, ponieważ suma prawdopodobieństw różnych obserwacji lub klas mogłaby pozostać numerycznie poprawna.
+Mapowanie i~kolejność klas pochodzą z~definicji przygotowanego zadania i~są zapisywane w~metadanych konfiguracji. Podczas zapisu predykcji runner sprawdza zgodność etykiet z~identyfikatorami wierszy oraz rozmiar i~poprawność macierzy prawdopodobieństw. Przed łączeniem konfiguracji reporter porównuje etykiety oraz identyfikatory wierszy OOF i~testu; nie wykonuje odrębnego porównania list klas między rekordami. Walidacja prawdopodobieństw obejmuje skończoność elementów, zakres i~sumy wierszy, lecz nie potwierdza semantycznej kolejności kolumn. Dopuszczalne odchylenia numeryczne mogą być normalizowane; błędna macierz nie staje się poprawną predykcją przez bezwarunkowe przeskalowanie. Przy konstruowaniu zespołu ta kontrola jest konieczna, ponieważ suma prawdopodobieństw różnych obserwacji lub klas mogłaby pozostać numerycznie poprawna.
 
 Izolacja ma opisane granice. IID KNN korzysta z~pełnej deweloperskiej populacji cech w~przygotowaniu LOO, a~stały TabPFN nie tworzy OOF. Ustawienie pola czasowego w~definicji zadania prowadzi obecnie do jawnego zgłoszenia braku implementacji podziału czasowego. Nie ma automatycznego uzasadnienia, że dane bez takiego pola spełniają założenie IID. Te własności muszą być przedstawiane razem z~wynikami, a~nie ukrywane za wspólnym interfejsem.
 
-\section{Artefakty, awarie i wznowienie}
+\subsection{Artefakty, awarie i wznowienie}
 \label{sec:artefakty-wznowienie}
 
-Tożsamość badania jest wyznaczana z~rozwiązanych ustawień, ścieżek, manifestów danych, skrótu źródeł i~pliku zależności, wybranych wersji pakietów oraz zapisanej charakterystyki sprzętu. Dane są serializowane w~ustalonej postaci i~identyfikowane przez SHA-256. Skrót źródeł obejmuje moduły wykonawcze, \path{pyproject.toml} i~\path{uv.lock}; nie obejmuje automatycznie dokumentacji, testów ani skryptów wdrożeniowych. Identyfikator commitu i~obrazu kontenera należy zachować osobno. Zmiana ścieżek może zmienić tożsamość mimo tej samej treści danych.
+Identyfikator badania jest wyznaczany z~efektywnych ustawień, ścieżek, manifestów danych, skrótu źródeł i~pliku zależności, wybranych wersji pakietów oraz zapisanej charakterystyki sprzętu. Dane są serializowane w~ustalonej postaci i~identyfikowane przez SHA-256. Skrót źródeł obejmuje moduły wykonawcze, \path{pyproject.toml} i~\path{uv.lock}; nie obejmuje automatycznie dokumentacji, testów ani skryptów wdrożeniowych. Identyfikator commitu i~obrazu kontenera należy zachować osobno. Zmiana ścieżek może zmienić tożsamość mimo tej samej treści danych.
 
 \begin{table}[tbp]
 \centering\small
@@ -84,22 +85,22 @@ Plik lub katalog & Znaczenie \\
 \end{tabularx}
 \end{table}
 
-Zapis ważnych plików jest atomowy: plik tymczasowy zostaje opróżniony, zsynchronizowany i~zastępuje docelowy. Blokada wyłączna chroni przed równoczesnym posiadaniem tego samego katalogu przez dwa wykonania. Przed pominięciem ukończonego zadania runner kontroluje spójność statusu, rekordów, predykcji i~ich sum kontrolnych. Sam fakt istnienia pliku nie wystarcza do uznania zadania za ukończone.
+Metadane JSON i~predykcje są najpierw zapisywane do plików tymczasowych. Po opróżnieniu buforów zapisu i~synchronizacji z~dyskiem plik tymczasowy atomowo zastępuje plik docelowy. Blokada wyłączna zapobiega jednoczesnemu zapisowi tego samego katalogu przez dwa uruchomienia. Przed pominięciem ukończonego zadania runner kontroluje spójność statusu, rekordów, predykcji i~ich sum kontrolnych. Sam fakt istnienia pliku nie wystarcza do uznania zadania za ukończone.
 
 Awarie są zapisywane wraz z~diagnostyką, a~niezależne zadania mogą być kontynuowane. Wystąpienie niepowodzeń powoduje niezerowy kod zakończenia głównego uruchomienia. Automatyczny raport powstaje po jego pomyślnym ukończeniu. Oddzielne polecenie raportowania może obsłużyć jawnie nieudane konfiguracje losowe, gdy wszystkie zadania zostały podjęte; nieudany wariant domyślny albo zadanie nieukończone uniemożliwiają pełny raport.
 
 Po próbie usuwane są dopasowane modele, a~pozostają predykcje i~metadane. Umożliwia to ponowne wyliczenie raportu bez zachowania wszystkich sieci. Nie umożliwia jednak wznowienia w~środku foldu ani wykorzystania usuniętego modelu do nowych predykcji. Przerwaną konfigurację trzeba dopasować ponownie w~całości. Tożsamość badania i~kontrole zgodności ograniczają również automatyczne przenoszenie wyników do zmienionego eksperymentu.
 
-\section{Weryfikacja i kwalifikacja platformy}
+\subsection{Weryfikacja i kwalifikacja platformy}
 \label{sec:kwalifikacja}
 
 Zapis sprawdzeń z~6~listopada 2026~r. dokumentuje 71 przechodzących testów, kontrole Ruff i~formatowania oraz sprawdzenie samodzielnego pakietu i~konfiguracji. Odnotowano skrócony pilotaż Ionosphere dla regresji logistycznej i~MLP: cztery konfiguracje, 32 dopasowania foldów i~sześć wierszy raportu. Sprawdzenie wznowienia potwierdziło zachowanie ukończonych rekordów. Nie jest to wynik głównego porównania: MLP był skrócony, a~pula metod i~budżet nie odpowiadały kampanii.
 
-Ta sama migawka zawiera przygotowanie czterech tras UCI i~kontrolę grupowego podziału Diabetes. Dla tego źródła odnotowano 67\,844 wiersze deweloperskie, 33\,922 testowe, brak wspólnych pacjentów i~osiem poprawnie rozłącznych walidacji grupowych. Są to datowane dowody infrastruktury dla określonych danych i~źródła. Nie dowodzą późniejszych rewizji, poprawności innej maszyny ani wykonania pełnego audytu dwunastu zadań.
+Ta sama migawka zawiera pobranie i~przygotowanie czterech zbiorów UCI i~kontrolę grupowego podziału Diabetes. Dla tego źródła odnotowano 67\,844 wiersze deweloperskie, 33\,922 testowe, brak wspólnych pacjentów i~osiem poprawnie rozłącznych walidacji grupowych. Są to datowane dowody infrastruktury dla określonych danych i~źródła. Nie dowodzą późniejszych rewizji, poprawności innej maszyny ani wykonania pełnego audytu dwunastu zadań.
 
 \begin{table}[tbp]
 \centering\small
-\caption{Rozdzielenie dostępnych dowodów i~otwartych bramek kwalifikacji według stanu opisanego 6~listopada 2026~r.}
+\caption{Wykonane sprawdzenia i~pozostałe wymagania według stanu opisanego 6~listopada 2026~r.}
 \label{tab:kwalifikacja}
 \begin{tabularx}{\linewidth}{P{0.24\linewidth}YY}
 \toprule
@@ -108,10 +109,10 @@ Wymaganie & Dostępny dowód & Ograniczenie lub brak \\
 Kontrakty i~integralność & Testy kodu i~kontrole pakietu & Nie kwalifikują wszystkich par danych i~modeli \\
 Uruchomienie i~wznowienie & Skrócony pilotaż CPU & Brak pełnej macierzy i~docelowych budżetów \\
 Izolacja pacjentów & Rzeczywisty podział Diabetes & Nie zastępuje audytu pozostałych źródeł \\
-Identyfikacja danych & Przygotowane cztery źródła UCI & Pełny audyt i~zamrożenie dwunastu źródeł otwarte \\
+Identyfikacja danych & Przygotowane cztery zbiory UCI & Pełny audyt i~zamrożenie dwunastu źródeł otwarte \\
 Obliczenia GPU i~TabPFN & Ścieżki zaimplementowane & Brak kwalifikacji rzeczywistego wykonania \\
 Kontener & Przygotowana konfiguracja & Brak potwierdzonego uruchomienia \\
-Badania mechanizmów & Przyjęty projekt & Runnery i~kontrole wymagają implementacji \\
+Badania mechanizmów & Przyjęty projekt & Moduły wykonawcze i~kontrole wymagają implementacji \\
 Analiza końcowa & Plan z~sekcji~\ref{sec:analiza-plan} & Brak zamrożenia i~wykonania procedur \\
 \bottomrule
 \end{tabularx}
@@ -119,9 +120,9 @@ Analiza końcowa & Plan z~sekcji~\ref{sec:analiza-plan} & Brak zamrożenia i~wyk
 
 Test syntetyczny \texttt{smoke} sprawdza mały, niezależny od sieci przebieg z~regresją logistyczną i~dwuepokowym MLP. Umożliwia wykrycie problemów interfejsów, zapisu i~raportowania. Nie jest testem jakości modeli na rzeczywistych zadaniach. Analogicznie poprawny import pakietu lub diagnostyka urządzenia nie kwalifikują każdego modelu, limitu pamięci ani długości kontekstu TabPFN.
 
-Przed kampanią wymagane są rzeczywiste pilotaże GPU, dostęp do przypiętych wag, szerokie i~wieloklasowe przypadki, pomiary zasobów oraz oba runnery mechanizmów. Weryfikacja powinna identyfikować użyte źródła i~datę. Po zmianie istotnego składnika nie należy bez nowego sprawdzenia przypisywać aktualnej wersji dowodów pochodzących ze starszej migawki.
+Przed kampanią wymagane są rzeczywiste pilotaże GPU, dostęp do przypiętych wag, szerokie i~wieloklasowe przypadki, pomiary zasobów oraz sprawdzenie modułów obu badań uzupełniających. Weryfikacja powinna identyfikować użyte źródła i~datę. Po zmianie istotnego składnika nie należy bez nowego sprawdzenia przypisywać aktualnej wersji dowodów pochodzących ze starszej migawki.
 
-\section{Środowisko wykonania i procedura kampanii}
+\subsection{Środowisko wykonania i procedura kampanii}
 \label{sec:wykonanie-kampanii}
 
 Podstawą odtworzenia środowiska jest Python~3.11 na Linux x86-64 oraz plik \path{uv.lock}. Istotne deklarowane wersje zestawiono w~tabeli~\ref{tab:wersje}. Są to przypięcia środowiska, a~nie daty publikacji metod ani potwierdzenie ich uruchomienia na końcowym węźle. Wersja pakietu \texttt{tabpfn} nie zastępuje identyfikacji konkretnego checkpointu modelu.
@@ -148,6 +149,6 @@ PyTorch & 2.13.0 \\
 
 Odtworzenie kampanii wymaga kolejno przygotowania środowiska z~zamrożonych zależności, audytu i~przygotowania danych, udostępnienia checkpointu oraz kwalifikacji urządzenia. Rewizję, nazwę pliku i~hash wag wskazuje konfiguracja; w~końcowym opisie należy powiązać je z~manifestem rzeczywistego wykonania. Następnie należy sprawdzić plan zadań, wykonać pilotaże i~zamrozić ustawienia. Samo polecenie wyświetlające plan nie pobiera danych ani nie potwierdza wykonalności modeli.
 
-Po rozpoczęciu kampanii należy zachować manifesty, indeksy, próby i~predykcje, a~po jej zakończeniu --- wyliczyć raporty i~odrębną analizę naukową. Globalne opcje konfiguracji wiersza poleceń poprzedzają podkomendę. Pełne polecenia, konfiguracje i~procedurę odzyskiwania należy dołączyć w~załączniku technicznym, aby nie zastępowały opisu metodyki instrukcją obsługi.
+Po rozpoczęciu kampanii należy zachować manifesty, indeksy, próby i~predykcje, a~po jej zakończeniu --- wyliczyć raporty i~odrębną analizę naukową. Pełne polecenia, konfiguracje i~procedurę odzyskiwania należy dołączyć w~załączniku technicznym, aby nie zastępowały opisu metodyki instrukcją obsługi.
 
 \textbf{Do uzupełnienia po kwalifikacji węzła:} CPU, GPU, sterownik, pamięć RAM i~VRAM, system, rzeczywiste wersje pakietów, identyfikator źródeł i~obrazu, checkpoint, hashe danych, ostateczne limity oraz identyfikatory badań. Nie podaje się tych danych jako wykonanej konfiguracji eksperymentów, dopóki nie istnieją odpowiednie artefakty. Dalsze wyniki zostaną przedstawione w~rozdziałach~\ref{chap:wyniki} i~\ref{chap:mechanizmy}.

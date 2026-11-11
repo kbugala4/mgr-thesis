@@ -1,7 +1,8 @@
-\chapter{Wybrane metody klasyfikacji}
+\clearpage
+\section{Wybrane metody klasyfikacji}
 \label{chap:metody}
 
-\section{Zasady doboru i wspólna terminologia}
+\subsection{Zasady doboru i wspólna terminologia}
 \label{sec:dobor-metod}
 
 Metody wybrano ze względu na ich role w~porównaniu, a~nie wyłącznie datę publikacji lub dostępność kodu. Pula obejmuje siedem rozwiązań neuronowych i~cztery konwencjonalne. Pozwala ona porównać liniową klasyfikację, sąsiedztwo, zespoły drzew oraz odmienne sposoby wykorzystania sieci. Nie obejmuje wszystkich rodzin opisanych w~literaturze; brak metody w~macierzy nie oznacza jej nieskuteczności.
@@ -19,7 +20,7 @@ Każda metoda ma zwracać prawdopodobieństwa w~jednakowej, zapisanej kolejnośc
 \toprule
 Metoda & Mechanizm & Rola w porównaniu \\
 \midrule
-Regresja logistyczna & Liniowa ocena klas & Proste odniesienie wymagające niewielkiej złożoności reprezentacji. \\
+Regresja logistyczna & Liniowa ocena klas & Odniesienie liniowe w przyjętej reprezentacji cech. \\
 KNN & Sąsiedztwo przykładów & Konwencjonalne odniesienie do uczonego sąsiedztwa. \\
 XGBoost & Wzmacniane drzewa & Silne odniesienie drzewiaste. \\
 CatBoost & Drzewa i obsługa kategorii & Odniesienie zachowujące dedykowane przetwarzanie kategorii. \\
@@ -34,49 +35,49 @@ TabPFN-3.5 & Pretrenowanie i kontekst zadania & Zewnętrznie nabyte wagi przy st
 \end{tabularx}
 \end{table}
 
-\section{Metody konwencjonalne}
+\subsection{Metody konwencjonalne}
 \label{sec:metody-konwencjonalne}
 
-\subsection{Regresja logistyczna}
+\subsubsection{Regresja logistyczna}
 \label{sec:regresja-logistyczna}
 
 Regresja logistyczna wiąże liniową kombinację cech z~prawdopodobieństwem klasy. W~przypadku binarnym stosowana jest funkcja logistyczna, natomiast uogólnienie wieloklasowe pozwala uzyskać rozkład po etykietach. Regularyzacja ogranicza wartości współczynników. Takie własności opisuje również dokumentacja implementacji scikit-learn~\cite{sklearnLogistic}.
 
 Model stanowi odniesienie pozwalające sprawdzić, czy do uzyskania dobrej jakości potrzebna jest bardziej złożona zależność niż liniowa w~przyjętej reprezentacji. Nie oznacza to liniowości względem surowego zapisu każdej kolumny: kodowanie kategorii zmienia wejście. W~przyjętym potoku nominalne wartości są kodowane zero-jedynkowo, a~przekształcenia dopasowywane na odpowiedniej części treningowej. Dobra jakość tego odniesienia ogranicza uzasadnienie kosztowniejszych metod; słaba jakość sama w~sobie nie dowodzi przewagi określonej architektury.
 
-\subsection{Klasyfikacja najbliższych sąsiadów}
+\subsubsection{Klasyfikacja najbliższych sąsiadów}
 \label{sec:knn}
 
 Reguła najbliższego sąsiada przypisuje nowemu przypadkowi klasę na podstawie podobnych oznakowanych obserwacji~\cite{cover1967nearest}. KNN rozszerza tę zasadę na wybrany zbiór sąsiadów i~agreguje ich etykiety, ewentualnie z~wagami zależnymi od odległości~\cite{sklearnNeighbors}. Kluczowe znaczenie mają liczba sąsiadów, metryka i~reprezentacja cech. Duża skala jednej kolumny może zdominować odległość, a~dowolne kody kategorii mogą narzucić nieuzasadnione sąsiedztwo.
 
 W~badaniu nominalne kategorie KNN mają ustalone kodowanie zero-jedynkowe. Należy uwzględniać pamięć banku odniesienia i~koszt predykcji, a~nie tylko przygotowania klasyfikatora. Natywna walidacja LOO dla zadań IID wyłącza etykietę ocenianej obserwacji z~jej sąsiedztwa, lecz dopasowuje preprocessing na całej części deweloperskiej. Jest to jawny wyjątek walidacyjny, odmienny od dokładnego ponownego dopasowania wszystkich przekształceń po usunięciu każdego wiersza. Dla Diabetes zastosowane zostaną foldy grupowe.
 
-\subsection{XGBoost}
+\subsubsection{XGBoost}
 \label{sec:xgboost}
 
 XGBoost jest systemem wzmacniania drzew, w~którym predyktor powstaje przez kolejne dodawanie funkcji drzewiastych. Nowe drzewa ograniczają stratę aktualnego zespołu, a~kryterium uwzględnia regularyzację jego złożoności. Chen i~Guestrin~\cite{chen2016xgboost} opisują również mechanizmy usprawniające uczenie na danych rzadkich i~dużych kolekcjach.
 
 Podziały drzew umożliwiają modelowanie progów i~interakcji bez przyjmowania globalnej liniowości. Nie usuwa to potrzeby doboru głębokości, tempa uczenia, liczby drzew i~regularyzacji. W~pracy XGBoost stanowi silne odniesienie konwencjonalne, oceniane z~odpowiednią funkcją klasyfikacji i~zadeklarowaną reprezentacją. Własności współczesnej biblioteki nie są utożsamiane z~każdym szczegółem publikacji z~2016 roku; wersja wykonania jest odrębnym elementem odtwarzalności.
 
-\subsection{CatBoost}
+\subsubsection{CatBoost}
 \label{sec:catboost}
 
-CatBoost łączy wzmacnianie drzew z~dedykowanym przetwarzaniem cech kategorycznych. Prokhorenkova i~współautorzy~\cite{prokhorenkova2018catboost} opisują statystyki kategorii obliczane z~wykorzystaniem porządku obserwacji oraz uporządkowane wzmacnianie. Celem tych mechanizmów jest ograniczanie określonych źródeł przecieku i~przesunięcia predykcji związanych z~użyciem etykiet treningowych.
+CatBoost łączy wzmacnianie drzew z~obsługą cech kategorycznych. Prokhorenkova i~współautorzy~\cite{prokhorenkova2018catboost} opisują statystyki kategorii wyznaczane według porządku obserwacji oraz uporządkowane wzmacnianie. Celem tych mechanizmów jest ograniczanie określonych źródeł przecieku i~przesunięcia predykcji związanych z~użyciem etykiet treningowych.
 
-Nie wynika z~tego, że każda konfiguracja biblioteki stosuje identyczny wariant wszystkich mechanizmów publikacji. Opis wykonanej procedury musi wskazywać ustawienia faktycznie użyte. W~tym badaniu zachowana zostanie natywna obsługa kategorii. CatBoost pełni rolę mocnego odniesienia oraz konwencjonalnej kontroli w~badaniu ważenia klas; sama obecność algorytmu drzewiastego nie zapewnia mu odporności na błędną definicję zadania lub przeciek między częściami danych.
+W~badaniu zostanie zachowana natywna obsługa cech kategorycznych CatBoost. Metoda będzie punktem odniesienia w~porównaniu głównym oraz w~badaniu ważenia klas. Efektywna konfiguracja określi, które warianty mechanizmów opisanych w~publikacji są używane przez bibliotekę.
 
-\section{MLP i znaczenie receptury uczenia}
+\subsection{MLP i znaczenie receptury uczenia}
 \label{sec:mlp}
 
-Perceptron wielowarstwowy przetwarza wektor wejściowy przez kolejne warstwy gęste z~nieliniowymi aktywacjami. W~klasyfikacji końcowa warstwa wyznacza oceny klas przekształcane w~prawdopodobieństwa. Uczenie parametrów opiera się na minimalizacji straty z~wykorzystaniem gradientów. Prosty MLP jest istotnym odniesieniem, ponieważ pozwala ocenić, czy bardziej wyspecjalizowane mechanizmy dają korzyść względem kompetentnej sieci gęstej~\cite{rtdlImplementation}.
+Perceptron wielowarstwowy przetwarza wektor wejściowy przez kolejne warstwy gęste z~nieliniowymi aktywacjami. W~klasyfikacji końcowa warstwa wyznacza oceny klas przekształcane w~prawdopodobieństwa. Uczenie parametrów opiera się na minimalizacji straty z~wykorzystaniem gradientów. Prosty MLP jest istotnym odniesieniem, ponieważ pozwala ocenić, czy bardziej wyspecjalizowane mechanizmy dają korzyść względem odpowiednio skonfigurowanej sieci gęstej~\cite{rtdlImplementation}.
 
-Lokalny model bazowy wykorzystuje ReLU, dropout i~AdamW. Przygotowanie cech obejmuje skalowanie numeryczne oraz ograniczone kodowanie zero-jedynkowe kategorii. Jest to jawnie zadeklarowana konfiguracja lokalna, a~nie dokładna reprodukcja jednej receptury publikacyjnej. Jej nazwa nie upoważnia do przypisania jej wyników opublikowanych dla innego MLP.
+Lokalny model bazowy wykorzystuje aktywacje ReLU, dropout i~optymalizator AdamW. Konfiguracja domyślna zawiera dwie warstwy ukryte o~256 i~128 jednostkach, dropout równy~0,1, tempo uczenia~0,001 i~zanik wag~$10^{-4}$. Cechy numeryczne są skalowane, a~kategorie kodowane zero-jedynkowo z~limitem 256 kolumn na cechę. Uczenie trwa najwyżej 100 epok; zachowywany jest stan sieci o~najniższej stracie walidacyjnej. Są to ustawienia własnego modelu bazowego, a~nie dokładne odtworzenie jednej z~opublikowanych procedur MLP. W~wariancie strojonym część tych wartości jest wybierana z~zadeklarowanej przestrzeni hiperparametrów.
 
 Dropout losowo wyłącza jednostki w~trakcie treningu, zmieniając reprezentacje dostępne w~kolejnych aktualizacjach~\cite{srivastava2014dropout}. Podczas zwykłej oceny jest wyłączony; procedura uwzględnia odpowiednie skalowanie. Zanik wag ogranicza parametry w~trakcie optymalizacji. W~AdamW jest oddzielony od aktualizacji wynikającej z~gradientu straty; nie należy utożsamiać go bez zastrzeżeń z~dodaniem kary $L_2$ do straty optymalizowanej Adamem~\cite{loshchilov2019adamw}.
 
-Wpływ regularyzacji zależy od innych ustawień. Zbyt silne ograniczenie może prowadzić do niedopasowania. Niższy błąd treningowy nie musi oznaczać lepszego testu, a~mniejsza luka generalizacji może wynikać z~pogorszenia dopasowania treningu. Potrzebna jest wspólna analiza jakości na treningu i~na danych niewykorzystanych do aktualizacji parametrów.
+Wpływ regularyzacji zależy od innych ustawień. Zbyt silne ograniczenie może prowadzić do niedopasowania. Niższy błąd treningowy nie musi oznaczać lepszej jakości na zbiorze testowym, a~mniejsza luka generalizacji może wynikać z~pogorszenia dopasowania treningu. Potrzebna jest wspólna analiza jakości na treningu i~na danych niewykorzystanych do aktualizacji parametrów.
 
-W~osobnym badaniu zostanie zastosowana ustalona, kompetentna receptura MLP oraz dwie ablacje: wyłączenie dropoutu i~wyłączenie zaniku wag. Pozostałe ustawienia będą zachowane. Dobór tej receptury nie będzie oparty na wyniku strojenia z~pełną liczbą etykiet trzech badanych zadań. Wyniki wieloskładnikowych zestawów regularyzacji~\cite{kadra2021regularization} są motywacją takiego rozdzielenia, lecz nie określają automatycznie wartości parametrów własnej kontroli.
+W~osobnym badaniu zostanie zastosowana ustalona procedura uczenia MLP oparta na opublikowanym rozwiązaniu oraz dwie ablacje: wyłączenie dropoutu i~wyłączenie zaniku wag. Pozostałe ustawienia będą zachowane. Dobór tej receptury nie będzie oparty na wyniku strojenia z~pełną liczbą etykiet trzech badanych zadań. Wyniki wieloskładnikowych zestawów regularyzacji~\cite{kadra2021regularization} są motywacją takiego rozdzielenia, lecz nie określają automatycznie wartości parametrów własnej kontroli.
 
 \begin{table}[tbp]
 \centering
@@ -95,17 +96,17 @@ Kontrola zmian & Porównanie pełnych potoków & Jedna ablacja przy stałych poz
 \end{tabularx}
 \end{table}
 
-\section{TabNet i FT-Transformer}
+\subsection{TabNet i FT-Transformer}
 \label{sec:tabnet-ft}
 
-\subsection{TabNet: sekwencyjna selekcja cech}
+\subsubsection{TabNet: sekwencyjna selekcja cech}
 \label{sec:tabnet}
 
 TabNet wykorzystuje kolejne kroki przetwarzania, w~których uczone maski określają udział cech dla danej obserwacji. Informacja z~poprzedniego kroku wpływa na następną selekcję, a~częściowe reprezentacje współtworzą wynik. Mechanizm ma kierować zdolność modelowania na wybrane składniki wejścia zamiast przetwarzać je jednakowo w~każdym kroku~\cite{arik2021tabnet}.
 
 Maski mogą służyć opisowi zachowania modelu, lecz nie są dowodem przyczynowego znaczenia cech. W~tej pracy TabNet reprezentuje historycznie ważną specjalizację dla tabel. Nie zaplanowano osobnego badania wierności wyjaśnień ani etapu samonadzorowanego pretrenowania, również opisanego w~oryginalnej publikacji. Wykorzystana implementacja biblioteczna będzie identyfikowana oddzielnie od publikacji metody.
 
-\subsection{FT-Transformer: tokeny cech i uwaga}
+\subsubsection{FT-Transformer: tokeny cech i uwaga}
 \label{sec:ft-transformer}
 
 FT-Transformer przekształca każdą cechę w~token o~wspólnym wymiarze. Dla cech numerycznych stosuje parametry właściwe kolumnie, a~dla kategorii --- uczone tablice osadzeń. Zachowuje to tożsamość cechy: jednakowa wartość liczbowa w~dwóch kolumnach nie musi otrzymać tej samej reprezentacji. Warstwy uwagi przetwarzają tokeny cech pojedynczej obserwacji, a~reprezentacja tokenu agregującego służy predykcji~\cite{gorishniy2021revisiting}.
@@ -120,25 +121,25 @@ Na rysunku~\ref{fig:reprezentacje} przewidziano porównanie przepływu informacj
     {fig:reprezentacje}
     {Trzy równoległe ścieżki od tej samej obserwacji do prawdopodobieństw klas. Pokazać wektor cech, kolejne maski lub tokeny z tożsamością kolumn.}
 
-\section{RealMLP: rozwinięta receptura sieci gęstej}
+\subsection{RealMLP: rozwinięta receptura sieci gęstej}
 \label{sec:realmlp}
 
 RealMLP jest zestawem rozwiązań obejmujących przetwarzanie wejścia, konstrukcję sieci i~uczenie. W~publikacji opisano m.in. skalowanie odporne z~łagodnym ograniczaniem wartości, osadzenia i~zmodyfikowane ustawienia optymalizacji~\cite{holzmueller2024realmlp}. Nazwa nie powinna być interpretowana jako oznaczenie jednej dodatkowej warstwy dołączonej do dowolnego MLP.
 
-W~badaniu RealMLP odpowiada na pytanie o~jakość rozwiniętego rozwiązania gęstego względem lokalnej sieci i~odniesień konwencjonalnych. Warianty domyślne i~strojone będą wynikać z~przypiętego adaptera i~jego przestrzeni konfiguracji. Pusty lokalny zapis przestrzeni YAML nie oznacza braku strojenia, gdy kandydatów dostarcza biblioteka nadrzędna.
+W~badaniu RealMLP odpowiada na pytanie o~jakość rozwiniętego rozwiązania gęstego względem lokalnej sieci i~odniesień konwencjonalnych. Warianty domyślne i~strojone będą wynikać z~przypiętego adaptera i~jego przestrzeni konfiguracji. Konfiguracje do strojenia generuje biblioteka TabArena; lokalny plik YAML nie definiuje dla tej metody osobnej przestrzeni.
 
 Ustawienia opracowane na innych zadaniach są formą wiedzy zewnętrznej. Wynik MLP--RealMLP będzie zatem różnicą kompletnych potoków, obejmującą również przygotowanie danych i~recepturę. Nie posłuży jako jednoczynnikowy dowód działania konkretnego regularyzatora; temu służy osobne badanie MLP.
 
-\section{ModernNCA: uczenie reprezentacji sąsiedztwa}
+\subsection{ModernNCA: uczenie reprezentacji sąsiedztwa}
 \label{sec:modernnca}
 
 ModernNCA rozwija ideę Neighbourhood Components Analysis, zastępując wyłącznie liniową reprezentację rozwiązaniem wykorzystującym współczesne składniki głębokiego uczenia. Przewidywanie wykorzystuje miękką agregację etykiet sąsiadów w~uczonej przestrzeni. Autorzy stosują również losowe próbkowanie kandydatów sąsiedztwa, aby ograniczać koszt treningu~\cite{ye2025modernnca}.
 
-Metoda pozostaje neuronowa mimo zależności predykcji od oznakowanych przykładów. Reprezentacja jest uczona przez optymalizację parametrów, zamiast opierać się wyłącznie na ustalonej odległości surowego wejścia. Zarazem pamięć i~koszt użycia banku są istotną częścią procedury.
+Sieć uczy się reprezentacji, w~której wyznaczane jest sąsiedztwo. Podczas predykcji nadal potrzebne są oznakowane przykłady odniesienia, dlatego koszt metody obejmuje również ich przechowywanie i~porównywanie z~nowymi obserwacjami.
 
 KNN stanowi bezpośrednie odniesienie, lecz porównanie obejmie różne sposoby uczenia, przetwarzania i~agregacji. Nie wyizoluje wyłącznie korzyści reprezentacji. Kandydaci i~ich etykiety muszą pochodzić z~treningu bieżącego foldu; etykieta walidacyjna lub testowa nie może trafić do banku. W~środowisku użyto implementacji wywodzącej się z~TALENT i~udostępnionej przez TabArena, co wymaga odróżnienia algorytmu publikacji od konkretnej ścieżki integracji.
 
-\section{TabM i poziomy łączenia predykcji}
+\subsection{TabM i poziomy łączenia predykcji}
 \label{sec:tabm-zespoly}
 
 TabM wykorzystuje sieć gęstą do wytwarzania wielu predykcji, przy czym podmodele współdzielą znaczną część parametrów. Rozwiązanie nawiązuje do BatchEnsemble i~ogranicza konieczność przechowywania całkowicie niezależnej kopii każdej sieci. W~klasyfikacji predykcje podmodeli są łączone w~ocenę klas~\cite{gorishniy2025tabm}.
@@ -163,7 +164,7 @@ Konfiguracje & Wyniki różnych kandydatów & T+E dodaje dobór wag na OOF, bez 
 \end{tabularx}
 \end{table}
 
-Dla zwykłych metod strojonych konfiguracja domyślna (D) i~wybrana konfiguracja (T) korzystają z~uśrednienia predykcji ośmiu foldów. Warunek T+E dodatkowo łączy konfiguracje. Nie są to trzy niezależne kampanie treningowe ani porównanie jednej sieci z~ośmioma. Natywny IID KNN i~stały TabPFN mają odmienne zasady, które należy zachować w~opisie wyników. Rysunek~\ref{fig:zespoly} ma uwidocznić właśnie to rozróżnienie.
+Dla metod strojonych z~ośmiofoldową walidacją konfiguracja domyślna (D) i~wybrana konfiguracja (T) korzystają z~uśrednienia predykcji ośmiu foldów. Warunek T+E dodatkowo łączy konfiguracje. Nie są to trzy niezależne kampanie treningowe ani porównanie jednej sieci z~ośmioma. Natywny IID KNN i~stały TabPFN mają odmienne zasady, które należy zachować w~opisie wyników. Rysunek~\ref{fig:zespoly} ma uwidocznić właśnie to rozróżnienie.
 
 \plannedfigure
     {figures/ch03/poziomy-zespolow.pdf}
@@ -171,7 +172,7 @@ Dla zwykłych metod strojonych konfiguracja domyślna (D) i~wybrana konfiguracja
     {fig:zespoly}
     {Trzy panele z podpisanymi jednostkami łączenia. Zaznaczyć, że D i T zwykłych metod już uśredniają foldy, a KNN i TabPFN mają wyjątki.}
 
-\section{TabPFN-3.5: pretrenowanie i kontekst zadania}
+\subsection{TabPFN-3.5: pretrenowanie i kontekst zadania}
 \label{sec:tabpfn}
 
 TabPFN-3.5 wykorzystuje wagi uzyskane przed otrzymaniem konkretnego zadania. Oznakowane obserwacje uczące stanowią kontekst, na podstawie którego model przewiduje etykiety nowych przypadków. Lokalna adaptacja nie jest utożsamiana z~trenowaniem całej sieci od początku. Raport techniczny~\cite{jaeger2026tabpfn35} rozróżnia model bazowy oraz warianty o~innych możliwościach i~kosztach inferencji.
@@ -180,9 +181,9 @@ W~pracy przyjęto jeden lokalny checkpoint bazowy, ze stałymi ustawieniami infe
 
 Porównanie kosztu dotyczyć będzie lokalnego przygotowania i~predykcji, bez historycznego kosztu pretrenowania. Wcześniejsze publikacje TabPFN nie potwierdzają automatycznie możliwości ani wyników wersji 3.5. Ponadto zbiorcze zestawienia rodziny w~raporcie technicznym nie muszą dotyczyć jednego wariantu bazowego~\cite{jaeger2026tabpfn35}. Faktyczna dostępność checkpointu, obsługa rozmiarów i~klas oraz wymagania pamięciowe wymagają kwalifikacji. Ich opis nie będzie zastąpiony wynikami autorów raportu lub testem samego interfejsu.
 
-\section{Granice porównań i uzasadnienie wyłączeń}
+\subsection{Granice porównań i uzasadnienie wyłączeń}
 \label{sec:granice-metod}
 
-Przyjęta pula obejmuje odmienne mechanizmy, ale nie całość literatury. ResNet, NODE, podejścia samonadzorowane, inne modele uwagi i~kolejne modele fundamentowe pozostają kontekstem dla wyboru. ResNet jest ważnym odniesieniem historycznym, lecz rozwinięty model gęsty reprezentuje w~macierzy RealMLP. Uczenie sąsiedztwa reprezentuje ModernNCA, uwaga nad tokenami cech --- FT-Transformer, a~współdzielenie parametrów zespołu --- TabM. Dodawanie kolejnych podobnych ról zwiększałoby koszt bez automatycznego pogłębienia odpowiedzi na przyjęte pytania.
+Przyjęta pula obejmuje odmienne mechanizmy, ale nie całość literatury. ResNet, NODE, podejścia samonadzorowane, inne modele uwagi i~kolejne modele fundamentowe pozostają kontekstem dla wyboru. ResNet jest ważnym odniesieniem historycznym, lecz rozwinięty model gęsty reprezentuje w~macierzy RealMLP. ModernNCA reprezentuje uczenie sąsiedztwa. FT-Transformer wykorzystuje uwagę nad tokenami cech, a~TabM --- współdzielenie parametrów zespołu. Dodawanie kolejnych podobnych ról zwiększałoby koszt bez automatycznego pogłębienia odpowiedzi na przyjęte pytania.
 
-Wyłączenie metody nie jest twierdzeniem, że jest gorsza od uwzględnionych rozwiązań. Również późniejsza data publikacji nie stanowi podstawy rankingu. W~porównaniu głównym będzie oceniana przydatność potoków w~zadeklarowanych warunkach. W~badaniach kontrolowanych zakres wniosku zostanie zawężony do konkretnej interwencji. Tak rozdzielone role pozwalają przejść do projektu oceny bez zakładania z~góry odpowiedzi o~przewadze sieci lub metod konwencjonalnych.
+Tak ograniczona pula pozwala zbadać wybrane sposoby wykorzystania sieci przy dostępnym budżecie obliczeń. Wnioski z~porównania będą dotyczyły tych konkretnych procedur i~warunków oceny. Wpływ ważenia klas i~regularyzacji zostanie oceniony osobno, zgodnie z~projektem przedstawionym w~kolejnym rozdziale.

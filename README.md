@@ -105,3 +105,12 @@ W tekście jawnie oznaczono brak pełnego audytu danych i finalnej konfiguracji 
 Sprawdzono 24 klucze cytowań, unikalność 98 etykiet, rozwiązanie 36 odwołań, strukturę środowisk i klamer, kolejność siedmiu rozdziałów, 20 tabel oraz zgodność wszystkich 12 ścieżek ilustracji z instrukcją. Kontrola sum plików potwierdziła zachowanie rozdziałów 1–3, bibliografii, makra i pustego rozdziału 8.
 
 Tymczasowy podgląd pdfLaTeX/BibTeX z uproszczoną preambułą składa 47 stron; nie pozostały niezdefiniowane cytowania/odwołania ani przepełnione wiersze. Nie jest to docelowy skład LuaLaTeX/Biber ani zatwierdzony szablon PW. Ograniczenia środowiska opisane powyżej nadal obowiązują. Nie instalowano zależności i nie uruchamiano eksperymentów ML.
+
+
+## Korekta zgodności tekstu z implementacją: 2026-11-08
+
+Ponownie sprawdzono pięć ustaleń wcześniejszego przeglądu. [Zapis dowodów i rozstrzygnięć](appendices/alignment-review-2026-11-08.md) wskazuje źródła i rozróżnia nieprawidłowe przypisanie kontroli od brakującego doprecyzowania. Poprawiono zakres limitu partii, granice pomiarów pamięci, opis walidacji klas i znaczenie budżetu zespołu. Nie zmieniono algorytmów, puli metod, danych ani protokołu eksperymentów.
+
+[Archiwum podstawy redakcji](appendices/provenance/2026-11-08/README.md) zachowuje bajtowo identyczne kopie lokalnego planu, rejestru literatury, przekazania sesji i datowanego dowodu weryfikacji. Manifest zawiera ich SHA-256, źródła i tożsamość HEAD; kopie nie są drugim, niezależnie edytowanym protokołem. Dokumenty źródłowe są ignorowane przez Git w repozytorium eksperymentów. Archiwum jest przygotowane do zachowania w historii manuskryptu; nie wykonano commitu ani publikacji.
+
+Walidacja tej korekty obejmuje zgodność kopii z manifestem, zachowanie kodu i konfiguracji, 24 cytowane pozycje, 98 etykiet, 36 odwołań, 12 ścieżek ilustracji i 20 tabel. W obecnym środowisku pełny przebieg LuaLaTeX/Biber/LuaLaTeX/LuaLaTeX zakończył się poprawnie i utworzył 47-stronicowy PDF bez nierozwiązanych cytowań i odwołań. Wcześniejszy brak Biber i błąd fontów nie opisują już bieżącego środowiska. Pozostają ostrzeżenia o braku polskich wzorców dzielenia wyrazów, osiem przepełnionych wierszy oraz zalecenie pakietu csquotes. To udany przebieg kompilacji, lecz nie potwierdzenie docelowej typografii ani wymagań PW. Nie instalowano pakietów i nie kwalifikowano ponownie GPU, TabPFN ani eksperymentów.

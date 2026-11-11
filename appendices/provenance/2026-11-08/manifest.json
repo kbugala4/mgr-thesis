@@ -1,0 +1,37 @@
+{
+  "snapshot_date": "2026-11-08",
+  "source_repository": "../mgr-repo",
+  "source_head": "68f0fb3a156968edd36a9eb31ec7a67e89301de7",
+  "source_worktree_dirty": true,
+  "role": "Read-only historical evidence; accepted scope remains in the experiment repository. Not a new scientific verification.",
+  "files": [
+    {
+      "source": "docs/thesis-plan.md",
+      "snapshot": "thesis-plan.md",
+      "sha256": "44243b04df3796f187d0c6697bfba92157e6f2265dded9fbb280904916a123a7",
+      "bytes": 45867,
+      "git_ignored": true
+    },
+    {
+      "source": "docs/literature-review.md",
+      "snapshot": "literature-review.md",
+      "sha256": "05e3ccdb017e856382a89b00342378f6696944a1d78eb82ce2b7b23f9c02ced3",
+      "bytes": 25588,
+      "git_ignored": true
+    },
+    {
+      "source": "docs/session-handoff.md",
+      "snapshot": "session-handoff.md",
+      "sha256": "f1d99ea0b66a24aa4d69796d374f73cfa7391212995e23582560cd1c41c40868",
+      "bytes": 17382,
+      "git_ignored": true
+    },
+    {
+      "source": "docs/verification-2026-11-06.json",
+      "snapshot": "verification-2026-11-06.json",
+      "sha256": "0cd3847750acc763cc069492d976cca975574a6190d6bb6fe362ae045a57a69b",
+      "bytes": 6270,
+      "git_ignored": true
+    }
+  ]
+}
