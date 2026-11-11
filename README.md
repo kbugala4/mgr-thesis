@@ -1,5 +1,15 @@
 # Rozprawa: głębokie sieci neuronowe w klasyfikacji danych tabelarycznych
 
+## Bieżący skład: 2026-11-11
+
+[PDF części teoretycznej i metodologicznej](build/wut/main.pdf) składa rozdziały 1–5 oraz streszczenia zakresu i metodyki. Opis procedur używa czasu teraźniejszego; informacje o stanie realizacji i instrukcje redakcyjne pozostają poza PDF. Rozdziały 6–7 zachowano bez zmian w źródłach jako szkielety wynikowe i wyłączono z `main.tex`. Nie dodano wyników ani deklaracji przeprowadzenia kampanii.
+
+Sześć ramek instruktażowych zastąpiono schematami pojęciowymi zapisanymi w LaTeX. Makro zachowuje możliwość wstawienia zewnętrznego pliku; przy jego braku składa kompletny schemat z czwartego argumentu. Nie wygenerowano wykresów empirycznych. [Notatka redakcyjna](appendices/editorial-status-2026-11-11.md) zachowuje otwarte ustalenia i wskazuje dokumenty autorytatywne. Wcześniejszy [audyt cytowań](appendices/citation-audit-2026-11-11.md) dotyczy zapisanej tam wersji i numeracji linii; nie wdrażano przy tej korekcie odrębnych zmian bibliograficznych.
+
+Weryfikacja: pełny przebieg pdfLaTeX/Biber/pdfLaTeX/pdfLaTeX, zachowanie 50 miejsc cytowania i 14 równań, kontrola tekstu PDF oraz oględziny sześciu stron ze schematami. Brak błędów cytowań i odwołań oraz przepełnionych wierszy; pozostają komunikaty `Underfull` dotyczące rozkładu stron. Dane autora, albumu i instytutu nadal są oznaczone do uzupełnienia. Streszczenia wymagają dodania wyników przy składaniu kompletnej pracy.
+
+## Wcześniejsze etapy
+
 Stan na 2026-11-06: pierwsze wersje rozdziałów 1–5 oraz szkielety wynikowe rozdziałów 6–7. Dokument zawiera 20 tabel (w tym puste formularze wyników), 24 cytowane pozycje i 12 miejsc na ilustracje: sześć schematów oraz sześć przyszłych wykresów. Nie zawiera własnych wyników końcowej kampanii. Rozdział 8 pozostaje pusty i nie jest włączony do składu.
 
 ## Organizacja
@@ -129,3 +139,34 @@ Adaptowano dokument do wskazanego repozytorium szablonu, zachowując treść roz
 ### Tekst główny i marginesy po korekcie
 
 Na polecenie użytkownika zastosowano TeX Gyre Heros 11 pt oraz marginesy: wewnętrzny 30 mm, zewnętrzny 20 mm, górny i dolny 25 mm. Bieżący `build/wut/main.pdf` ma 47 stron; kompilacja kończy się bez ostrzeżeń i przepełnień. Szczegóły pomiaru parametrów zapisano w [dokumentacji szablonu](template/wut-thesis/README.md). Jest to korekta tych dwóch elementów, nie deklaracja pełnej zgodności wszystkich elementów dokumentu z wytycznymi.
+
+## Pogłębienie części teoretycznej: 2026-11-11
+
+Przeredagowano rozdziały 1–3 pod kątem odbiorcy znającego uczenie maszynowe. Rozwinięto syntezę ustaleń benchmarków, uzasadnienie własnego projektu i mechanizmy metod. Dodano analizę optimum ważonej straty logarytmicznej, interpretację jakości prawdopodobieństw, równania regularyzacji i mechanizmów modeli oraz konsekwencje kosztowe. Rozdziały 4–5 dostosowano terminologicznie i powiązano z teorią; techniczną interpretację pól raportera przeniesiono do opisu środowiska. Zachowano pulę danych i metod, protokół, status niewykonanych eksperymentów oraz szkielety wynikowe.
+
+Wcześniejsza praca autora była wyłącznie odniesieniem redakcyjnym: wykorzystano sposób wiązania opisu rozwiązania z uzasadnieniem decyzji. Nie przenoszono treści ani metadanych. Zachowano granicę literatury 2026-10-27; ponowne odczyty dotyczyły istniejącego korpusu, nie nowego przeglądu.
+
+### Źródła rozwiniętych fragmentów
+
+Kontrola 2026-11-11 obejmowała treść wskazanych sekcji, nie tylko abstrakty. Poniższy zapis uzupełnia wcześniejszy rejestr kontroli; nie oznacza ponownego audytu wszystkich cytowań i implementacji.
+
+| Źródło i wersja | Sprawdzony fragment i wykorzystanie |
+| --- | --- |
+| RTDL, tekst NeurIPS 2021; pomocniczo arXiv v2 | Sekcje 3.3 i 4: tokenizacja FT-Transformer, rola odniesień i zakres porównania. |
+| Grinsztajn i in., tekst NeurIPS 2022; pomocniczo arXiv v1 | Sekcje 4–5: wynik benchmarku, cechy nieinformatywne i obroty. |
+| [TabZilla, v4](https://arxiv.org/html/2305.02997v4) | Sekcja 2.1, „Algorithm selection vs. tuning”: porównanie lekkiego strojenia i wyboru rodziny. |
+| RealMLP, tekst NeurIPS 2024; pomocniczo [v3](https://arxiv.org/html/2407.04491v3) | Sekcje 3 i 5.2: skalowanie, PBLD, przenoszenie ustawień i zależność wyniku od kolekcji. |
+| [TALENT, v4](https://arxiv.org/html/2407.00956v4) | Sekcja 5.1: pozycje rodzin i korzyści zespołowania; bez utożsamiania braku istotności z równoważnością. |
+| [TabNet, v5](https://arxiv.org/html/1908.07442v5) | „TabNet for Tabular Learning”: sparsemax, pamięć użycia cech, maski i kara entropijna. |
+| [ModernNCA, v2](https://arxiv.org/html/2407.03257v2) | Sekcje 4.1–4.2: miękka predykcja, strata logarytmiczna, reprezentacja i próbkowanie banku. |
+| [TabM, v2](https://arxiv.org/html/2410.24210v2) | Sekcje 3.2–3.3 i 5.1: współdzielenie wag, wariant mini, średnia strat i średnia predykcji. |
+| [TabPFN-3.5, v2](https://arxiv.org/html/2609.17895v2) | Sekcja 3: kodowanie wartości i ECDF, syntetyczny rozkład pretrenowania; rozróżnienie wariantów. |
+| [XGBoost, v3](https://arxiv.org/html/1603.02754v3), [CatBoost, v5](https://arxiv.org/pdf/1706.09516v5) | Odpowiednio sekcja 2.2 oraz sekcje 3–4: wartość liścia, uporządkowane statystyki i wzmacnianie. |
+| [Dropout, JMLR](https://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf), [AdamW, v3](https://arxiv.org/html/1711.05101v3) | Maskowanie i przybliżenie zespołu; sekcja 2 AdamW: odłączenie zaniku od adaptacyjnego gradientu. |
+| Kadra i in., NeurIPS 2021; Saito i Rehmsmeier, PLOS ONE | Zakres 40 zadań i regularyzacja dobierana wspólnie; zależność precision–recall od częstości klasy. |
+
+Równania optimum ważonej straty, rozkładu straty na entropię i dywergencję, liczby parametrów warstwy zespołowej oraz składania predykcji rozwijają argumentację analityczną. Nie są nowymi wynikami empirycznymi ani deklaracją nowości tych zależności. Opisy algorytmów odróżniono od wariantów faktycznie wykonywanych przez adaptery.
+
+### Weryfikacja redakcji
+
+Pełny przebieg pdfLaTeX/Biber/pdfLaTeX/pdfLaTeX utworzył `build/wut/main.pdf` (51 stron). Brak błędów kompilacji, nierozwiązanych cytowań i odwołań oraz przepełnień. Pozostały komunikaty `Underfull` dotyczące rozkładu tekstu na stronach. Kontrola struktury potwierdziła 24 cytowane pozycje, 110 unikalnych etykiet (w tym etykiety makra ilustracji), 51 odwołań, 14 równań, 20 tabel i 12 miejsc na ilustracje. Sprawdzono wizualnie strony z analizą ważenia oraz mechanizmami ModernNCA i TabM. Nie wykonywano eksperymentów, instalacji ani ponownej kwalifikacji środowiska ML.
