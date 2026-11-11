@@ -4,30 +4,37 @@ Stan na 2026-11-06: pierwsze wersje rozdziałów 1–5 oraz szkielety wynikowe r
 
 ## Organizacja
 
-- `main.tex` składa pięć napisanych rozdziałów, dwa szkielety wynikowe i bibliografię.
+- `main.tex` składa stronę tytułową, miejsca na streszczenia, pięć napisanych rozdziałów, dwa szkielety wynikowe, bibliografię i spisy.
 - `chapters/` zawiera rozdziały; `sections/` jest dostępny do ewentualnego podziału dłuższych części.
 - `bibliography/references.bib` zawiera zweryfikowane odniesienia oraz wskazania czytanych wersji.
 - [figures/README.md](figures/README.md) określa zawartość, formaty i dokładne ścieżki wszystkich dwunastu ilustracji, sposób wstawiania oraz wymagane pochodzenie danych wynikowych.
 - `template/figure-input.tex` automatycznie zastępuje ramkę plikiem, gdy grafika jest dostępna.
 - [AGENTS.md](AGENTS.md) określa zasady redakcji i odsyła do autorytatywnych dokumentów w repozytorium eksperymentów.
 
-Obecny układ oparty na klasie `report` służy pracy nad treścią. Nie jest potwierdzonym szablonem PW. Nie skopiowano metadanych ani treści poprzedniej pracy. Wybór ostatecznej klasy, strony tytułowej i danych autora/promotora pozostaje oddzielnym zadaniem.
+Dokument korzysta z **WUT-Thesis** z lokalnego repozytorium `../WUT-Thesis`. [Pochodzenie, ustawienia i zakres adaptacji](template/wut-thesis/README.md) opisują wersję klasy i ograniczenia. Dane strony tytułowej znajdują się w [template/metadata.tex](template/metadata.tex); niepotwierdzone pola oznaczono do uzupełnienia. Streszczenia pozostają szkieletami w [template/abstracts.tex](template/abstracts.tex).
 
-## Kompilacja docelowa
+## Kompilacja
 
-Wymagane są LuaLaTeX, Biber oraz pakiety użyte w preambule, zwłaszcza `fontspec` z działającym mechanizmem `luaotfload`, `polyglossia` z obsługą języka polskiego, `biblatex`, `graphicx`, `booktabs`, `tabularx` i `hyperref` z jego zależnościami. Bibliografia wymaga BibLaTeX/Biber; BibTeX nie jest docelowym zamiennikiem.
+Kompilacja używa **pdfLaTeX i Biber**, zgodnie z domyślną ścieżką `quick` źródłowego szablonu. Wymagane są pakiety klasy WUT-Thesis, polskie wzorce dzielenia, `booktabs`, `tabularx` i `xurl`. BibTeX nie zastępuje Biber.
 
-Uruchamiać z katalogu głównego repozytorium:
+Na tej maszynie brakujące pakiety są zainstalowane lokalnie w `build/texmf`. Uruchamiać z katalogu głównego:
 
 ```bash
-mkdir -p build
-lualatex -interaction=nonstopmode -halt-on-error -output-directory=build main.tex
-biber --input-directory=build --output-directory=build main
-lualatex -interaction=nonstopmode -halt-on-error -output-directory=build main.tex
-lualatex -interaction=nonstopmode -halt-on-error -output-directory=build main.tex
+mkdir -p build/wut build/texmf-var build/texmf-config
+export TEXMFHOME="$PWD/build/texmf"
+export TEXMFVAR="$PWD/build/texmf-var"
+export TEXMFCONFIG="$PWD/build/texmf-config"
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build/wut main.tex
+biber --input-directory=build/wut --output-directory=build/wut main
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build/wut main.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build/wut main.tex
 ```
 
-Pierwszy przebieg może zgłosić nierozwiązane cytowania; po udanym Biber i kolejnych przebiegach nie powinny pozostać. Wynikiem jest `build/main.pdf`. Brak pliku ilustracji nie przerywa kompilacji: pojawia się ramka z instrukcją. Przed wersją końcową ramki trzeba zastąpić lub usunąć wraz z odwołaniami.
+W kompletnej instalacji systemowej lub na Overleafie pomija się trzy zmienne `TEXMF*`. Wynik to **`build/wut/main.pdf`**. Katalog `build/before-wut/` zachowuje lokalną kopię wcześniejszego układu; stary `build/main.pdf` nie jest wynikiem nowej kompilacji. Nie usuwać `build/` bez uwzględnienia lokalnych zależności opisanych w dokumentacji szablonu.
+
+Pierwszy przebieg może zgłosić nierozwiązane cytowania; po Biber i kolejnych przebiegach nie powinny pozostać. Brak ilustracji nadal daje ramkę z instrukcją. Przed złożeniem pracy należy uzupełnić dane, streszczenia i wyniki oraz zastąpić ramki rzeczywistymi ilustracjami.
+
+Poniższe datowane zapisy opisują wcześniejsze etapy redakcji i kompilacji, w tym poprzedni układ `report`.
 
 ## Zakres kontroli źródeł
 
@@ -114,3 +121,11 @@ Ponownie sprawdzono pięć ustaleń wcześniejszego przeglądu. [Zapis dowodów 
 [Archiwum podstawy redakcji](appendices/provenance/2026-11-08/README.md) zachowuje bajtowo identyczne kopie lokalnego planu, rejestru literatury, przekazania sesji i datowanego dowodu weryfikacji. Manifest zawiera ich SHA-256, źródła i tożsamość HEAD; kopie nie są drugim, niezależnie edytowanym protokołem. Dokumenty źródłowe są ignorowane przez Git w repozytorium eksperymentów. Archiwum jest przygotowane do zachowania w historii manuskryptu; nie wykonano commitu ani publikacji.
 
 Walidacja tej korekty obejmuje zgodność kopii z manifestem, zachowanie kodu i konfiguracji, 24 cytowane pozycje, 98 etykiet, 36 odwołań, 12 ścieżek ilustracji i 20 tabel. W obecnym środowisku pełny przebieg LuaLaTeX/Biber/LuaLaTeX/LuaLaTeX zakończył się poprawnie i utworzył 47-stronicowy PDF bez nierozwiązanych cytowań i odwołań. Wcześniejszy brak Biber i błąd fontów nie opisują już bieżącego środowiska. Pozostają ostrzeżenia o braku polskich wzorców dzielenia wyrazów, osiem przepełnionych wierszy oraz zalecenie pakietu csquotes. To udany przebieg kompilacji, lecz nie potwierdzenie docelowej typografii ani wymagań PW. Nie instalowano pakietów i nie kwalifikowano ponownie GPU, TabPFN ani eksperymentów.
+
+## Migracja do WUT-Thesis: 2026-11-11
+
+Adaptowano dokument do wskazanego repozytorium szablonu, zachowując treść rozdziałów i wcześniejsze zmiany. Nowy PDF ma 52 strony. Końcowa kompilacja pdfLaTeX/Biber nie zgłasza ostrzeżeń, przepełnień, brakujących cytowań ani odwołań. Polskie dzielenie wyrazów jest aktywne. [Szczegóły migracji i weryfikacji](template/wut-thesis/README.md) obejmują pochodzenie klasy, lokalne zależności, kontrolę zachowania treści oraz zakres oględzin PDF. Dane autora, albumu i instytutu oraz streszczenia pozostają do uzupełnienia.
+
+### Tekst główny i marginesy po korekcie
+
+Na polecenie użytkownika zastosowano TeX Gyre Heros 11 pt oraz marginesy: wewnętrzny 30 mm, zewnętrzny 20 mm, górny i dolny 25 mm. Bieżący `build/wut/main.pdf` ma 47 stron; kompilacja kończy się bez ostrzeżeń i przepełnień. Szczegóły pomiaru parametrów zapisano w [dokumentacji szablonu](template/wut-thesis/README.md). Jest to korekta tych dwóch elementów, nie deklaracja pełnej zgodności wszystkich elementów dokumentu z wytycznymi.

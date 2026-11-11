@@ -1,0 +1,11 @@
+{
+  "source": "https://github.com/ArturB/WUT-Thesis",
+  "commit": "7391c2874e4d668a59c053267f85e1ecf4dfb882",
+  "date": "2026-11-11",
+  "files": {
+    "src/wut-thesis.cls": "0546de04ae035f69467d24e539d2893129754540960d64c9cc109bf6304c2a15",
+    "src/pl/header/eiti.pdf": "214190a328376932c07383c0909c6119b1ec93e38217f602f7e852384a884297",
+    "src/pl/title/mgr.pdf": "4032352135fa0f0fe56edf09f0d139ad7b58d513547a1262b36c5bf54d772e2a",
+    "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+  }
+}
