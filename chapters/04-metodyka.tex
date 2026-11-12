@@ -16,28 +16,28 @@ Dwa badania uzupełniające wprowadzają kontrolowane zmiany przy zachowaniu poz
 \subsection{Dobór i audyt zbiorów danych}
 \label{sec:dane-audyt}
 
-Dobór dwunastu zadań jest celowy. Ma uwzględnić różne liczności, typy cech, liczbę klas oraz relację liczby cech do liczby przykładów. Tabela~\ref{tab:rejestr-zadan} przedstawia deklarowane źródła i~role danych. Wskazane własności uzasadniają dobór, lecz nie są zmierzoną oceną trudności ani dowodem niezależności źródeł. HIGGS oznacza wskazany podzbiór OpenML, a~nie pełny pierwotny zbiór. Wersja~1 przypisana konfiguracji źródła UCI jest oznaczeniem lokalnej definicji; nie gwarantuje niezmienności pobieranego archiwum.
+Dobór dwunastu zadań jest celowy. Ma uwzględnić różne liczności, typy cech, liczbę klas oraz relację liczby cech do liczby przykładów. Tabela~\ref{tab:rejestr-zadan} zestawia rozmiary zbiorów i~ich role w~badaniu; nazwy zbiorów są odnośnikami do opisów źródłowych. Podane liczności odnoszą się do zbiorów przed podziałem na uczenie i~test, a~liczby cech do reprezentacji wejściowej, bez etykiety docelowej i~identyfikatorów wyłączonych z~predyktorów. Są to rozmiary referencyjne, nie wymiary macierzy po przetwarzaniu właściwym poszczególnym metodom. HIGGS oznacza wybrany podzbiór OpenML, a~nie pełny pierwotny zbiór; Santander obejmuje oznakowane dane treningowe konkursu. Wskazane role uzasadniają dobór, lecz nie stanowią zmierzonej oceny trudności ani dowodu niezależności źródeł.
 
 \begin{table}[tbp]
 \centering\small
-\caption{Źródła i~role przyjętych zadań. Liczba klas wynika z~definicji zadania.}
+\caption{Rozmiary zbiorów danych i~ich role w~badaniu.}
 \label{tab:rejestr-zadan}
-\begin{tabularx}{\linewidth}{P{0.23\linewidth}P{0.23\linewidth}cY}
+\begin{tabularx}{\linewidth}{@{}P{0.26\linewidth}rrcY@{}}
 \toprule
-Zbiór & Źródło i~wersja & Klasy & Rola w~projekcie \\
+Zbiór & Próbki & Cechy & Klasy & Rola w~projekcie \\
 \midrule
-Adult & OpenML 1590, v2 & 2 & Cechy mieszane \\
-Covertype & OpenML 1596, v4 & 7 & Duża liczność, wiele klas \\
-Credit Card Fraud & OpenML 1597, v1 & 2 & Rzadkie zdarzenie \\
-HIGGS, podzbiór & OpenML 23512, v2 & 2 & Cechy numeryczne \\
-Amazon Employee Access & OpenML 4135, v1 & 2 & Kategorie, rzadka decyzja \\
-Santander Customer Satisfaction & Oficjalny lokalny plik treningowy & 2 & Niezrównoważenie klas \\
-Online Shoppers & UCI 468 & 2 & Cechy mieszane \\
-Diabetes 130-US & UCI 296 & 3 & Powtarzające się pobyty pacjentów \\
-Helena & OpenML 41169, v1 & 100 & Wiele klas, ograniczona semantyka cech \\
-German Credit & UCI 144 & 2 & Mała próba, cechy mieszane \\
-Ionosphere & UCI 52 & 2 & Mała próba, cechy numeryczne \\
-Bioresponse & OpenML 4134, v1 & 2 & Dużo cech względem liczby przykładów \\
+\href{https://www.openml.org/d/1590}{Adult} & 48\,842 & 14 & 2 & Cechy mieszane \\
+\href{https://www.openml.org/d/1596}{Covertype} & 581\,012 & 54 & 7 & Duża liczność, wiele klas \\
+\href{https://www.openml.org/d/1597}{Credit Card Fraud} & 284\,807 & 30 & 2 & Rzadkie zdarzenie \\
+\href{https://www.openml.org/d/23512}{HIGGS, podzbiór} & 98\,050 & 28 & 2 & Cechy numeryczne \\
+\href{https://www.openml.org/d/4135}{Amazon Employee Access} & 32\,769 & 9 & 2 & Kategorie, rzadka decyzja \\
+\href{https://www.kaggle.com/competitions/santander-customer-satisfaction/data}{Santander Customer Satisfaction} & 76\,020 & 369 & 2 & Niezrównoważenie klas \\
+\href{https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset}{Online Shoppers} & 12\,330 & 17 & 2 & Cechy mieszane \\
+\href{https://archive.ics.uci.edu/dataset/296/diabetes+130-us+hospitals+for+years+1999-2008}{Diabetes 130-US} & 101\,766 & 47 & 3 & Powtarzające się pobyty pacjentów \\
+\href{https://www.openml.org/d/41169}{Helena} & 65\,196 & 27 & 100 & Wiele klas, ograniczona semantyka cech \\
+\href{https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data}{German Credit} & 1\,000 & 20 & 2 & Mała próba, cechy mieszane \\
+\href{https://archive.ics.uci.edu/dataset/52/ionosphere}{Ionosphere} & 351 & 34 & 2 & Mała próba, cechy numeryczne \\
+\href{https://www.openml.org/d/4134}{Bioresponse} & 3\,751 & 1\,776 & 2 & Dużo cech względem liczby przykładów \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -138,6 +138,8 @@ Rzadkie zdarzenie jest określone przez surową etykietę i~jej zapisane kodowan
 
 \subsection{Badanie A: ważenie klas}
 \label{sec:projekt-wazenie}
+
+Badanie wykorzystuje ważenie straty, którego podstawy opisuje literatura dotycząca uczenia uwzględniającego koszty błędów~\cite{elkan2001cost,dmochowski2010cost}. W~przyjętym protokole wagi wynikają jednak z~liczności klas, a~nie z~oszacowanych kosztów błędnych decyzji. Dobór modeli, zbiorów i~warunków porównania stanowi projekt badania własnego.
 
 Badanie obejmuje Credit Card Fraud, Santander i~Amazon oraz metody MLP, TabM i~CatBoost. Dla każdego zestawu porównuje się uczenie nieważone i~ważone. Wagi klas są wyznaczane wyłącznie z~treningowej części danego foldu:
 \begin{equation}
