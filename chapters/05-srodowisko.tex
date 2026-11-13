@@ -154,7 +154,7 @@ Moduł metryk zapisuje nieokreślone ROC AUC jako brak wartości, lecz nie zapis
 
 Poprawność platformy ocenia się od wejściowych danych po odtworzony raport. Kontrole wymiarów i~prawdopodobieństw wykrywają błędy interfejsów, a~porównanie identyfikatorów wierszy i~grup sprawdza przepływ informacji między treningiem, walidacją i~testem. Na etapie zapisu i~wznowienia sprawdza się również integralność artefaktów.
 
-Krótki test synetetyczny sprawdzający podstawowe działanie platformy (ang. \textit{smoke test}), oznaczony w~kodzie jako \texttt{smoke}, wykorzystuje dane syntetyczne: w~niewielkim przebiegu z~regresją logistyczną i~dwuepokowym MLP kontroluje się spójność artefaktów i~przebiegu przy uruchamianiu, zapisie, wznowieniu i~raportowaniu. Test wznowienia wymaga zachowania ukończonych rekordów i~ponowienia wyłącznie tych konfiguracji, dla których nie istnieje kompletny, zgodny zapis. W~podziale grupowym sprawdza się rozłączność pacjentów na każdym poziomie, zachowanie wymaganych klas oraz dokładnie jednokrotne pokrycie obserwacji predykcjami OOF. Kontrolę prowadzi się po identyfikatorach pacjentów, ponieważ różne wiersze mogą opisywać pobyty tej samej osoby.
+Krótki test sprawdzający podstawowe działanie platformy (ang. \textit{smoke test}), oznaczony w~kodzie jako \texttt{smoke}, wykorzystuje dane syntetyczne: w~niewielkim przebiegu z~regresją logistyczną i~dwuepokowym MLP kontroluje się spójność artefaktów i~przebiegu przy uruchamianiu, zapisie, wznowieniu i~raportowaniu. Test wznowienia wymaga zachowania ukończonych rekordów i~ponowienia wyłącznie tych konfiguracji, dla których nie istnieje kompletny, zgodny zapis. W~podziale grupowym sprawdza się rozłączność pacjentów na każdym poziomie, zachowanie wymaganych klas oraz dokładnie jednokrotne pokrycie obserwacji predykcjami OOF. Kontrolę prowadzi się po identyfikatorach pacjentów, ponieważ różne wiersze mogą opisywać pobyty tej samej osoby.
 
 Zmiana rewizji programu, danych lub środowiska ogranicza możliwość przenoszenia wcześniejszych sprawdzeń na nowe wykonanie. Szczególne znaczenie mają granice pamięci, asynchroniczność GPU oraz zależność kosztu inferencji TabPFN od rozmiaru kontekstu.
 
@@ -186,6 +186,6 @@ PyTorch & 2.13.0 \\
 \end{tabularx}
 \end{table}
 
-Kampanię odtwarza się kolejno przez przygotowanie środowiska z~zamrożonych zależności, audyt i~przygotowanie danych, udostępnienie checkpointu oraz sprawdzenie GPU. Rewizję, nazwę pliku i~hash wag wskazuje konfiguracja. Powiązanie tych identyfikatorów z~manifestem wykonania rozróżnia modele korzystające z~tej samej wersji pakietu, lecz innych wag.
+Kampanię odtwarza się kolejno przez przygotowanie środowiska z~zamrożonych zależności, audyt i~przygotowanie danych, udostępnienie checkpointu oraz sprawdzenie GPU. Rewizję, nazwę pliku i~suma kontrolna wag wskazuje konfiguracja. Powiązanie tych identyfikatorów z~manifestem wykonania rozróżnia modele korzystające z~tej samej wersji pakietu, lecz innych wag.
 
 Raporty odtwarza się z~manifestów, indeksów, historii prób i~predykcji. Na ich podstawie można następnie interpretować różnice, uwzględniając populację porównania i~zakres niepewności.
