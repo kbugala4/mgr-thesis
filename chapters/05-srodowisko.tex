@@ -2,12 +2,12 @@
 \section{Środowisko eksperymentalne i odtwarzalność}
 \label{chap:srodowisko}
 
-W~badaniu głównym zaplanowano nominalnie 3132 zadania konfiguracji i~14\,976 dopasowań sieci uczonych w~foldach. Przy budżecie godziny na konfigurację nawet pojedyncze niepowodzenie może oznaczać istotny koszt powtórzenia obliczeń. Środowisko przygotowano więc tak, aby ukończone wyniki można było zachować przy wznowieniu kampanii, a~raporty odtworzyć z~zapisanych predykcji. Każdy wynik pozostaje powiązany z~danymi, ustawieniami i~warunkami wykonania.
+W~badaniu głównym zaplanowano nominalnie 3132 zadania konfiguracji i~14\,976 dopasowań sieci uczonych w~foldach. Nawet pojedyncze niepowodzenie może przy budżecie godziny na konfigurację oznaczać istotny koszt powtórzenia obliczeń. Środowisko przygotowano więc tak, aby ukończone wyniki można było zachować przy wznowieniu kampanii, a~raporty odtworzyć z~zapisanych predykcji. Każdy wynik jest powiązany z~danymi, ustawieniami i~warunkami wykonania.
 
 \subsection{Wymagania wynikające z metodyki}
 \label{sec:wymagania-platformy}
 
-Aby odtworzyć przebieg dużej liczby prób, trzeba ustalić, na jakich danych powstała każda predykcja, jak wybrano konfigurację i~czy zapis obejmuje całe zadanie. Przyjęto więc wspólne mapowanie klas i~kontrolę podziałów, a~wyniki powiązano z~ustawieniami wykonania. Predykcje zapisuje się trwale, aby po kosztownym uczeniu można było ponownie sporządzić raport.
+Aby odtworzyć przebieg dużej liczby prób, trzeba ustalić, na jakich danych powstała każda predykcja, jak wybrano konfigurację i~czy zapis obejmuje całe zadanie. Przyjęto wspólne mapowanie klas i~kontrolę podziałów, a~wyniki powiązano z~ustawieniami wykonania. Predykcje zapisuje się trwale, aby po kosztownym uczeniu można było ponownie sporządzić raport.
 
 Pojedynczy proces sterujący uruchamia konfiguracje i~foldy sekwencyjnie. Ustawienia YAML przechodzą przez centralny moduł konfiguracji, po czym odpowiedni adapter udostępnia model pod wspólnym interfejsem predykcji prawdopodobieństw. Dzięki temu lokalne implementacje, modele natywne bibliotek i~stały model pretrenowany mogą uczestniczyć w~tej samej procedurze oceny.
 
@@ -37,7 +37,7 @@ Raportowanie & \path{reporting.py}, \path{evaluation/metrics.py} & Wybór OOF, z
 \end{tabularx}
 \end{table}
 
-Lokalnie zaimplementowano sześć integracji: MLP, TabNet, FT-Transformer, regresję logistyczną, XGBoost i~CatBoost. KNN, RealMLP, ModernNCA oraz TabM są uruchamiane przez natywne ścieżki przypiętych bibliotek. Osobny adapter obsługuje stały TabPFN. Wszystkie te ścieżki połączono we wspólnym katalogu eksperymentów, wykorzystując dla integracji natywnych procedury uczenia dostarczane przez biblioteki. Moduł wykonawczy zachowuje role cech numerycznych i~kategorycznych, pozostawiając ich przekształcanie właściwej integracji. Wspólne automatyczne przygotowanie cech jest wyłączone. Przed dopasowaniem lub predykcją na GPU i~po ich zakończeniu synchronizuje się urządzenie, aby pomiar czasu uwzględniał zakończenie asynchronicznie wykonywanych obliczeń.
+Lokalnie zaimplementowano sześć integracji: MLP, TabNet, FT-Transformer, regresję logistyczną, XGBoost i~CatBoost. KNN, RealMLP, ModernNCA oraz TabM są uruchamiane przez natywne ścieżki bibliotek. Osobny adapter obsługuje stały TabPFN. Wszystkie te ścieżki połączono we wspólnym katalogu eksperymentów, wykorzystując dla integracji natywnych procedury uczenia dostarczane przez biblioteki. Moduł wykonawczy zachowuje role cech numerycznych i~kategorycznych, pozostawiając ich przekształcanie właściwej integracji. Wspólne automatyczne przygotowanie cech jest wyłączone. Przed dopasowaniem lub predykcją na GPU i~po ich zakończeniu synchronizuje się urządzenie, aby pomiar czasu uwzględniał zakończenie asynchronicznie wykonywanych obliczeń.
 
 Rysunek~\ref{fig:architektura} przedstawia zależności komponentów i~oddzielenie uczenia od wtórnego odczytu zapisanych predykcji. Interfejs wiersza poleceń znajduje się w~\path{experiments/cli.py}, a~konfiguracja jest rozwiązywana przed wywołaniem właściwego polecenia.
 
@@ -63,7 +63,7 @@ Raport zachowuje odziedziczoną nazwę pola \texttt{log\_loss\_val}, chociaż za
 \subsection{Artefakty, awarie i wznowienie}
 \label{sec:artefakty-wznowienie}
 
-Przy wznowieniu obliczeń korzysta się z~artefaktów zestawionych w~tabeli~\ref{tab:artefakty}, przypisanych do tożsamości danego badania. Identyfikator badania jest wyznaczany z~efektywnych ustawień, ścieżek, manifestów danych, skrótu źródeł i~pliku zależności, wybranych wersji pakietów oraz zapisanej charakterystyki sprzętu. Dane są serializowane w~ustalonej postaci i~identyfikowane przez SHA-256. Skrót źródeł obejmuje moduły wykonawcze, \path{pyproject.toml} i~\path{uv.lock}, z~pominięciem dokumentacji, testów i~skryptów wdrożeniowych. Identyfikator commitu i~obrazu kontenera należy zachować osobno. Zmiana ścieżek może zmienić tożsamość mimo tej samej treści danych.
+Obliczenia wznawia się z~wykorzystaniem artefaktów zestawionych w~tabeli~\ref{tab:artefakty}, przypisanych do tożsamości danego badania. Identyfikator badania jest wyznaczany z~efektywnych ustawień, ścieżek, manifestów danych, skrótu źródeł i~pliku zależności, wybranych wersji pakietów oraz zapisanej charakterystyki sprzętu. Dane są serializowane w~ustalonej postaci i~identyfikowane przez SHA-256. Skrót źródeł obejmuje moduły wykonawcze, \path{pyproject.toml} i~\path{uv.lock}, z~pominięciem dokumentacji, testów i~skryptów wdrożeniowych. Identyfikator commitu i~obrazu kontenera należy zachować osobno. Zmiana ścieżek może zmienić tożsamość mimo tej samej treści danych.
 
 \begin{table}[tbp]
 \centering\small
@@ -89,9 +89,9 @@ Rozmiar partii zależy zarówno od konfiguracji, jak i~od danych danego foldu or
 
 Aby przerwanie procesu podczas zapisu nie pozostawiło pliku pozornie gotowego do użycia, metadane JSON i~predykcje trafiają najpierw do plików tymczasowych, które po opróżnieniu buforów i~synchronizacji z~dyskiem atomowo zastępują pliki docelowe. Osobna blokada wyłączna chroni katalog przed jednoczesnym zapisem przez dwa uruchomienia. Przy wznowieniu sprawdza się spójność statusu, rekordów, predykcji i~sum kontrolnych, zanim zadanie zostanie pominięte jako ukończone.
 
-Awarie są zapisywane wraz z~diagnostyką, a~niezależne zadania mogą być kontynuowane. Wystąpienie niepowodzeń powoduje niezerowy kod zakończenia głównego uruchomienia. Automatyczny raport powstaje po jego pomyślnym ukończeniu. Oddzielne polecenie raportowania może obsłużyć jawnie nieudane konfiguracje losowe, gdy wszystkie zadania zostały podjęte. Nieudany wariant domyślny albo zadanie nieukończone uniemożliwiają pełny raport.
+Po awarii zapisuje się jej diagnostykę i~można kontynuować niezależne zadania, ale główne uruchomienie kończy się wówczas niezerowym kodem zakończenia. Automatyczny raport powstaje po jego pomyślnym ukończeniu. Oddzielne polecenie raportowania może obsłużyć jawnie nieudane konfiguracje losowe, gdy wszystkie zadania zostały podjęte, przy czym nieudany wariant domyślny albo zadanie nieukończone uniemożliwiają pełny raport.
 
-Po zakończeniu próby zachowuje się predykcje i~metadane potrzebne do ponownego obliczenia raportu, a~dopasowane modele są usuwane. Aby wyznaczyć nowe predykcje lub ponowić konfigurację bez kompletnego wyniku, trzeba więc przeprowadzić dopasowanie od początku. Poprawne zatrzymanie z~powodu budżetu pozostawia wynik dopuszczony do dalszej oceny, jeśli spełnia wymagania kompletności.
+Po zakończeniu próby zachowuje się predykcje i~metadane potrzebne do ponownego obliczenia raportu, a~dopasowane modele są usuwane. Aby wyznaczyć nowe predykcje lub ponowić konfigurację bez kompletnego wyniku, trzeba przeprowadzić dopasowanie od początku. Poprawne zatrzymanie z~powodu budżetu pozostawia wynik dopuszczony do dalszej oceny, jeśli spełnia wymagania kompletności.
 
 \subsection{Dobór partii i ograniczenia pamięci}
 \label{sec:partie-platformy}
@@ -143,7 +143,7 @@ Dostępność śledzenia & Znacznik w~bloku \texttt{memory\_usage} & Brak pomiar
 
 Pomiary pamięci są zapisywane w~bloku \texttt{memory\_usage} rekordu konfiguracji i~obejmują dopasowanie. Nie wyznaczają szczytu całej próby ani pamięci testowej predykcji. Osobny pomiar inferencji jest szczególnie istotny dla KNN i~TabPFN, które zachowują zbiór odniesienia lub kontekst zadania. Zewnętrzne pretrenowanie TabPFN pozostaje poza kosztem lokalnego wykonania.
 
-Przy interpretacji czasu oraz niepowodzeń na współdzielonym GPU należy powiązać próby z~dostępnymi zapisami obciążenia urządzenia przez inne procesy. Dotyczy to również przypisywania zużycia pamięci badanemu modelowi po komunikacie o~jej wyczerpaniu.
+Czas oraz niepowodzenia prób na współdzielonym GPU należy interpretować na podstawie dostępnych zapisów obciążenia urządzenia przez inne procesy. Dotyczy to również przypisywania zużycia pamięci badanemu modelowi po komunikacie o~jej wyczerpaniu.
 
 Moduł metryk zapisuje nieokreślone ROC AUC jako brak wartości, lecz nie zapisuje osobnego pola z~przyczyną. Dla precyzji, czułości i~F1 stosuje natomiast konwencję \texttt{zero\_division=0}: przy zerowym mianowniku zwraca zero. Aby odróżnić te przypadki od zerowej wartości poprawnie określonej miary, należy sprawdzić liczności klas i~macierz pomyłek.
 
@@ -152,9 +152,9 @@ Moduł metryk zapisuje nieokreślone ROC AUC jako brak wartości, lecz nie zapis
 
 Poprawność platformy ocenia się od wejściowych danych po odtworzony raport. Kontrole wymiarów i~prawdopodobieństw wykrywają błędy interfejsów, a~porównanie identyfikatorów wierszy i~grup sprawdza przepływ informacji między treningiem, walidacją i~testem. Na etapie zapisu i~wznowienia sprawdza się również integralność artefaktów.
 
-W~teście syntetycznym \texttt{smoke} wykonuje się niewielki przebieg z~regresją logistyczną i~dwuepokowym MLP, sprawdzając spójność artefaktów i~przebiegu przy uruchamianiu, zapisie, wznowieniu i~raportowaniu. Test wznowienia wymaga zachowania ukończonych rekordów i~ponowienia wyłącznie tych konfiguracji, dla których nie istnieje kompletny, zgodny zapis. W~podziale grupowym sprawdza się rozłączność pacjentów na każdym poziomie, zachowanie wymaganych klas oraz dokładnie jednokrotne pokrycie obserwacji predykcjami OOF. Kontrolę prowadzi się po identyfikatorach pacjentów, ponieważ różne wiersze mogą opisywać pobyty tej samej osoby.
+Test syntetyczny \texttt{smoke} jest krótkim sprawdzeniem podstawowych operacji platformy: w~niewielkim przebiegu z~regresją logistyczną i~dwuepokowym MLP kontroluje się spójność artefaktów i~przebiegu przy uruchamianiu, zapisie, wznowieniu i~raportowaniu. Test wznowienia wymaga zachowania ukończonych rekordów i~ponowienia wyłącznie tych konfiguracji, dla których nie istnieje kompletny, zgodny zapis. W~podziale grupowym sprawdza się rozłączność pacjentów na każdym poziomie, zachowanie wymaganych klas oraz dokładnie jednokrotne pokrycie obserwacji predykcjami OOF. Kontrolę prowadzi się po identyfikatorach pacjentów, ponieważ różne wiersze mogą opisywać pobyty tej samej osoby.
 
-Dowód weryfikacji odnosi się do konkretnej rewizji programu, danych i~środowiska. Zmiana tych składników ogranicza możliwość przenoszenia wcześniejszych sprawdzeń na nowe wykonanie. Szczególne znaczenie mają granice pamięci, asynchroniczność GPU oraz zależność kosztu inferencji TabPFN od rozmiaru kontekstu.
+Zmiana rewizji programu, danych lub środowiska ogranicza możliwość przenoszenia wcześniejszych sprawdzeń na nowe wykonanie. Szczególne znaczenie mają granice pamięci, asynchroniczność GPU oraz zależność kosztu inferencji TabPFN od rozmiaru kontekstu.
 
 \subsection{Środowisko wykonania i procedura kampanii}
 \label{sec:wykonanie-kampanii}

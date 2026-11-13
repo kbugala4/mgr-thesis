@@ -56,7 +56,7 @@ u_j^*=-\frac{G_j}{H_j+\lambda},\qquad
 G_j=\sum_{i\in I_j}g_i,\quad H_j=\sum_{i\in I_j}h_i,
 \label{eq:xgb-lisc}
 \end{equation}
-gdzie $g_i$ i~$h_i$ są pochodnymi straty względem aktualnego wyniku modelu. Kryterium rozbudowy drzewa uwzględnia poprawę wynikającą z~rozdzielenia tych statystyk oraz karę za liczbę liści~\cite{chen2016xgboost}. Regularyzuje się zatem zarówno wartości predykcyjne, jak i~strukturę podziału.
+gdzie $g_i$ i~$h_i$ są pochodnymi straty względem aktualnego wyniku modelu. Kryterium rozbudowy drzewa uwzględnia poprawę wynikającą z~rozdzielenia tych statystyk oraz karę za liczbę liści~\cite{chen2016xgboost}. Regularyzuje się zarówno wartości predykcyjne, jak i~strukturę podziału.
 
 Dzięki podziałom osiowym XGBoost zachowuje bezpośrednie odniesienie do oryginalnych cech i~stanowi drzewiaste odniesienie dla sieci uczących ich wspólne reprezentacje. W~badaniu stroi się między innymi głębokość i~liczbę drzew, tempo uczenia oraz regularyzację.
 
@@ -109,7 +109,7 @@ Ta sama kolumna może dzięki temu wnosić różny wkład do decyzji dla różny
 \subsubsection{FT-Transformer: tokeny cech i uwaga}
 \label{sec:ft-transformer}
 
-Cechy tabeli mają różną semantykę, ale ich znaczenie predykcyjne może zależeć od wzajemnych relacji. FT-Transformer łączy oba aspekty: zachowuje odrębność kolumn w~tokenizacji właściwej każdej cesze, a~następnie uczy interakcji między tokenami. Przy wymiarze tokenu~$h$ reprezentacja numeryczna ma postać $t_j=b_j+x_jw_j$, gdzie $b_j,w_j\in\mathbb{R}^{h}$, natomiast dla kategorii $t_j=b_j+E_j[x_j]$, gdzie $E_j$ jest uczoną tablicą osadzeń. Token klasyfikacyjny dołączony do tokenów cech agreguje informację wykorzystywaną przez głowicę wyjściową~\cite{gorishniy2021revisiting}. Tożsamość kolumny koduje się więc w~parametrach tokenizatora.
+Cechy tabeli mają różną semantykę, ale ich znaczenie predykcyjne może zależeć od wzajemnych relacji. FT-Transformer łączy oba aspekty: zachowuje odrębność kolumn w~tokenizacji właściwej każdej cesze, a~następnie uczy interakcji między tokenami. Przy wymiarze tokenu~$h$ reprezentacja numeryczna ma postać $t_j=b_j+x_jw_j$, gdzie $b_j,w_j\in\mathbb{R}^{h}$, natomiast dla kategorii $t_j=b_j+E_j[x_j]$, gdzie $E_j$ jest uczoną tablicą osadzeń. Token klasyfikacyjny dołączony do tokenów cech agreguje informację wykorzystywaną przez głowicę wyjściową~\cite{gorishniy2021revisiting}. Tożsamość kolumny koduje się w~parametrach tokenizatora.
 
 W~pojedynczej głowie uwagi współczynniki mają postać $A=\operatorname{softmax}(QK^\top/\sqrt{h_a})$, gdzie $h_a$ oznacza wymiar klucza, a~softmax działa wierszami. Agregacja $AV$ łączy reprezentacje cech w~obrębie jednej obserwacji. Pełna macierz uwagi ma $(d+1)^2$ elementów na głowę, a~człon kosztu obliczania podobieństw rośnie jak $O(d^2h_a)$. Szeroki Bioresponse stanowi z~tego względu inny przypadek obliczeniowy niż tabela o~podobnej liczbie wierszy i~kilkudziesięciu cechach.
 
@@ -133,7 +133,7 @@ f(z)=\frac{z}{\sqrt{1+(z/3)^2}},
 \end{equation}
 gdzie $z$ oznacza wartość po skalowaniu, a~$f$ płynnie ogranicza zakres do $(-3,3)$. W~ten sposób oddzielono odporność estymacji skali od ograniczenia wpływu ekstremalnych wartości wejścia. Zastosowano również osadzenia numeryczne PBLD (ang. \textit{periodic bias linear DenseNet}), łączące wartość cechy po skalowaniu i~płynnym ograniczeniu zakresu z~uczoną reprezentacją okresową, uczone skale wejściowe oraz dobrane wspólnie ustawienia inicjalizacji i~uczenia~\cite{holzmueller2024realmlp}.
 
-Wykorzystana integracja RealMLP-TD pochodzi z~TabArena i~opiera się na bibliotece pytabkit. Zarówno konfiguracja domyślna, jak i~losowani kandydaci należą do tej rodziny, a~stroi się między innymi architekturę, dropout, tempo uczenia i~zanik wag. Do opracowania ustawień domyślnych RealMLP wykorzystano kolekcję obejmującą Adult i~Online Shoppers~\cite{holzmueller2024realmlp}. Interpretując wyniki na tych dwóch zadaniach, trzeba zatem uwzględnić wcześniejszy dobór parametrów, którego koszt pozostaje poza lokalnym uczeniem. Stwierdzono zgodność nazw zbiorów, bez potwierdzenia tożsamości ich wersji i~podziałów.
+Wykorzystana integracja RealMLP-TD pochodzi z~TabArena i~opiera się na bibliotece pytabkit. Zarówno konfiguracja domyślna, jak i~losowani kandydaci należą do tej rodziny, a~stroi się między innymi architekturę, dropout, tempo uczenia i~zanik wag. Do opracowania ustawień domyślnych RealMLP wykorzystano kolekcję obejmującą Adult i~Online Shoppers~\cite{holzmueller2024realmlp}. Wyniki na tych dwóch zadaniach trzeba interpretować z~uwzględnieniem wcześniejszego doboru parametrów, którego koszt pozostaje poza lokalnym uczeniem. Stwierdzono zgodność nazw zbiorów, bez potwierdzenia tożsamości ich wersji i~podziałów.
 
 \subsection{ModernNCA: uczenie reprezentacji sąsiedztwa}
 \label{sec:modernnca}
@@ -164,7 +164,7 @@ gdzie $W\in\mathbb{R}^{h_{\mathrm{out}}\times h_{\mathrm{in}}}$ jest wspólna, a
 
 Różnica między tymi operacjami jest istotna dla interpretacji zespołu. Średnia strat wymaga użytecznej predykcji od każdego podmodelu; strata obliczona dopiero dla średniej prawdopodobieństw miałaby inny gradient. Przy $R$ podmodelach warstwa z~równania~\ref{eq:tabm-warstwa} wymaga $h_{\mathrm{out}}h_{\mathrm{in}}+R(h_{\mathrm{in}}+2h_{\mathrm{out}})$ parametrów, zamiast $R(h_{\mathrm{out}}h_{\mathrm{in}}+h_{\mathrm{out}})$ dla niezależnych kopii. Oszczędność pamięci parametrów nie usuwa jednak konieczności przetwarzania $R$ reprezentacji i~przechowywania ich aktywacji.
 
-Za pomocą TabM bada się kompromis między jakością zespołu a~kosztem współdzielenia parametrów. Zarówno konfiguracja domyślna, jak i~losowani kandydaci w~przypiętej integracji TabArena wykorzystują wariant TabM-mini z~32 podmodelami. Dla cech numerycznych przewidziano osadzenia odcinkowo liniowe, wyłączane przez implementację, gdy nie można wyznaczyć poprawnego podziału na przedziały. Pełne parametry każdej ocenianej konfiguracji są zachowywane razem z~wynikiem.
+Za pomocą TabM bada się kompromis między jakością zespołu a~kosztem współdzielenia parametrów. Zarówno konfiguracja domyślna, jak i~losowani kandydaci w~przypiętej wersji integracji TabArena, czyli wersji ustalonej dla badania, wykorzystują wariant TabM-mini z~32 podmodelami. Dla cech numerycznych przewidziano osadzenia odcinkowo liniowe, wyłączane przez implementację, gdy nie można wyznaczyć poprawnego podziału na przedziały. Pełne parametry każdej ocenianej konfiguracji są zachowywane razem z~wynikiem.
 
 \subsection{TabPFN-3.5: pretrenowanie i kontekst zadania}
 \label{sec:tabpfn}
@@ -173,7 +173,7 @@ Dotychczas opisane sieci dopasowują wagi na danych bieżącego zadania. TabPFN-
 
 Raport wersji~3.5 opisuje kodowanie wartości wykorzystujące zarówno ich skalę numeryczną, jak i~położenie w~empirycznym rozkładzie kolumny kontekstu. Cechy Fouriera reprezentują wartości, a~sygnał ECDF dostarcza informacji rangowej. Zachowane są także wskaźniki braków. Model otrzymuje w~ten sposób różne opisy tej samej kolumny. Sama składowa rangowa jest niezmiennicza względem ściśle rosnącej transformacji, lecz cały model, korzystający również z~wartości, nie musi mieć tej własności~\cite{jaeger2026tabpfn35}.
 
-W~pracy ocenia się podstawowy wariant uruchamiany lokalnie z~ustaloną wersją wag, pełnym kontekstem części rozwojowej i~stałymi ustawieniami inferencji. Nie podlega strojeniu ani nie jest obejmowany zespołem ośmiu foldów. Wykorzystywany jest checkpoint \path{tabpfn-v3.5-20260909.safetensors}, osiem estymatorów inferencji i~ziarno~0.\footnote{Wyniki wariantów Plus i~Thinking z~raportu dotyczą innych procedur niż wybrany wariant podstawowy.}
+W~pracy ocenia się podstawowy wariant uruchamiany lokalnie z~ustaloną wersją wag, pełnym kontekstem części rozwojowej i~stałymi ustawieniami inferencji. Nie podlega strojeniu ani nie jest obejmowany zespołem ośmiu foldów. Wykorzystuje się zapisany stan wag (ang. \textit{checkpoint}) \path{tabpfn-v3.5-20260909.safetensors} i~ziarno~0, a~podczas inferencji uśrednia osiem predykcji uzyskanych dla różnie przekształconych danych wejściowych.\footnote{Wyniki wariantów Plus i~Thinking z~raportu dotyczą innych procedur niż wybrany wariant podstawowy.}
 
 Przygotowanie kontekstu i~predykcja obciążają bieżące zadanie, natomiast pretrenowanie jest kosztem zewnętrznym. Koszt lokalnej inferencji zależy od liczności i~szerokości kontekstu. W~zadaniach takich jak Helena istotne są ponadto koszt reprezentacji stu klas i~ograniczenia pamięci przy pełnym kontekście.
 
