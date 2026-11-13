@@ -50,7 +50,7 @@ Dobra jakość tego modelu oznaczałaby, że w~danym zadaniu koszt bardziej elas
 
 KNN stanowi odniesienie, w~którym lokalność predykcji wynika bezpośrednio z~metryki zadanej przestrzeni, bez uczenia reprezentacji~\cite{cover1967nearest,sklearnNeighbors}. Dobór liczby sąsiadów określa skalę uśredniania etykiet, natomiast skalowanie i~kodowanie cech rozstrzygają, które obserwacje są bliskie. Przy odległości euklidesowej dwa różne poziomy jednej cechy zakodowanej zero-jedynkowo wnoszą taki sam kwadrat odległości równy~2, o~ile zachowano pełne kodowanie bez dodatkowego skalowania. Jest to konkretne założenie geometryczne, nie informacja wyuczona z~podobieństwa kategorii.
 
-W~pracy nominalne kategorie KNN mają ustalone kodowanie zero-jedynkowe. Zestawienie z~ModernNCA pozwala ocenić, czy koszt uczenia przestrzeni podobieństwa i~zmiany agregacji znajduje uzasadnienie w~jakości predykcji. Dla obu metod istotny jest także bank oznakowanych obserwacji: niewielki koszt dopasowania KNN nie oznacza niskiego kosztu przechowywania i~odpytywania tego banku. Wyjątek walidacyjny LOO dla zadań IID oraz grupową procedurę Diabetes opisano w~sekcji~\ref{sec:przygotowanie-procedura}.
+W~pracy nominalne kategorie KNN mają ustalone kodowanie zero-jedynkowe. Zestawienie z~ModernNCA pozwala ocenić, czy koszt uczenia przestrzeni podobieństwa i~zmiany agregacji znajduje uzasadnienie w~jakości predykcji. Dla obu metod istotny jest także bank oznakowanych obserwacji: niewielki koszt dopasowania KNN nie oznacza niskiego kosztu przechowywania i~odpytywania tego banku. Sposób walidacji KNN, w~tym odrębne traktowanie powtarzających się pobytów pacjentów w~Diabetes, opisano w~sekcji~\ref{sec:przygotowanie-procedura}.
 
 \subsubsection{XGBoost}
 \label{sec:xgboost}
@@ -70,12 +70,14 @@ Podziały osiowe zachowują bezpośrednie odniesienie do oryginalnych cech i~two
 
 CatBoost rozwiązuje dwa powiązane problemy wykorzystania etykiet treningowych: wyznaczanie statystyk kategorii i~obliczanie sygnału kolejnych kroków wzmacniania. W~uporządkowanym kodowaniu statystyka kategorii dla obserwacji powstaje z~przykładów poprzedzających ją w~wylosowanej permutacji. Jej własna etykieta nie wchodzi więc bezpośrednio do jej reprezentacji. W~uporządkowanym wzmacnianiu podobna zasada dotyczy modelu używanego do obliczania gradientu dla danej obserwacji~\cite{prokhorenkova2018catboost}. Wspólnym celem jest ograniczenie różnicy między informacją dostępną przy dopasowaniu i~przy predykcji nowego przypadku.
 
-Oba mechanizmy trzeba rozróżniać: natywna obsługa kategorii nie oznacza automatycznie uruchomienia wariantu Ordered wzmacniania. Efektywna konfiguracja określa wariant wykorzystany w~eksperymencie. CatBoost stanowi odniesienie zachowujące dedykowane przetwarzanie kategorii, szczególnie istotne dla Amazon i~zbiorów mieszanych. Uczestniczy również w~badaniu ważenia klas, dzięki czemu efekt tej interwencji jest oceniany poza rodziną neuronową.
+Oba mechanizmy trzeba rozróżniać: natywna obsługa kategorii nie oznacza automatycznie uruchomienia wariantu Ordered wzmacniania. Lokalna konfiguracja nie zadaje parametru \texttt{boosting\_type}, pozostawiając jego dobór bibliotece dla wykonania na CPU. Sam opis algorytmu nie uprawnia zatem do przypisania wszystkim uruchomieniom wariantu Ordered. CatBoost stanowi odniesienie zachowujące dedykowane przetwarzanie kategorii, szczególnie istotne dla Amazon i~zbiorów mieszanych. Uczestniczy również w~badaniu ważenia klas, dzięki czemu efekt tej interwencji jest oceniany poza rodziną neuronową.
 
 \subsection{MLP i mechanizmy regularyzacji}
 \label{sec:mlp}
 
 MLP stanowi punkt odniesienia dla metod, które zmieniają selekcję cech, reprezentację kolumn lub sposób łączenia predykcji. Jego wartość porównawcza zależy od przygotowania wejścia i~uczenia, a~nie od samej obecności warstw gęstych. W~badaniu głównym zastosowano lokalny model ReLU z~AdamW, dropoutem i~wyborem stanu według straty walidacyjnej. Domyślnie ma dwie warstwy ukryte o~256 i~128 jednostkach, dropout~0,1, tempo uczenia~0,001, zanik wag~$10^{-4}$ i~limit 100 epok. Kategorie są kodowane zero-jedynkowo z~limitem 256 kolumn na cechę, a~cechy numeryczne skalowane. Jest to jawnie określony model bazowy, nie dokładna reprodukcja opublikowanej procedury.
+
+Rozmiar partii uczenia dobiera się do liczby przykładów w~treningowej części foldu (podzbioru wydzielonego w~walidacji krzyżowej), a~w~strojeniu zmienia się mnożnik tej wartości. Dzięki temu jedna konfiguracja opisuje regułę dostosowania partii do danych, zamiast narzucać jednakową liczbę przykładów małym i~dużym zadaniom. Rozwiązanie to przyjęto także dla lokalnych integracji FT-Transformera i~TabNet; szczegóły podano w~sekcji~\ref{sec:strojenie}. Nie pozostaje ono bez związku z~regularyzacją: rozmiar partii wpływa na liczbę aktualizacji w~epoce, a~więc również na skumulowane działanie zaniku wag.
 
 Dropout i~zanik wag ingerują w~uczenie na różnych poziomach. Przy konwencji skalowania w~treningu dropout zastępuje aktywację $h$ przez
 \begin{equation}
@@ -135,7 +137,7 @@ FT-Transformer zachowuje odrębność kolumn przez tokenizację właściwą każ
 
 W~pojedynczej głowie uwagi współczynniki mają postać $A=\operatorname{softmax}(QK^\top/\sqrt{h_a})$, gdzie $h_a$ oznacza wymiar klucza, a~softmax działa wierszami. Agregacja $AV$ łączy reprezentacje cech w~obrębie jednej obserwacji. W~odróżnieniu od TabNet chodzi zatem o~uczone relacje między tokenami, nie sekwencyjne maskowanie wspólnego wektora wejściowego. Pełna macierz uwagi ma $(d+1)^2$ elementów na głowę; człon kosztu obliczania podobieństw rośnie jak $O(d^2h_a)$. Szeroki Bioresponse stanowi z~tego względu inny przypadek obliczeniowy niż tabela o~podobnej liczbie wierszy i~kilkudziesięciu cechach.
 
-Przyjęta integracja korzysta z~implementacji autorów~\cite{rtdlImplementation}. W~interpretacji istotne są zarówno jakość predykcji, jak i~koszt przetwarzania tokenów; sama obecność mechanizmu uwagi nie przesądza o~korzyści względem sieci gęstej.
+Przyjęta integracja korzysta z~implementacji autorów~\cite{rtdlImplementation}. W~lokalnej procedurze uczenia automatyczny dobór partii uzupełniono ograniczeniem zależnym od liczby cech i~głów uwagi. Większa liczba wierszy może zatem uzasadniać większą partię, podczas gdy szerokość tabeli wymusza jej zmniejszenie. Regułę tę opisano w~sekcji~\ref{sec:koszt-metodyka}. Jakość predykcji rozpatruje się wobec tego łącznie z~kosztem przetwarzania tokenów.
 
 Rysunek~\ref{fig:reprezentacje} zestawia trzy sposoby przetwarzania wejścia: warstwy gęste, sekwencyjne maski oraz uwagę nad tokenami cech.
 
@@ -162,9 +164,9 @@ f(z)=\frac{z}{\sqrt{1+(z/3)^2}},
 \end{equation}
 gdzie $z$ oznacza wartość po skalowaniu, a~$f$ płynnie ogranicza zakres do $(-3,3)$. Rozdziela to odporność estymacji skali od ograniczenia wpływu ekstremalnych wartości wejścia. Procedura obejmuje również osadzenia numeryczne PBLD (ang. periodic bias linear DenseNet), łączące surową wartość po skalowaniu z~uczoną reprezentacją okresową, uczone skale wejściowe oraz dobrane wspólnie ustawienia inicjalizacji i~uczenia~\cite{holzmueller2024realmlp}.
 
-Znaczenie RealMLP dla porównania polega na sprawdzeniu, ile można uzyskać przez rozwinięcie procedury gęstej bez zastępowania jej uwagą lub predykcją sąsiedztwa. Różnica względem lokalnego MLP obejmuje kilka składników, natomiast osobna ablacja w~badaniu~B dotyczy wyłącznie wskazanych regularyzatorów. Warianty RealMLP i~przestrzeń strojenia są identyfikowane przez efektywne konfiguracje integracji. Opis RealMLP-TD wyjaśnia zasadę konstrukcji, nie zastępuje zapisu wariantu faktycznie wykonanego.
+Znaczenie RealMLP dla porównania polega na sprawdzeniu, ile można uzyskać przez rozwinięcie procedury gęstej bez zastępowania jej uwagą lub predykcją sąsiedztwa. Różnica względem lokalnego MLP obejmuje kilka składników, natomiast osobna ablacja w~badaniu~B dotyczy wyłącznie wskazanych regularyzatorów. W~badaniu wykorzystuje się integrację RealMLP-TD z~TabArena, opartą na bibliotece pytabkit. Konfiguracja domyślna i~losowani kandydaci korzystają z~tej samej rodziny; przestrzeń losowania obejmuje między innymi architekturę, dropout, tempo uczenia i~zanik wag.
 
-Ustawienia przenoszone między zadaniami są zasobem procedury. Interpretując wynik domyślny, trzeba więc uwzględnić możliwe pokrycie własnych danych z~kolekcją rozwoju ustawień. Jest to odrębny problem od użycia etykiet testowych podczas pojedynczego uruchomienia. Koszt lokalny nie obejmuje wcześniejszego opracowania tych ustawień.
+Ustawienia domyślne RealMLP opracowano na kolekcji obejmującej także Adult i~Online Shoppers~\cite{holzmueller2024realmlp}. Ocena na tych dwóch zadaniach nie jest więc całkowicie niezależna od wcześniejszego doboru ustawień. Pokrycie nazw zbiorów nie oznacza jednak tożsamości ich wersji, przetwarzania ani podziałów, a~tym bardziej nie dowodzi wykorzystania etykiet zewnętrznego testu tej pracy. Koszt lokalnego uczenia nie obejmuje opracowania ustawień domyślnych.
 
 \subsection{ModernNCA: uczenie reprezentacji sąsiedztwa}
 \label{sec:modernnca}
@@ -177,16 +179,16 @@ a_j(x)=\frac{\exp[-\|\phi_\theta(x)-\phi_\theta(x_j)\|_2^2]}
 p_c(x)=\sum_{j\in\mathcal{B}(x)}a_j(x)\mathbf{1}[y_j=c].
 \label{eq:modernnca}
 \end{equation}
-Podczas uczenia obserwacja nie może być własnym kandydatem. Minimalizacja $-\log p_{y_i}(x_i)$ dopasowuje geometrię bezpośrednio do miękkiej agregacji etykiet. W~stosunku do klasycznego NCA zmieniono nie tylko liniową projekcję, lecz także cel uczenia i~regułę predykcji: miękka agregacja pozostaje używana przy ocenie nowych przypadków~\cite{ye2025modernnca}.
+Podczas uczenia obserwacja nie może być własnym kandydatem. Minimalizacja $-\log p_{y_i}(x_i)$ dopasowuje geometrię bezpośrednio do miękkiej agregacji etykiet. W~stosunku do klasycznej metody NCA (ang. neighbourhood components analysis)~\cite{goldberger2004nca} zmieniono nie tylko liniową projekcję, lecz także cel uczenia i~regułę predykcji: miękka agregacja pozostaje używana przy ocenie nowych przypadków~\cite{ye2025modernnca}.
 
 Autorzy stosują nieliniowe bloki reprezentacji, osadzenia cech numerycznych oraz losowanie kandydatów sąsiedztwa w~treningu. Ogranicza to koszt porównywania każdej partii z~całym bankiem. Przy dokładnej predykcji z~$N$ wektorami odniesienia o~wymiarze~$h$ samo obliczenie odległości jednego zapytania wymaga $O(Nh)$ operacji, poza kosztem reprezentacji. Sieć nie zastępuje więc pamięci przykładów stałym zestawem wag.
 
 KNN pozwala ocenić korzyść całej procedury uczonego sąsiedztwa względem metryki ustalonej. Koszt przechowywania banku i~predykcji jest analizowany obok kosztu uczenia. Zarówno przykłady, jak i~etykiety banku pochodzą wyłącznie z~treningu bieżącego foldu; ścieżkę integracji implementacji TALENT przez TabArena opisano w~rozdziale~\ref{chap:srodowisko}.
 
-\subsection{TabM i poziomy łączenia predykcji}
+\subsection{TabM: zespół ze współdzieleniem parametrów}
 \label{sec:tabm-zespoly}
 
-TabM tworzy wiele predykcji przez podmodele współdzielące macierze wag. Mechanizm wywodzący się z~BatchEnsemble można zapisać dla warstwy liniowej jako
+TabM tworzy wiele predykcji przez podmodele współdzielące macierze wag. Mechanizm wywodzący się z~BatchEnsemble~\cite{wen2020batchensemble} można zapisać dla warstwy liniowej jako
 \begin{equation}
 z_r=s_r\odot\bigl(W(r_r\odot u_r)\bigr)+b_r,
 \label{eq:tabm-warstwa}
@@ -195,39 +197,7 @@ gdzie $W\in\mathbb{R}^{h_{\mathrm{out}}\times h_{\mathrm{in}}}$ jest wspólna, a
 
 Różnica między tymi operacjami jest istotna dla interpretacji zespołu. Średnia strat wymaga użytecznej predykcji od każdego podmodelu; strata obliczona dopiero dla średniej prawdopodobieństw miałaby inny gradient. Przy $R$ podmodelach warstwa z~równania~\ref{eq:tabm-warstwa} wymaga $h_{\mathrm{out}}h_{\mathrm{in}}+R(h_{\mathrm{in}}+2h_{\mathrm{out}})$ parametrów, zamiast $R(h_{\mathrm{out}}h_{\mathrm{in}}+h_{\mathrm{out}})$ dla niezależnych kopii. Oszczędność pamięci parametrów nie usuwa jednak konieczności przetwarzania $R$ reprezentacji i~przechowywania ich aktywacji.
 
-TabM pozwala zbadać kompromis między jakością zespołu a~kosztem współdzielenia parametrów. Liczba podmodeli, wariant modulacji i~osadzenia numeryczne należą do definicji wykonanej konfiguracji. Nie można przenosić wyniku jednego wariantu na całą rodzinę bez uwzględnienia tych różnic.
-
-Należy odróżnić trzy poziomy łączenia, zestawione w~tabeli~\ref{tab:poziomy-zespolow}. Wewnętrzny zespół TabM występuje wewnątrz pojedynczego dopasowania modelu. Uśrednienie foldów łączy modele uczone na różnych częściach danych. Zespół konfiguracji łączy z~kolei wyniki różnych kandydatów, z~wagami ustalonymi na walidacji. Poziomy mogą się nakładać; nie są wzajemnie wykluczającymi się warunkami.
-
-\begin{table}[tbp]
-\centering
-\caption{Poziomy łączenia predykcji w~porównywanych procedurach.}
-\label{tab:poziomy-zespolow}
-\small
-\begin{tabularx}{\textwidth}{@{}P{0.22\textwidth}YY@{}}
-\toprule
-Poziom & Łączone obiekty & Znaczenie dla badania \\
-\midrule
-Wewnętrzny & Podmodele ze współdzieleniem parametrów & Składnik architektury TabM~\cite{gorishniy2025tabm}. \\
-Foldy & Modele tej samej konfiguracji & Zwykłe warunki D i T już wykorzystują takie uśrednienie. \\
-Konfiguracje & Wyniki różnych kandydatów & T+E dodaje dobór wag na OOF, bez selekcji na teście. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Rysunek~\ref{fig:zespoly} zestawia jednostki agregacji. Warunki D, T i~T+E oraz wyjątki KNN i~TabPFN zdefiniowano w~sekcji~\ref{sec:warunki-raportowania}; formalny zapis pozwala odróżnić uśrednianie foldów od wyboru wag konfiguracji.
-
-\plannedfigure
-    {figures/ch03/poziomy-zespolow.pdf}
-    {Wewnętrzny zespół, uśrednienie foldów i łączenie konfiguracji. Opracowanie własne na podstawie mechanizmu TabM~\cite{gorishniy2025tabm} i przyjętego protokołu.}
-    {fig:zespoly}
-    {\textbf{Wewnątrz TabM}\\
-Podmodele ze współdzielonymi wagami $\longrightarrow$ średnia prawdopodobieństw\\[0.8em]
-\textbf{W~obrębie konfiguracji}\quad (zwykłe warunki D i~T)\\
-Osiem modeli foldów $\longrightarrow$ średnia predykcji testowych\\[0.8em]
-\textbf{Między konfiguracjami}\quad (T+E)\\
-Predykcje konfiguracji $\longrightarrow$ suma z~wagami dobranymi na OOF\\[0.8em]
-IID KNN: pojedynczy model LOO.\quad Stały TabPFN: wyłącznie D.}
+TabM pozwala zbadać kompromis między jakością zespołu a~kosztem współdzielenia parametrów. Zarówno konfiguracja domyślna, jak i~losowani kandydaci w~przypiętej integracji TabArena wykorzystują wariant TabM-mini z~32 podmodelami. Dla cech numerycznych przewidziano osadzenia odcinkowo liniowe, wyłączane przez implementację, gdy nie można wyznaczyć poprawnego podziału na przedziały. Pełne parametry każdej ocenianej konfiguracji są zachowywane razem z~wynikiem.
 
 \subsection{TabPFN-3.5: pretrenowanie i kontekst zadania}
 \label{sec:tabpfn}
@@ -243,6 +213,6 @@ Ta odmienność ma konsekwencje dla porównania kosztu. Przygotowanie kontekstu 
 \subsection{Granice porównań i uzasadnienie wyłączeń}
 \label{sec:granice-metod}
 
-Przyjęta pula obejmuje odmienne mechanizmy, ale nie całość literatury. ResNet, NODE, podejścia samonadzorowane, inne modele uwagi i~kolejne modele fundamentowe pozostają kontekstem dla wyboru. ResNet jest ważnym odniesieniem historycznym, lecz rozwinięty model gęsty reprezentuje w~macierzy RealMLP. ModernNCA reprezentuje uczenie sąsiedztwa. FT-Transformer wykorzystuje uwagę nad tokenami cech, a~TabM --- współdzielenie parametrów zespołu. Dodawanie kolejnych podobnych ról zwiększałoby koszt bez automatycznego pogłębienia odpowiedzi na przyjęte pytania.
+Przyjęta pula obejmuje odmienne mechanizmy, ale nie całość literatury. ResNet, podejścia samonadzorowane, inne modele uwagi i~kolejne modele fundamentalne pozostają kontekstem dla wyboru. ResNet jest ważnym odniesieniem historycznym, lecz rozwinięty model gęsty reprezentuje w~macierzy RealMLP. ModernNCA reprezentuje uczenie sąsiedztwa. FT-Transformer wykorzystuje uwagę nad tokenami cech, a~TabM --- współdzielenie parametrów zespołu. Dodawanie kolejnych podobnych ról zwiększałoby koszt bez automatycznego pogłębienia odpowiedzi na przyjęte pytania.
 
 Tak ograniczona pula pozwala zbadać wybrane sposoby wykorzystania sieci przy dostępnym budżecie obliczeń. Wnioski z~porównania dotyczą tych konkretnych procedur i~warunków oceny. Wpływ ważenia klas i~regularyzacji stanowi przedmiot osobnej analizy, zgodnie z~projektem przedstawionym w~kolejnym rozdziale.

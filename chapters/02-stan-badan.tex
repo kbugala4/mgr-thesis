@@ -58,7 +58,7 @@ Rozwój sieci dla danych tabelarycznych odbywał się przy silnej konkurencji ze
 
 Jedną z~odpowiedzi była specjalizacja architektury. TabNet wybiera cechy za pomocą sekwencyjnego mechanizmu uwagi, dzięki czemu kolejne kroki przetwarzania mogą wykorzystywać różne fragmenty obserwacji~\cite{arik2021tabnet}. FT-Transformer reprezentuje poszczególne cechy jako tokeny i~łączy informacje za pomocą samouwagi~\cite{gorishniy2021revisiting}. W~obu przypadkach sposób przetwarzania uwzględnia odrębność kolumn, lecz realizuje to inaczej. TabNet steruje dostępem do cech, a~FT-Transformer uczy zależności między ich reprezentacjami. Nie są to zatem dwa warianty tej samej selekcji cech.
 
-Równolegle rozwijano prostsze sieci gęste. Kadra i~współautorzy pokazali znaczenie wspólnego doboru technik regularyzacji, kierując uwagę na procedurę uczenia MLP~\cite{kadra2021regularization}. Wynikiem badań był zaproponowany RealMLP, który rozwija ten ogólny kierunek przez połączenie przygotowania cech, ustawień sieci i~optymalizacji z~hiperparametrami opracowanymi na wielu zadaniach~\cite{holzmueller2024realmlp}. Użytkownik otrzymuje w~ten sposób ustawienia domyślne zawierające wynik wcześniejszego doboru. Brak strojenia na aktualnym zbiorze nie oznacza więc, że konfigurację wybrano bez danych i~kosztu obliczeniowego.
+Równolegle rozwijano prostsze sieci gęste. Kadra i~współautorzy pokazali znaczenie wspólnego doboru technik regularyzacji, kierując uwagę na procedurę uczenia MLP~\cite{kadra2021regularization}. W~podobnym kierunku poszli Holzmüller i~współautorzy, proponując RealMLP. Metoda rozwija procedurę uczenia sieci gęstej przez połączenie przygotowania cech, ustawień sieci i~optymalizacji z~hiperparametrami opracowanymi na wielu zadaniach~\cite{holzmueller2024realmlp}. Użytkownik otrzymuje w~ten sposób ustawienia domyślne zawierające wynik wcześniejszego doboru. Brak strojenia na aktualnym zbiorze nie oznacza więc, że konfigurację wybrano bez danych i~kosztu obliczeniowego.
 
 ModernNCA wykorzystuje sieć inaczej. Model uczy reprezentacji, w~której przewidywanie etykiety opiera się na podobieństwie do przykładów treningowych~\cite{ye2025modernnca}. Łączy tym samym ideę sąsiedztwa z~uczeniem cech, zamiast zastępować regułę sąsiedztwa zwykłą warstwą wyjściową klasyfikatora. TabM pozostaje bliższy MLP, ale tworzy wiele predykcji przez podmodele współdzielące znaczną część parametrów~\cite{gorishniy2025tabm}. Zespołowanie jest tu składnikiem architektury, a~nie dopiero końcowym łączeniem niezależnie wytrenowanych sieci. Obie metody pokazują, że rozwój modeli tabelarycznych obejmuje więcej niż zwiększanie głębokości sieci lub zastępowanie warstw gęstych uwagą.
 
@@ -66,11 +66,12 @@ Modele fundamentalne, reprezentowane w~tej pracy przez TabPFN-3.5, zmieniają r�
 
 Opisane kierunki nie tworzą szeregu, w~którym każda kolejna metoda zastępuje poprzednią. MLP pozostaje podstawą bardziej rozbudowanych procedur, a~reprezentacja cech, regularyzacja i~łączenie predykcji mogą występować w~jednym rozwiązaniu. Rysunek~\ref{fig:mapa-podejsc} pokazuje te powiązania dla przyjętej puli metod. Szczegółowe mechanizmy przedstawiono w~rozdziale~\ref{chap:metody}.
 
-\plannedfigure
-{figures/ch02/mapa-podejsc.pdf}
-{Powiązania między wybranymi podejściami. Strzałki oznaczają wykorzystanie wspólnej idei, nie przewagę jakości. Opracowanie własne na podstawie opisów metod cytowanych w~tekście.}
-{fig:mapa-podejsc}
-{\input{figures/source/mapa-podejsc.tex}}
+\begin{figure}[tbp]
+\centering
+\input{figures/source/mapa-podejsc.tex}
+\caption{Powiązania między wybranymi podejściami. Strzałki oznaczają wykorzystanie wspólnej idei, nie przewagę jakości. Opracowanie własne na podstawie opisów metod cytowanych w~tekście.}
+\label{fig:mapa-podejsc}
+\end{figure}
 
 \subsection{Badania porównawcze}
 \label{sec:benchmarki}
@@ -81,7 +82,7 @@ Przegląd ma charakter narracyjny i~obejmuje wybrane publikacje dostępne w~mome
 
 Gorishniy i~współautorzy~\cite{gorishniy2021revisiting} porównali architektury na jedenastu zadaniach klasyfikacji i~regresji we wspólnej procedurze uczenia i~strojenia. Istotnym wynikiem było wykazanie konkurencyjności prostego ResNet oraz silnej pozycji FT-Transformer wśród badanych sieci. Porównanie z~drzewami nie wskazało rozwiązania wygrywającego we wszystkich zadaniach.
 
-Grinsztajn i~współautorzy~\cite{grinsztajn2022trees} uzyskali przewagę drzew na benchmarku 45 zbiorów, utrzymującą się wraz ze zwiększaniem liczby prób strojenia. Badanie obejmowało jednak określony reżim: ograniczoną liczność treningu, usunięte braki, równoważenie klasyfikacji oraz ograniczenia wymiarowości i~kategorii. Wynik stanowi argument za zachowaniem silnych odniesień drzewiastych, lecz nie rozstrzyga o~naturalnie rzadkich klasach ani o~wszystkich późniejszych procedurach neuronowych.
+Grinsztajn i~współautorzy~\cite{grinsztajn2022trees} uzyskali przewagę drzew na benchmarku 45 zbiorów, utrzymującą się wraz ze zwiększaniem liczby prób strojenia. Badanie obejmowało jednak określony reżim: ograniczoną liczność treningu, usunięte braki, równoważenie liczności klas w~zadaniach klasyfikacyjnych oraz ograniczenia wymiarowości i~kategorii. Wynik stanowi argument za zachowaniem silnych odniesień drzewiastych, lecz nie rozstrzyga o~naturalnie rzadkich klasach ani o~wszystkich późniejszych procedurach neuronowych.
 
 McElfresh i~współautorzy~\cite{mcelfresh2024tabzilla} rozszerzyli perspektywę do 19 algorytmów i~176 zbiorów klasyfikacji. Ich badanie TabZilla jako jedyne spośród zestawionych w~tabeli~\ref{tab:benchmarki} skupia się wyłącznie na klasyfikacji. W~ich analizie na około jednej trzeciej zadań przyrost jakości po lekkim strojeniu CatBoost był większy niż różnica między najlepszym domyślnym modelem drzewiastym i~neuronowym. Znaczenie ma tu konkretna konstrukcja porównania, a~nie ogólne pierwszeństwo strojenia przed doborem algorytmu. Wczesny TabPFN był przy tym oceniany w~odmiennych warunkach i~nie stanowi dowodu skuteczności wybranej tutaj wersji~3.5.
 
@@ -149,7 +150,7 @@ Przyjmijmy, że klasa rzadka jest klasą dodatnią, obie klasy występują w~oce
 \qquad
 \operatorname{FPR}=\frac{FP}{FP+TN}.
 \]
-Zatem możemy wyprowadzić $TP=N\pi\operatorname{TPR}$ oraz $FP=N(1-\pi)\operatorname{FPR}$. Po podstawieniu do definicji precyzji i~skróceniu przez $N$ otrzymujemy
+Stąd wynika $TP=N\pi\operatorname{TPR}$ oraz $FP=N(1-\pi)\operatorname{FPR}$. Po podstawieniu do definicji precyzji i~skróceniu przez $N$ otrzymuje się
 \begin{equation}
 \operatorname{Precyzja}
 =\frac{TP}{TP+FP}
