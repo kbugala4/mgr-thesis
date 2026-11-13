@@ -5,9 +5,9 @@
 \subsection{Zasady doboru i wspólna terminologia}
 \label{sec:dobor-metod}
 
-W~porównaniu metod tabelarycznych istotny jest nie tylko sposób budowy predyktora, lecz także problem, który dana konstrukcja ma rozwiązać. Dlatego opisy rozpoczynają się od motywacji, następnie przedstawiają ideę i~mechanizm metody, a~na końcu wskazują jej zastosowanie w~badaniu. Zakres omówienia zależy od metody: proste odniesienia wymagają przede wszystkim określenia reprezentacji wejścia, podczas gdy sieci wykorzystujące uwagę lub zespołowanie także wyjaśnienia przepływu informacji i~kosztu obliczeń.
+Dobierając metody, uwzględniono zarówno konstrukcję predyktora, jak i~problem, który ma ona rozwiązać. Dla prostych odniesień określono przede wszystkim reprezentację wejścia, a~dla sieci wykorzystujących uwagę lub zespołowanie omówiono również przepływ informacji i~koszt obliczeń.
 
-Jednostką porównania jest \emph{potok uczenia}, obejmujący przygotowanie cech, dopasowanie modelu i~wyznaczanie predykcji. Różnica między potokami może wynikać z~kilku składników naraz. Kontrolowane badanie regularyzacji opisano oddzielnie w~sekcji~\ref{sec:projekt-regularyzacja}, a~implementacje zestawiono w~tabeli~\ref{tab:konfiguracje-metod}.
+Porównuje się \emph{potoki uczenia}, obejmujące przygotowanie cech, dopasowanie modelu i~wyznaczanie predykcji. Kontrolowane badanie regularyzacji opisano oddzielnie w~sekcji~\ref{sec:projekt-regularyzacja}, a~implementacje zestawiono w~tabeli~\ref{tab:konfiguracje-metod}.
 
 \begin{table}[tbp]
 \centering\small
@@ -38,16 +38,14 @@ TabPFN-3.5 & Lokalny checkpoint podstawowego wariantu & Stała konfiguracja; GPU
 \subsubsection{Regresja logistyczna}
 \label{sec:regresja-logistyczna}
 
-Przed oceną rozbudowanych modeli potrzebne jest odniesienie pokazujące, ile jakości zapewnia liniowa reguła w~przyjętej reprezentacji danych. Tę rolę pełni regresja logistyczna, która wyznacza liniowe logarytmy ilorazów szans. Kodowanie kategorii nadaje osobne współczynniki ich poziomom, ale samo nie tworzy interakcji między kolumnami. Po rozszerzeniu wejścia przez kodowanie zero-jedynkowe szczególnego znaczenia nabiera regularyzacja tych współczynników~\cite{sklearnLogistic}.
-
-Dobra jakość tego modelu oznaczałaby, że w~danym zadaniu koszt bardziej elastycznej procedury trzeba uzasadnić przyrostem jakości lub inną wymaganą własnością. Słaby wynik jest natomiast interpretowany względem konkretnego przygotowania cech i~zakresu strojenia.
+Jako odniesienie dla rozbudowanych modeli wybrano regresję logistyczną, aby ocenić jakość liniowej reguły w~przyjętej reprezentacji danych. Model wyznacza liniowe logarytmy ilorazów szans. Kodowanie kategorii nadaje osobne współczynniki ich poziomom, ale samo nie tworzy interakcji między kolumnami. Po rozszerzeniu wejścia przez kodowanie zero-jedynkowe szczególnego znaczenia nabiera regularyzacja tych współczynników~\cite{sklearnLogistic}. Dobra jakość tego modelu oznaczałaby, że w~danym zadaniu koszt bardziej elastycznej procedury trzeba uzasadnić przyrostem jakości lub inną wymaganą własnością. Słaby wynik jest natomiast interpretowany względem konkretnego przygotowania cech i~zakresu strojenia.
 
 \subsubsection{Klasyfikacja najbliższych sąsiadów}
 \label{sec:knn}
 
 Podobieństwo do znanych przykładów stanowi alternatywę dla uczenia jednej parametrycznej reguły decyzyjnej. W~KNN zależy ono od metryki zadanej przestrzeni, a~liczba sąsiadów określa skalę uśredniania etykiet~\cite{cover1967nearest,sklearnNeighbors}. O~tym, które obserwacje znajdą się blisko siebie, rozstrzygają zatem także skalowanie i~kodowanie cech. Przy pełnym kodowaniu zero-jedynkowym bez dodatkowego skalowania dwa różne poziomy jednej cechy wnoszą do kwadratu odległości euklidesowej dokładnie~2. Tak zadana geometria traktuje pary różnych kategorii jednakowo.
 
-W~pracy nominalne kategorie KNN mają ustalone kodowanie zero-jedynkowe. Zestawienie z~ModernNCA pozwala ocenić, czy koszt uczenia przestrzeni podobieństwa i~zmiany agregacji znajduje uzasadnienie w~jakości predykcji. Dla obu metod istotny jest także zbiór przykładów odniesienia: niewielki koszt dopasowania KNN nie oznacza niskiego kosztu przechowywania i~odpytywania tego zbioru odniesienia. Sposób walidacji KNN, w~tym odrębne traktowanie powtarzających się pobytów pacjentów w~Diabetes, opisano w~sekcji~\ref{sec:przygotowanie-procedura}.
+W~pracy nominalne kategorie KNN mają ustalone kodowanie zero-jedynkowe. Zestawienie z~ModernNCA pozwala ocenić, czy koszt uczenia przestrzeni podobieństwa i~zmiany agregacji znajduje uzasadnienie w~jakości predykcji. Dla obu metod, obok kosztu dopasowania, uwzględnia się koszt przechowywania i~odpytywania zbioru przykładów odniesienia. Sposób walidacji KNN, w~tym odrębne traktowanie powtarzających się pobytów pacjentów w~Diabetes, opisano w~sekcji~\ref{sec:przygotowanie-procedura}.
 
 \subsubsection{XGBoost}
 \label{sec:xgboost}
@@ -58,23 +56,21 @@ u_j^*=-\frac{G_j}{H_j+\lambda},\qquad
 G_j=\sum_{i\in I_j}g_i,\quad H_j=\sum_{i\in I_j}h_i,
 \label{eq:xgb-lisc}
 \end{equation}
-gdzie $g_i$ i~$h_i$ są pochodnymi straty względem aktualnego wyniku modelu. Kryterium rozbudowy drzewa uwzględnia poprawę wynikającą z~rozdzielenia tych statystyk oraz karę za liczbę liści~\cite{chen2016xgboost}. Zapis pokazuje, że regularyzacja dotyczy zarówno wartości predykcyjnych, jak i~struktury podziału, a~nie jedynie końcowego ograniczenia głębokości.
+gdzie $g_i$ i~$h_i$ są pochodnymi straty względem aktualnego wyniku modelu. Kryterium rozbudowy drzewa uwzględnia poprawę wynikającą z~rozdzielenia tych statystyk oraz karę za liczbę liści~\cite{chen2016xgboost}. Regularyzuje się zatem zarówno wartości predykcyjne, jak i~strukturę podziału.
 
-Dzięki podziałom osiowym XGBoost zachowuje bezpośrednie odniesienie do oryginalnych cech i~stanowi drzewiaste odniesienie dla sieci uczących ich wspólne reprezentacje. W~badaniu strojenie obejmuje między innymi głębokość i~liczbę drzew, tempo uczenia oraz regularyzację.
+Dzięki podziałom osiowym XGBoost zachowuje bezpośrednie odniesienie do oryginalnych cech i~stanowi drzewiaste odniesienie dla sieci uczących ich wspólne reprezentacje. W~badaniu stroi się między innymi głębokość i~liczbę drzew, tempo uczenia oraz regularyzację.
 
 \subsubsection{CatBoost}
 \label{sec:catboost}
 
-W~zbiorach z~cechami kategorycznymi sposób wykorzystania etykiet do kodowania wejścia staje się częścią problemu uczenia. CatBoost odpowiada na niego przez uporządkowane statystyki kategorii, a~osobnym mechanizmem uporządkowanego wzmacniania ogranicza obciążenie sygnału kolejnych kroków uczenia. W~uporządkowanym kodowaniu statystyka kategorii dla obserwacji powstaje z~przykładów poprzedzających ją w~wylosowanej permutacji. Jej własna etykieta nie wchodzi więc bezpośrednio do jej reprezentacji. W~uporządkowanym wzmacnianiu podobna zasada dotyczy modelu używanego do obliczania gradientu dla danej obserwacji~\cite{prokhorenkova2018catboost}. Wspólnym celem jest ograniczenie różnicy między informacją dostępną przy dopasowaniu i~przy predykcji nowego przypadku.
+W~zbiorach z~cechami kategorycznymi sposób wykorzystania etykiet do kodowania wejścia staje się częścią problemu uczenia. CatBoost odpowiada na niego przez uporządkowane statystyki kategorii, a~osobnym mechanizmem uporządkowanego wzmacniania ogranicza obciążenie sygnału kolejnych kroków uczenia. W~uporządkowanym kodowaniu statystykę kategorii dla obserwacji oblicza się z~przykładów poprzedzających ją w~wylosowanej permutacji, wyłączając jej własną etykietę z~bezpośredniego udziału w~reprezentacji. W~uporządkowanym wzmacnianiu podobna zasada dotyczy modelu używanego do obliczania gradientu dla danej obserwacji~\cite{prokhorenkova2018catboost}. Wspólnym celem jest ograniczenie różnicy między informacją dostępną przy dopasowaniu i~przy predykcji nowego przypadku.
 
-W~badaniu CatBoost zachowuje dedykowaną obsługę kategorii, szczególnie istotną dla Amazon i~zbiorów mieszanych. Lokalna konfiguracja na CPU pozostawia parametr \texttt{boosting\_type} bibliotece, dlatego opis uporządkowanego wzmacniania wyjaśnia ideę metody, lecz nie identyfikuje trybu każdego uruchomienia. CatBoost uczestniczy też w~badaniu ważenia klas jako odniesienie spoza rodziny neuronowej.
+W~badaniu CatBoost zachowuje dedykowaną obsługę kategorii, szczególnie istotną dla Amazon i~zbiorów mieszanych. W~lokalnej konfiguracji na CPU pozostawiono parametr \texttt{boosting\_type} bibliotece, dlatego tryb konkretnego uruchomienia należy odróżnić od opisanej wyżej idei uporządkowanego wzmacniania. CatBoost uczestniczy też w~badaniu ważenia klas jako odniesienie spoza rodziny neuronowej.
 
 \subsection{MLP i mechanizmy regularyzacji}
 \label{sec:mlp}
 
-MLP stanowi punkt odniesienia dla metod, które zmieniają selekcję cech, reprezentację kolumn lub sposób łączenia predykcji. Jego wartość porównawcza zależy od przygotowania wejścia i~uczenia, a~nie od samej obecności warstw gęstych. W~badaniu głównym zastosowano lokalny model ReLU z~AdamW, dropoutem i~wyborem stanu według straty walidacyjnej. Domyślnie ma dwie warstwy ukryte o~256 i~128 jednostkach, dropout~0,1, tempo uczenia~0,001, zanik wag~$10^{-4}$ i~limit 100 epok, z~wcześniejszym zatrzymaniem po dziesięciu epokach bez poprawy straty walidacyjnej. Kategorie są kodowane zero-jedynkowo z~limitem 256 kolumn na cechę, a~cechy numeryczne skalowane. Jest to jawnie określony model bazowy, nie dokładna reprodukcja opublikowanej procedury.
-
-Partię dobiera się do treningowej części foldu, czyli podzbioru wydzielonego w~walidacji krzyżowej, zgodnie z~regułą opisaną w~sekcji~\ref{sec:strojenie}.
+MLP stanowi punkt odniesienia dla metod, które zmieniają selekcję cech, reprezentację kolumn lub sposób łączenia predykcji. Przy ocenie jego jakości uwzględnia się przygotowanie wejścia i~sposób uczenia. W~badaniu głównym zastosowano lokalny model ReLU z~AdamW, dropoutem i~wyborem stanu według straty walidacyjnej. Domyślnie ma dwie warstwy ukryte o~256 i~128 jednostkach, dropout~0,1, tempo uczenia~0,001, zanik wag~$10^{-4}$ i~limit 100 epok, z~wcześniejszym zatrzymaniem po dziesięciu epokach bez poprawy straty walidacyjnej. Kategorie są kodowane zero-jedynkowo z~limitem 256 kolumn na cechę, a~cechy numeryczne skalowane. Partię dobiera się do treningowej części foldu, czyli podzbioru wydzielonego w~walidacji krzyżowej, zgodnie z~regułą opisaną w~sekcji~\ref{sec:strojenie}.
 
 Dropout i~zanik wag ingerują w~uczenie na różnych poziomach. Przy konwencji skalowania w~treningu dropout zastępuje aktywację $h$ przez
 \begin{equation}
@@ -82,7 +78,7 @@ Dropout i~zanik wag ingerują w~uczenie na różnych poziomach. Przy konwencji s
 m_j\sim\operatorname{Bernoulli}(1-\rho),
 \label{eq:dropout}
 \end{equation}
-gdzie $\rho$ jest prawdopodobieństwem wyłączenia, a~$\odot$ oznacza mnożenie elementowe. Zachowanie $\mathbb{E}[\widetilde h\mid h]=h$ nie oznacza zachowania oczekiwanego wyjścia całej nieliniowej sieci. Deterministyczna predykcja bez maskowania jest przybliżeniem efektu zespołowego, a~nie dokładnym uśrednieniem wszystkich realizacji maski~\cite{srivastava2014dropout}.
+gdzie $\rho$ jest prawdopodobieństwem wyłączenia, a~$\odot$ oznacza mnożenie elementowe. Równość $\mathbb{E}[\widetilde h\mid h]=h$ dotyczy maskowanej aktywacji. Dla całej nieliniowej sieci deterministyczna predykcja bez maskowania jedynie przybliża efekt uśredniania po realizacjach maski~\cite{srivastava2014dropout}.
 
 Dla AdamW, zapisując współczynnik zaniku w~konwencji mnożenia przez tempo uczenia $\alpha_t$, aktualizację można przedstawić jako
 \begin{equation}
@@ -90,9 +86,9 @@ Dla AdamW, zapisując współczynnik zaniku w~konwencji mnożenia przez tempo uc
 -\alpha_t\frac{\widehat m_t}{\sqrt{\widehat v_t}+\epsilon}.
 \label{eq:adamw}
 \end{equation}
-Momenty $\widehat m_t$ i~$\widehat v_t$ dotyczą gradientu straty danych. Zanik działa poza adaptacyjnym skalowaniem gradientu; dodanie kary $L_2$ do straty optymalizowanej Adamem na ogół prowadzi do innej aktualizacji~\cite{loshchilov2019adamw}. Przy pominięciu składnika gradientowego skumulowane mnożenie wag po $T$ krokach wynosi $\prod_{t=0}^{T-1}(1-\alpha_t\lambda)$. Stały współczynnik $\lambda$ nie zapewnia zatem takiego samego skumulowanego działania przy różnych harmonogramach i~liczbach aktualizacji.
+Momenty $\widehat m_t$ i~$\widehat v_t$ dotyczą gradientu straty danych. Zanik działa poza adaptacyjnym skalowaniem gradientu, dlatego dodanie kary $L_2$ do straty optymalizowanej Adamem na ogół prowadzi do innej aktualizacji~\cite{loshchilov2019adamw}. Przy pominięciu składnika gradientowego skumulowane mnożenie wag po $T$ krokach wynosi $\prod_{t=0}^{T-1}(1-\alpha_t\lambda)$. Skumulowane działanie przy ustalonym współczynniku $\lambda$ zależy zatem od harmonogramu i~liczby aktualizacji.
 
-Wpływ obu regularyzatorów jest przedmiotem osobnego badania~B, którego projekt opisano w~sekcji~\ref{sec:projekt-regularyzacja}.
+Wpływ obu regularyzatorów ocenia się w~osobnym badaniu~B, którego projekt opisano w~sekcji~\ref{sec:projekt-regularyzacja}.
 
 \subsection{TabNet i FT-Transformer}
 \label{sec:tabnet-ft}
@@ -108,14 +104,14 @@ M_s=\operatorname{sparsemax}\!\left(P_{s-1}\odot h_s(a_{s-1})\right),
 \end{equation}
 gdzie $a_{s-1}$ jest reprezentacją przekazywaną z~poprzedniego kroku, $h_s$ uczonym przekształceniem, $P_0$ wektorem jedynek, a~$\gamma$ reguluje możliwość ponownego użycia cech. Sparsemax rzutuje wyniki na sympleks i~może nadawać części współrzędnych dokładne zera. Maska mnoży wejście, którego przekształcona reprezentacja jest dzielona na wkład do decyzji i~informację dla kolejnego kroku. Dodatkowa kara entropijna kontroluje rozproszenie masek~\cite{arik2021tabnet}.
 
-Ta sama kolumna może dzięki temu wnosić różny wkład do decyzji dla różnych obserwacji. Agregacja masek opisuje sposób korzystania z~wejścia, choć nie wyznacza przyczynowego wpływu cechy. W~pracy ocenia się nadzorowaną klasyfikację z~użyciem TabNet, bez osobnego badania wyjaśnień i~samonadzorowanego pretrenowania.
+Ta sama kolumna może dzięki temu wnosić różny wkład do decyzji dla różnych obserwacji, a~agregując maski, można opisać sposób korzystania z~wejścia. W~pracy ocenia się nadzorowaną klasyfikację z~użyciem TabNet, bez osobnego badania wyjaśnień i~samonadzorowanego pretrenowania.
 
 \subsubsection{FT-Transformer: tokeny cech i uwaga}
 \label{sec:ft-transformer}
 
-Cechy tabeli mają różną semantykę, ale ich znaczenie predykcyjne może zależeć od wzajemnych relacji. FT-Transformer łączy oba aspekty: zachowuje odrębność kolumn w~tokenizacji właściwej każdej cesze, a~następnie uczy interakcji między tokenami. Przy wymiarze tokenu~$h$ reprezentacja numeryczna ma postać $t_j=b_j+x_jw_j$, gdzie $b_j,w_j\in\mathbb{R}^{h}$; dla kategorii $t_j=b_j+E_j[x_j]$, gdzie $E_j$ jest uczoną tablicą osadzeń. Token klasyfikacyjny dołączony do tokenów cech agreguje informację wykorzystywaną przez głowicę wyjściową~\cite{gorishniy2021revisiting}. Tożsamość kolumny jest więc zakodowana w~parametrach tokenizatora, bez potrzeby nadawania kolumnom semantyki sekwencji.
+Cechy tabeli mają różną semantykę, ale ich znaczenie predykcyjne może zależeć od wzajemnych relacji. FT-Transformer łączy oba aspekty: zachowuje odrębność kolumn w~tokenizacji właściwej każdej cesze, a~następnie uczy interakcji między tokenami. Przy wymiarze tokenu~$h$ reprezentacja numeryczna ma postać $t_j=b_j+x_jw_j$, gdzie $b_j,w_j\in\mathbb{R}^{h}$, natomiast dla kategorii $t_j=b_j+E_j[x_j]$, gdzie $E_j$ jest uczoną tablicą osadzeń. Token klasyfikacyjny dołączony do tokenów cech agreguje informację wykorzystywaną przez głowicę wyjściową~\cite{gorishniy2021revisiting}. Tożsamość kolumny koduje się więc w~parametrach tokenizatora.
 
-W~pojedynczej głowie uwagi współczynniki mają postać $A=\operatorname{softmax}(QK^\top/\sqrt{h_a})$, gdzie $h_a$ oznacza wymiar klucza, a~softmax działa wierszami. Agregacja $AV$ łączy reprezentacje cech w~obrębie jednej obserwacji. W~odróżnieniu od TabNet chodzi zatem o~uczone relacje między tokenami, nie sekwencyjne maskowanie wspólnego wektora wejściowego. Pełna macierz uwagi ma $(d+1)^2$ elementów na głowę; człon kosztu obliczania podobieństw rośnie jak $O(d^2h_a)$. Szeroki Bioresponse stanowi z~tego względu inny przypadek obliczeniowy niż tabela o~podobnej liczbie wierszy i~kilkudziesięciu cechach.
+W~pojedynczej głowie uwagi współczynniki mają postać $A=\operatorname{softmax}(QK^\top/\sqrt{h_a})$, gdzie $h_a$ oznacza wymiar klucza, a~softmax działa wierszami. Agregacja $AV$ łączy reprezentacje cech w~obrębie jednej obserwacji. Pełna macierz uwagi ma $(d+1)^2$ elementów na głowę, a~człon kosztu obliczania podobieństw rośnie jak $O(d^2h_a)$. Szeroki Bioresponse stanowi z~tego względu inny przypadek obliczeniowy niż tabela o~podobnej liczbie wierszy i~kilkudziesięciu cechach.
 
 W~badaniu wykorzystuje się implementację autorów~\cite{rtdlImplementation}, z~lokalną obsługą uczenia i~ograniczeń pamięci opisanych w~sekcji~\ref{sec:partie-platformy}.
 
@@ -135,16 +131,14 @@ Poprawy jakości sieci gęstej można szukać także w~sposobie przygotowania da
 f(z)=\frac{z}{\sqrt{1+(z/3)^2}},
 \label{eq:realmlp-skalowanie}
 \end{equation}
-gdzie $z$ oznacza wartość po skalowaniu, a~$f$ płynnie ogranicza zakres do $(-3,3)$. Rozdziela to odporność estymacji skali od ograniczenia wpływu ekstremalnych wartości wejścia. Procedura obejmuje również osadzenia numeryczne PBLD (ang. \textit{periodic bias linear DenseNet}), łączące wartość cechy po skalowaniu i~płynnym ograniczeniu zakresu z~uczoną reprezentacją okresową, uczone skale wejściowe oraz dobrane wspólnie ustawienia inicjalizacji i~uczenia~\cite{holzmueller2024realmlp}.
+gdzie $z$ oznacza wartość po skalowaniu, a~$f$ płynnie ogranicza zakres do $(-3,3)$. W~ten sposób oddzielono odporność estymacji skali od ograniczenia wpływu ekstremalnych wartości wejścia. Zastosowano również osadzenia numeryczne PBLD (ang. \textit{periodic bias linear DenseNet}), łączące wartość cechy po skalowaniu i~płynnym ograniczeniu zakresu z~uczoną reprezentacją okresową, uczone skale wejściowe oraz dobrane wspólnie ustawienia inicjalizacji i~uczenia~\cite{holzmueller2024realmlp}.
 
-Wykorzystana integracja RealMLP-TD pochodzi z~TabArena i~opiera się na bibliotece pytabkit. Zarówno konfiguracja domyślna, jak i~losowani kandydaci należą do tej rodziny, a~przestrzeń strojenia obejmuje między innymi architekturę, dropout, tempo uczenia i~zanik wag. Porównanie z~lokalnym MLP dotyczy więc całej rozwiniętej procedury, podczas gdy wpływ pojedynczych regularyzatorów rozpatruje się w~osobnym badaniu~B.
-
-Do opracowania ustawień domyślnych RealMLP wykorzystano kolekcję obejmującą Adult i~Online Shoppers~\cite{holzmueller2024realmlp}. Wyniki na tych dwóch zadaniach wymagają zatem uwzględnienia wcześniejszego doboru parametrów, którego koszt pozostaje poza lokalnym uczeniem. Pokrycie dotyczy nazw zbiorów, a~nie potwierdzonej tożsamości ich wersji i~podziałów.
+Wykorzystana integracja RealMLP-TD pochodzi z~TabArena i~opiera się na bibliotece pytabkit. Zarówno konfiguracja domyślna, jak i~losowani kandydaci należą do tej rodziny, a~stroi się między innymi architekturę, dropout, tempo uczenia i~zanik wag. Do opracowania ustawień domyślnych RealMLP wykorzystano kolekcję obejmującą Adult i~Online Shoppers~\cite{holzmueller2024realmlp}. Interpretując wyniki na tych dwóch zadaniach, trzeba zatem uwzględnić wcześniejszy dobór parametrów, którego koszt pozostaje poza lokalnym uczeniem. Stwierdzono zgodność nazw zbiorów, bez potwierdzenia tożsamości ich wersji i~podziałów.
 
 \subsection{ModernNCA: uczenie reprezentacji sąsiedztwa}
 \label{sec:modernnca}
 
-Przy zadanej metryce KNN jakość sąsiedztwa zależy od reprezentacji przygotowanej przed uczeniem. ModernNCA umożliwia jej dopasowanie do zadania: uczy przekształcenie $\phi_\theta(x)$, a~etykietę nadal przewiduje na podstawie oznakowanych przykładów odniesienia. Dla zbioru kandydatów $\mathcal{B}(x)$ miękkie sąsiedztwo wyznacza
+Przy zadanej metryce KNN jakość sąsiedztwa zależy od reprezentacji przygotowanej przed uczeniem. ModernNCA dopasowuje ją do zadania: uczy przekształcenie $\phi_\theta(x)$, a~etykietę nadal przewiduje na podstawie oznakowanych przykładów odniesienia. Dla zbioru kandydatów $\mathcal{B}(x)$ miękkie sąsiedztwo wyznacza
 \begin{equation}
 a_j(x)=\frac{\exp[-\|\phi_\theta(x)-\phi_\theta(x_j)\|_2^2]}
 {\sum_{\ell\in\mathcal{B}(x)}\exp[-\|\phi_\theta(x)-\phi_\theta(x_\ell)\|_2^2]},
@@ -154,9 +148,9 @@ p_c(x)=\sum_{j\in\mathcal{B}(x)}a_j(x)\mathbf{1}[y_j=c].
 \end{equation}
 Podczas uczenia obserwacja nie może być własnym kandydatem. Minimalizacja $-\log p_{y_i}(x_i)$ dopasowuje geometrię bezpośrednio do miękkiej agregacji etykiet. W~stosunku do klasycznej metody NCA (ang. \textit{neighbourhood components analysis})~\cite{goldberger2004nca} zmieniono nie tylko liniową projekcję, lecz także cel uczenia i~regułę predykcji: miękka agregacja pozostaje używana przy ocenie nowych przypadków~\cite{ye2025modernnca}.
 
-Autorzy stosują nieliniowe bloki reprezentacji, osadzenia cech numerycznych oraz losowanie kandydatów sąsiedztwa w~treningu. Ogranicza to koszt porównywania każdej partii z~całym zbiorem odniesienia. Przy dokładnej predykcji z~$N$ wektorami odniesienia o~wymiarze~$h$ samo obliczenie odległości jednego zapytania wymaga $O(Nh)$ operacji, poza kosztem reprezentacji. Sieć nie zastępuje więc pamięci przykładów stałym zestawem wag.
+Autorzy stosują nieliniowe bloki reprezentacji i~osadzenia cech numerycznych, a~w~treningu losują kandydatów sąsiedztwa, aby ograniczyć koszt porównywania każdej partii z~całym zbiorem odniesienia. Przy dokładnej predykcji z~$N$ wektorami odniesienia o~wymiarze~$h$ samo obliczenie odległości jednego zapytania wymaga $O(Nh)$ operacji, poza kosztem reprezentacji.
 
-Przykłady i~etykiety zbioru odniesienia pochodzą wyłącznie z~treningu bieżącego foldu. W~badaniu wykorzystuje się integrację implementacji TALENT przez TabArena, wskazaną w~tabeli~\ref{tab:konfiguracje-metod}. Zestawienie z~KNN obejmuje jakość predykcji oraz koszt uczenia reprezentacji, przechowywania przykładów i~obliczania ich podobieństw.
+Przykłady i~etykiety zbioru odniesienia pochodzą wyłącznie z~treningu bieżącego foldu. W~badaniu wykorzystuje się integrację implementacji TALENT przez TabArena, wskazaną w~tabeli~\ref{tab:konfiguracje-metod}. W~zestawieniu z~KNN ocenia się jakość predykcji oraz koszt uczenia reprezentacji, przechowywania przykładów i~obliczania ich podobieństw.
 
 \subsection{TabM: zespół ze współdzieleniem parametrów}
 \label{sec:tabm-zespoly}
@@ -170,22 +164,22 @@ gdzie $W\in\mathbb{R}^{h_{\mathrm{out}}\times h_{\mathrm{in}}}$ jest wspólna, a
 
 Różnica między tymi operacjami jest istotna dla interpretacji zespołu. Średnia strat wymaga użytecznej predykcji od każdego podmodelu; strata obliczona dopiero dla średniej prawdopodobieństw miałaby inny gradient. Przy $R$ podmodelach warstwa z~równania~\ref{eq:tabm-warstwa} wymaga $h_{\mathrm{out}}h_{\mathrm{in}}+R(h_{\mathrm{in}}+2h_{\mathrm{out}})$ parametrów, zamiast $R(h_{\mathrm{out}}h_{\mathrm{in}}+h_{\mathrm{out}})$ dla niezależnych kopii. Oszczędność pamięci parametrów nie usuwa jednak konieczności przetwarzania $R$ reprezentacji i~przechowywania ich aktywacji.
 
-TabM pozwala zbadać kompromis między jakością zespołu a~kosztem współdzielenia parametrów. Zarówno konfiguracja domyślna, jak i~losowani kandydaci w~przypiętej integracji TabArena wykorzystują wariant TabM-mini z~32 podmodelami. Dla cech numerycznych przewidziano osadzenia odcinkowo liniowe, wyłączane przez implementację, gdy nie można wyznaczyć poprawnego podziału na przedziały. Pełne parametry każdej ocenianej konfiguracji są zachowywane razem z~wynikiem.
+Za pomocą TabM bada się kompromis między jakością zespołu a~kosztem współdzielenia parametrów. Zarówno konfiguracja domyślna, jak i~losowani kandydaci w~przypiętej integracji TabArena wykorzystują wariant TabM-mini z~32 podmodelami. Dla cech numerycznych przewidziano osadzenia odcinkowo liniowe, wyłączane przez implementację, gdy nie można wyznaczyć poprawnego podziału na przedziały. Pełne parametry każdej ocenianej konfiguracji są zachowywane razem z~wynikiem.
 
 \subsection{TabPFN-3.5: pretrenowanie i kontekst zadania}
 \label{sec:tabpfn}
 
 Dotychczas opisane sieci dopasowują wagi na danych bieżącego zadania. TabPFN-3.5 wykorzystuje inną możliwość: przenosi znaczną część uczenia do pretrenowania, a~nowe zadanie przedstawia modelowi jako oznakowany kontekst. Schemat inferencji można zapisać jako $p_{\theta_0}(y_*\mid x_*,\mathcal{D}_{\mathrm{ctx}})$: wagi $\theta_0$ są ustalone, natomiast oznakowany kontekst $\mathcal{D}_{\mathrm{ctx}}$ zmienia się między zadaniami. Adaptacja odbywa się przez warunkowanie predykcji kontekstem, bez ponownego uczenia całej sieci na każdym zbiorze. Rozkład syntetycznych zadań pretrenowania stanowi zatem część założeń indukcyjnych modelu~\cite{jaeger2026tabpfn35}.
 
-Raport wersji~3.5 opisuje kodowanie wartości wykorzystujące zarówno ich skalę numeryczną, jak i~położenie w~empirycznym rozkładzie kolumny kontekstu. Cechy Fouriera reprezentują wartości, a~sygnał ECDF dostarcza informacji rangowej; zachowane są także wskaźniki braków. Łączenie tych sygnałów pozwala udostępnić modelowi różne opisy tej samej kolumny. Sama składowa rangowa jest niezmiennicza względem ściśle rosnącej transformacji, lecz cały model, korzystający również z~wartości, nie musi mieć tej własności~\cite{jaeger2026tabpfn35}.
+Raport wersji~3.5 opisuje kodowanie wartości wykorzystujące zarówno ich skalę numeryczną, jak i~położenie w~empirycznym rozkładzie kolumny kontekstu. Cechy Fouriera reprezentują wartości, a~sygnał ECDF dostarcza informacji rangowej. Zachowane są także wskaźniki braków. Model otrzymuje w~ten sposób różne opisy tej samej kolumny. Sama składowa rangowa jest niezmiennicza względem ściśle rosnącej transformacji, lecz cały model, korzystający również z~wartości, nie musi mieć tej własności~\cite{jaeger2026tabpfn35}.
 
-W~pracy przedmiotem oceny jest podstawowy wariant uruchamiany lokalnie z~ustaloną wersją wag, pełnym kontekstem części rozwojowej i~stałymi ustawieniami inferencji. Nie podlega strojeniu ani nie jest obejmowany zespołem ośmiu foldów. Wykorzystywany jest checkpoint \path{tabpfn-v3.5-20260909.safetensors}, osiem estymatorów inferencji i~ziarno~0.\footnote{Wyniki wariantów Plus i~Thinking z~raportu dotyczą innych procedur niż wybrany wariant podstawowy.}
+W~pracy ocenia się podstawowy wariant uruchamiany lokalnie z~ustaloną wersją wag, pełnym kontekstem części rozwojowej i~stałymi ustawieniami inferencji. Nie podlega strojeniu ani nie jest obejmowany zespołem ośmiu foldów. Wykorzystywany jest checkpoint \path{tabpfn-v3.5-20260909.safetensors}, osiem estymatorów inferencji i~ziarno~0.\footnote{Wyniki wariantów Plus i~Thinking z~raportu dotyczą innych procedur niż wybrany wariant podstawowy.}
 
-Ta odmienność ma konsekwencje dla porównania kosztu. Przygotowanie kontekstu i~predykcja obciążają bieżące zadanie, natomiast pretrenowanie jest kosztem zewnętrznym. Brak lokalnego uczenia wag nie oznacza braku kosztu zależnego od liczności i~szerokości kontekstu. W~zadaniach takich jak Helena istotne są ponadto koszt reprezentacji stu klas i~ograniczenia pamięci przy pełnym kontekście.
+Przygotowanie kontekstu i~predykcja obciążają bieżące zadanie, natomiast pretrenowanie jest kosztem zewnętrznym. Koszt lokalnej inferencji zależy od liczności i~szerokości kontekstu. W~zadaniach takich jak Helena istotne są ponadto koszt reprezentacji stu klas i~ograniczenia pamięci przy pełnym kontekście.
 
 \subsection{Granice porównań i uzasadnienie wyłączeń}
 \label{sec:granice-metod}
 
-Przyjęta pula obejmuje odmienne mechanizmy, ale nie całość literatury. ResNet, podejścia samonadzorowane, inne modele uwagi i~kolejne modele fundamentalne pozostają kontekstem dla wyboru. ResNet jest ważnym odniesieniem historycznym, lecz rozwinięty model gęsty reprezentuje w~zestawieniu RealMLP. ModernNCA reprezentuje uczenie sąsiedztwa. FT-Transformer wykorzystuje uwagę nad tokenami cech, a~TabM --- współdzielenie parametrów zespołu. Dodawanie kolejnych podobnych ról zwiększałoby koszt bez automatycznego pogłębienia odpowiedzi na przyjęte pytania.
+Do badania wybrano metody o~odmiennych mechanizmach, pozostawiając ResNet, podejścia samonadzorowane, inne modele uwagi i~kolejne modele fundamentalne jako kontekst dla wyboru. ResNet jest ważnym odniesieniem historycznym, lecz rozwinięty model gęsty reprezentuje w~zestawieniu RealMLP. ModernNCA reprezentuje uczenie sąsiedztwa. FT-Transformer wykorzystuje uwagę nad tokenami cech, a~TabM --- współdzielenie parametrów zespołu. Liczbę metod o~podobnych rolach ograniczono ze względu na koszt obliczeń i~przyjęte pytania badawcze.
 
-Tak ograniczona pula pozwala zbadać wybrane sposoby wykorzystania sieci przy dostępnym budżecie obliczeń. Wnioski z~porównania dotyczą tych konkretnych procedur i~warunków oceny. Wpływ ważenia klas i~regularyzacji stanowi przedmiot osobnej analizy, zgodnie z~projektem przedstawionym w~kolejnym rozdziale.
+Wpływ ważenia klas i~regularyzacji analizuje się osobno, zgodnie z~projektem przedstawionym w~kolejnym rozdziale.

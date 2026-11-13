@@ -2,16 +2,16 @@
 \section{Środowisko eksperymentalne i odtwarzalność}
 \label{chap:srodowisko}
 
-Badanie główne obejmuje nominalnie 3132 zadania konfiguracji i~14\,976 dopasowań sieci uczonych w~foldach. Przy budżecie godziny na konfigurację nawet pojedyncze niepowodzenie może oznaczać istotny koszt powtórzenia obliczeń. Środowisko przygotowano więc tak, aby ukończone wyniki można było zachować przy wznowieniu kampanii, a~raporty odtworzyć z~zapisanych predykcji. Każdy wynik pozostaje powiązany z~danymi, ustawieniami i~warunkami wykonania.
+W~badaniu głównym zaplanowano nominalnie 3132 zadania konfiguracji i~14\,976 dopasowań sieci uczonych w~foldach. Przy budżecie godziny na konfigurację nawet pojedyncze niepowodzenie może oznaczać istotny koszt powtórzenia obliczeń. Środowisko przygotowano więc tak, aby ukończone wyniki można było zachować przy wznowieniu kampanii, a~raporty odtworzyć z~zapisanych predykcji. Każdy wynik pozostaje powiązany z~danymi, ustawieniami i~warunkami wykonania.
 
 \subsection{Wymagania wynikające z metodyki}
 \label{sec:wymagania-platformy}
 
-Przy dużej liczbie prób odtwarzalność wymaga czegoś więcej niż zachowania końcowej tabeli metryk. Trzeba ustalić, na jakich danych powstała każda predykcja, jak wybrano konfigurację i~czy zapis obejmuje całe zadanie. Z~tych potrzeb wynikają wspólne mapowanie klas, kontrola podziałów oraz powiązanie wyników z~ustawieniami wykonania. Trwały zapis predykcji pozwala ponadto oddzielić kosztowne uczenie od późniejszego raportowania.
+Aby odtworzyć przebieg dużej liczby prób, trzeba ustalić, na jakich danych powstała każda predykcja, jak wybrano konfigurację i~czy zapis obejmuje całe zadanie. Przyjęto więc wspólne mapowanie klas i~kontrolę podziałów, a~wyniki powiązano z~ustawieniami wykonania. Predykcje zapisuje się trwale, aby po kosztownym uczeniu można było ponownie sporządzić raport.
 
-Pojedynczy proces sterujący uruchamia konfiguracje i~foldy sekwencyjnie. Opis dotyczy organizacji jednego uruchomienia, a~nie wyłączności dostępu do maszyny. Ustawienia YAML przechodzą przez centralny moduł konfiguracji, po czym odpowiedni adapter udostępnia model pod wspólnym interfejsem predykcji prawdopodobieństw. Dzięki temu lokalne implementacje, modele natywne bibliotek i~stały model pretrenowany mogą uczestniczyć w~tej samej procedurze oceny.
+Pojedynczy proces sterujący uruchamia konfiguracje i~foldy sekwencyjnie. Ustawienia YAML przechodzą przez centralny moduł konfiguracji, po czym odpowiedni adapter udostępnia model pod wspólnym interfejsem predykcji prawdopodobieństw. Dzięki temu lokalne implementacje, modele natywne bibliotek i~stały model pretrenowany mogą uczestniczyć w~tej samej procedurze oceny.
 
-Niepowodzenie próby jest częścią wyniku wykonania. Zachowuje się jego czas i~diagnostykę, aby późniejsza analiza odróżniała awarię od zadania jeszcze nieukończonego i~nie utożsamiała braku metryki z~niskim kosztem.
+Dla nieudanych prób zachowuje się czas i~diagnostykę, dzięki czemu w~późniejszej analizie można odróżnić awarię od zadania jeszcze nieukończonego i~rozliczyć poniesiony koszt.
 
 \subsection{Architektura i integracje}
 \label{sec:architektura-platformy}
@@ -20,7 +20,7 @@ Za uruchamianie modeli i~walidację odpowiadają biblioteki TabArena i~AutoGluon
 
 \begin{table}[tbp]
 \centering\small
-\caption{Warstwy platformy i~ich odpowiedzialność. Nazwy modułów wskazują źródła implementacji, a~nie niezależne usługi.}
+\caption{Warstwy platformy i~ich odpowiedzialność.}
 \label{tab:warstwy-platformy}
 \begin{tabularx}{\linewidth}{P{0.22\linewidth}P{0.27\linewidth}Y}
 \toprule
@@ -37,35 +37,33 @@ Raportowanie & \path{reporting.py}, \path{evaluation/metrics.py} & Wybór OOF, z
 \end{tabularx}
 \end{table}
 
-Główna ścieżka wykorzystuje sześć lokalnych integracji: MLP, TabNet, FT-Transformer, regresję logistyczną, XGBoost i~CatBoost. KNN, RealMLP, ModernNCA oraz TabM są uruchamiane przez natywne ścieżki przypiętych bibliotek. Osobny adapter obsługuje stały TabPFN. Wspólny katalog eksperymentów łączy te ścieżki, dzięki czemu dodanie natywnej integracji nie wymaga powielania jej procedury uczenia w~lokalnym adapterze.
+Lokalnie zaimplementowano sześć integracji: MLP, TabNet, FT-Transformer, regresję logistyczną, XGBoost i~CatBoost. KNN, RealMLP, ModernNCA oraz TabM są uruchamiane przez natywne ścieżki przypiętych bibliotek. Osobny adapter obsługuje stały TabPFN. Wszystkie te ścieżki połączono we wspólnym katalogu eksperymentów, wykorzystując dla integracji natywnych procedury uczenia dostarczane przez biblioteki. Moduł wykonawczy zachowuje role cech numerycznych i~kategorycznych, pozostawiając ich przekształcanie właściwej integracji. Wspólne automatyczne przygotowanie cech jest wyłączone. Przed dopasowaniem lub predykcją na GPU i~po ich zakończeniu synchronizuje się urządzenie, aby pomiar czasu uwzględniał zakończenie asynchronicznie wykonywanych obliczeń.
 
-Moduł wykonawczy zachowuje role cech numerycznych i~kategorycznych, pozostawiając ich przekształcanie właściwej integracji. Wspólne automatyczne przygotowanie cech jest wyłączone. Przy pomiarze czasu na GPU konieczna jest natomiast synchronizacja przed dopasowaniem lub predykcją i~po ich zakończeniu: operacje urządzenia są asynchroniczne, więc sam powrót z~wywołania nie wyznacza końca obliczeń.
-
-Rysunek~\ref{fig:architektura} przedstawia zależności komponentów i~oddzielenie uczenia od wtórnego odczytu zapisanych predykcji. Interfejs wiersza poleceń znajduje się w~\path{experiments/cli.py}; konfiguracja jest rozwiązywana przed wywołaniem właściwego polecenia.
+Rysunek~\ref{fig:architektura} przedstawia zależności komponentów i~oddzielenie uczenia od wtórnego odczytu zapisanych predykcji. Interfejs wiersza poleceń znajduje się w~\path{experiments/cli.py}, a~konfiguracja jest rozwiązywana przed wywołaniem właściwego polecenia.
 
 \begin{figure}[tbp]\centering\small
 \input{figures/source/architektura.tex}
-\caption{Schemat lokalnej platformy oraz przepływu artefaktów; opracowanie własne.}
+\caption{Schemat lokalnej platformy oraz przepływu artefaktów. Opracowanie własne.}
 \label{fig:architektura}
 \end{figure}
 
 \subsection{Izolacja informacji i identyfikowalność danych}
 \label{sec:izolacja-platformy}
 
-Przygotowane dane są przechowywane jako plik Parquet z~manifestem i~sumami kontrolnymi. Źródła OpenML mają określone identyfikatory i~wersje; tożsamość pobieranych archiwów UCI określa suma kontrolna zawartości. Santander jest pobierany automatycznie z~OpenML (identyfikator 46859, wersja~2) w~ramach wspólnej procedury przygotowania danych. Zgodność schematu i~hashu chroni przed niezamierzoną podmianą danych, lecz nie rozstrzyga problemów populacji, przecieku lub duplikatów wskazanych w~sekcji~\ref{sec:dane-audyt}.
+Przygotowane dane są przechowywane jako plik Parquet z~manifestem i~sumami kontrolnymi. Źródła OpenML mają określone identyfikatory i~wersje, natomiast tożsamość pobieranych archiwów UCI ustala się przez sumę kontrolną zawartości. Santander jest pobierany automatycznie z~OpenML (identyfikator 46859, wersja~2) w~ramach wspólnej procedury przygotowania danych. Kontrola zgodności schematu i~hashu chroni przed niezamierzoną podmianą danych. Ich audyt opisano w~sekcji~\ref{sec:dane-audyt}.
 
-Zewnętrzne podziały zachowują identyfikatory wierszy, etykiety i~grupy pacjentów. Kolumny grupujące nie wchodzą do predyktorów. Moduł wykonawczy zapisuje rzeczywiste indeksy walidacji wewnętrznej, co umożliwia późniejszą kontrolę pokrycia OOF i~rozłączności pacjentów. Zdefiniowane są także zastrzeżone nazwy pomocniczych kolumn; konflikt z~danymi wejściowymi jest odrzucany zamiast prowadzić do cichego nadpisania cechy.
+Zewnętrzne podziały zachowują identyfikatory wierszy, etykiety i~grupy pacjentów. Kolumny grupujące nie wchodzą do predyktorów. Moduł wykonawczy zapisuje rzeczywiste indeksy walidacji wewnętrznej, co umożliwia późniejszą kontrolę pokrycia OOF i~rozłączności pacjentów. Zdefiniowano także zastrzeżone nazwy pomocniczych kolumn, a~konflikt z~danymi wejściowymi powoduje odrzucenie danych, aby uniknąć nadpisania cechy.
 
-Łączenie predykcji wymaga zgodności zarówno obserwacji, jak i~znaczenia kolumn. Macierze o~tych samych wymiarach mogą bowiem opisywać inne wiersze lub mieć odwróconą kolejność klas. Mapowanie klas pochodzi z~definicji przygotowanego zadania i~jest zapisywane wraz z~wynikiem. Podczas zapisu sprawdza się zgodność etykiet z~identyfikatorami wierszy, wymiary macierzy oraz skończoność, zakres i~sumy prawdopodobieństw. Niewielkie odchylenia numeryczne mogą być normalizowane. Przed zbudowaniem zespołu porównuje się ponadto etykiety i~identyfikatory wierszy OOF oraz testu. Kolejność klas opiera się na wspólnym mapowaniu zadania, ponieważ raporter nie porównuje osobno list klas między rekordami. Sama kontrola numeryczna macierzy nie wykrywa zamiany znaczenia kolumn.
+Aby połączyć predykcje, trzeba zachować zgodność obserwacji i~znaczenia kolumn, ponieważ macierze o~tych samych wymiarach mogą opisywać inne wiersze lub mieć odwróconą kolejność klas. Mapowanie klas pochodzi z~definicji przygotowanego zadania i~jest zapisywane wraz z~wynikiem. Podczas zapisu sprawdza się zgodność etykiet z~identyfikatorami wierszy, wymiary macierzy oraz skończoność, zakres i~sumy prawdopodobieństw. Niewielkie odchylenia numeryczne mogą być normalizowane. Przed zbudowaniem zespołu porównuje się ponadto etykiety i~identyfikatory wierszy OOF oraz testu. Kolejność klas opiera się na wspólnym mapowaniu zadania, ponieważ raporter nie porównuje osobno list klas między rekordami. Sama kontrola numeryczna macierzy nie wykrywa zamiany znaczenia kolumn.
 
-Ustawienie pola czasowego w~definicji zadania prowadzi do jawnego odrzucenia niewspieranego podziału czasowego. Kontrola techniczna blokuje zatem niewspieraną procedurę, ale nie zastępuje naukowego uzasadnienia podziału IID.
+Jeżeli w~definicji zadania ustawiono pole czasowe, program odrzuca niewspierany podział czasowy.
 
 Raport zachowuje odziedziczoną nazwę pola \texttt{log\_loss\_val}, chociaż zawarta w~nim wartość jest stratą na zewnętrznym teście. Przy przenoszeniu wyników do tabel pracy rozstrzygająca jest populacja powstania predykcji. Podobnie zbiorcze binarne AP odnosi się do klasy zakodowanej jako~1; do oceny rzadkiej klasy służy AP zapisane osobno dla każdej klasy w~\texttt{per\_class}. Kolumnę wybiera się na podstawie mapowania rzeczywistej etykiety zdarzenia, a~nie założenia, że ma ona kod~1. Te rozbieżności między nazwą techniczną a~interpretacją pomiaru muszą być uwzględnione w~analizie.
 
 \subsection{Artefakty, awarie i wznowienie}
 \label{sec:artefakty-wznowienie}
 
-Artefakty zestawione w~tabeli~\ref{tab:artefakty} pozwalają wznowić obliczenia bez pomieszania wyników różnych konfiguracji. Identyfikator badania jest wyznaczany z~efektywnych ustawień, ścieżek, manifestów danych, skrótu źródeł i~pliku zależności, wybranych wersji pakietów oraz zapisanej charakterystyki sprzętu. Dane są serializowane w~ustalonej postaci i~identyfikowane przez SHA-256. Skrót źródeł obejmuje moduły wykonawcze, \path{pyproject.toml} i~\path{uv.lock}; nie obejmuje automatycznie dokumentacji, testów ani skryptów wdrożeniowych. Identyfikator commitu i~obrazu kontenera należy zachować osobno. Zmiana ścieżek może zmienić tożsamość mimo tej samej treści danych.
+Przy wznowieniu obliczeń korzysta się z~artefaktów zestawionych w~tabeli~\ref{tab:artefakty}, przypisanych do tożsamości danego badania. Identyfikator badania jest wyznaczany z~efektywnych ustawień, ścieżek, manifestów danych, skrótu źródeł i~pliku zależności, wybranych wersji pakietów oraz zapisanej charakterystyki sprzętu. Dane są serializowane w~ustalonej postaci i~identyfikowane przez SHA-256. Skrót źródeł obejmuje moduły wykonawcze, \path{pyproject.toml} i~\path{uv.lock}, z~pominięciem dokumentacji, testów i~skryptów wdrożeniowych. Identyfikator commitu i~obrazu kontenera należy zachować osobno. Zmiana ścieżek może zmienić tożsamość mimo tej samej treści danych.
 
 \begin{table}[tbp]
 \centering\small
@@ -87,20 +85,18 @@ Plik lub katalog & Znaczenie \\
 \end{tabularx}
 \end{table}
 
-Sama konfiguracja nie wystarcza do odtworzenia warunków uczenia, ponieważ rozmiar partii zależy również od danych danego foldu i~ograniczeń wykonania. Dlatego dla lokalnych MLP, FT-Transformera i~TabNet w~bloku \texttt{hyperparameters\_fit} zapisuje się efektywny rozmiar partii (\texttt{effective\_batch\_size}), a~dla TabNet także skorygowany rozmiar partii wirtualnej (\texttt{effective\_virtual\_batch\_size}). Wartości te pozwalają ustalić, z~jakimi partiami rzeczywiście pracował model po zastosowaniu reguł z~sekcji~\ref{sec:strojenie}.
+Rozmiar partii zależy zarówno od konfiguracji, jak i~od danych danego foldu oraz ograniczeń wykonania. Dlatego dla lokalnych MLP, FT-Transformera i~TabNet w~bloku \texttt{hyperparameters\_fit} zapisuje się efektywny rozmiar partii (\texttt{effective\_batch\_size}), a~dla TabNet także skorygowany rozmiar partii wirtualnej (\texttt{effective\_virtual\_batch\_size}). Wartości te pozwalają ustalić, z~jakimi partiami rzeczywiście pracował model po zastosowaniu reguł z~sekcji~\ref{sec:strojenie}. Ten sam blok zawiera znacznik zakończenia z~powodu budżetu (\texttt{budget\_truncated}), liczbę ukończonych epok (\texttt{completed\_epochs}), przydzielony czas (\texttt{granted\_seconds}) i~czas dopasowania mierzony przez lokalną integrację (\texttt{fit\_seconds\_wrapper}). Znacznik budżetowy opisuje przyczynę zakończenia, a~nie stan zbieżności. Czas lokalnego dopasowania dotyczy pojedynczego foldu, natomiast koszt całej konfiguracji i~wyszukiwania rozlicza się zgodnie z~sekcją~\ref{sec:koszt-metodyka}.
 
-Ten sam blok zawiera znacznik zakończenia z~powodu budżetu (\texttt{budget\_truncated}), liczbę ukończonych epok (\texttt{completed\_epochs}), przydzielony czas (\texttt{granted\_seconds}) i~czas dopasowania mierzony przez lokalną integrację (\texttt{fit\_seconds\_wrapper}). Znacznik budżetowy opisuje przyczynę zakończenia, nie dowodzi braku zbieżności. Jego brak również nie potwierdza zbieżności, ponieważ uczenie może zakończyć limit epok lub reguła walidacyjna. Czas lokalnego dopasowania dotyczy pojedynczego foldu; koszt całej konfiguracji i~wyszukiwania rozlicza się zgodnie z~sekcją~\ref{sec:koszt-metodyka}.
+Aby przerwanie procesu podczas zapisu nie pozostawiło pliku pozornie gotowego do użycia, metadane JSON i~predykcje trafiają najpierw do plików tymczasowych, które po opróżnieniu buforów i~synchronizacji z~dyskiem atomowo zastępują pliki docelowe. Osobna blokada wyłączna chroni katalog przed jednoczesnym zapisem przez dwa uruchomienia. Przy wznowieniu sprawdza się spójność statusu, rekordów, predykcji i~sum kontrolnych, zanim zadanie zostanie pominięte jako ukończone.
 
-Przerwanie procesu podczas zapisu nie powinno pozostawić pliku pozornie gotowego do użycia. Metadane JSON i~predykcje trafiają dlatego najpierw do plików tymczasowych, które po opróżnieniu buforów i~synchronizacji z~dyskiem atomowo zastępują pliki docelowe. Osobna blokada wyłączna chroni katalog przed jednoczesnym zapisem przez dwa uruchomienia. Przy wznowieniu sprawdza się spójność statusu, rekordów, predykcji i~sum kontrolnych, zanim zadanie zostanie pominięte jako ukończone.
+Awarie są zapisywane wraz z~diagnostyką, a~niezależne zadania mogą być kontynuowane. Wystąpienie niepowodzeń powoduje niezerowy kod zakończenia głównego uruchomienia. Automatyczny raport powstaje po jego pomyślnym ukończeniu. Oddzielne polecenie raportowania może obsłużyć jawnie nieudane konfiguracje losowe, gdy wszystkie zadania zostały podjęte. Nieudany wariant domyślny albo zadanie nieukończone uniemożliwiają pełny raport.
 
-Awarie są zapisywane wraz z~diagnostyką, a~niezależne zadania mogą być kontynuowane. Wystąpienie niepowodzeń powoduje niezerowy kod zakończenia głównego uruchomienia. Automatyczny raport powstaje po jego pomyślnym ukończeniu. Oddzielne polecenie raportowania może obsłużyć jawnie nieudane konfiguracje losowe, gdy wszystkie zadania zostały podjęte; nieudany wariant domyślny albo zadanie nieukończone uniemożliwiają pełny raport.
-
-Po zakończeniu próby zachowuje się predykcje i~metadane, a~dopasowane modele są usuwane. Taki zapis wystarcza do ponownego obliczenia raportu, lecz nie do nowych predykcji ani wznowienia treningu wewnątrz foldu. Konfigurację bez kompletnego wyniku trzeba więc dopasować od początku. Poprawne zatrzymanie z~powodu budżetu pozostawia natomiast wynik dopuszczony do dalszej oceny, jeśli spełnia wymagania kompletności.
+Po zakończeniu próby zachowuje się predykcje i~metadane potrzebne do ponownego obliczenia raportu, a~dopasowane modele są usuwane. Aby wyznaczyć nowe predykcje lub ponowić konfigurację bez kompletnego wyniku, trzeba więc przeprowadzić dopasowanie od początku. Poprawne zatrzymanie z~powodu budżetu pozostawia wynik dopuszczony do dalszej oceny, jeśli spełnia wymagania kompletności.
 
 \subsection{Dobór partii i ograniczenia pamięci}
 \label{sec:partie-platformy}
 
-W~MLP, FT-Transformerze i~TabNet rozmiar partii wynika z~liczności treningowej części danego foldu. Strojenie obejmuje mnożnik tej bazowej wartości, wybierany ze zbioru $\{0{,}5;\,1;\,2\}$; w~konfiguracji domyślnej wynosi on~1. Dla MLP i~FT-Transformera podstawą doboru jest liczba przykładów treningowych~$n$. TabNet uwzględnia dodatkowo kategorie: progi stosuje się do wartości $n'=n(1+C/5000)$, gdzie $C$ oznacza sumę liczności słowników kategorii utworzonych na treningu danego foldu, wraz z~pozycjami zarezerwowanymi dla nieznanych wartości. Przyjęte progi zestawiono w~tabeli~\ref{tab:dobor-partii}. Jest to heurystyka wykonania, której nie należy utożsamiać z~empirycznie potwierdzonym optymalnym doborem partii.
+W~MLP, FT-Transformerze i~TabNet rozmiar partii wynika z~liczności treningowej części danego foldu. Stroi się mnożnik tej bazowej wartości, wybierany ze zbioru $\{0{,}5;\,1;\,2\}$, przy wartości domyślnej~1. Dla MLP i~FT-Transformera podstawą doboru jest liczba przykładów treningowych~$n$. TabNet uwzględnia dodatkowo kategorie: progi stosuje się do wartości $n'=n(1+C/5000)$, gdzie $C$ oznacza sumę liczności słowników kategorii utworzonych na treningu danego foldu, wraz z~pozycjami zarezerwowanymi dla nieznanych wartości. Progi przyjęte w~tej heurystyce wykonania zestawiono w~tabeli~\ref{tab:dobor-partii}.
 
 \begin{table}[tbp]
 \centering\small
@@ -126,11 +122,9 @@ W~FT-Transformerze efektywny rozmiar partii jest dodatkowo ograniczany na podsta
 \subsection{Pomiar kosztu i interpretacja raportu}
 \label{sec:pomiary-platformy}
 
-Koszt wyszukiwania i~suma czasów dopasowania konfiguracji wybranych do użycia opisują różne etapy procedury. Czas \texttt{search\_fit\_seconds} obejmuje udane dopasowania, natomiast \texttt{search\_wall\_seconds} uwzględnia zapisane próby, także zakończone błędem i~powtórzenia. Przerwanie bez znanego końca próby może uniemożliwić obliczenie łącznego czasu rzeczywistego. Brakująca wartość nie oznacza zerowego kosztu.
+Koszt wyszukiwania i~suma czasów dopasowania konfiguracji wybranych do użycia opisują różne etapy procedury. Czas \texttt{search\_fit\_seconds} obejmuje udane dopasowania, natomiast \texttt{search\_wall\_seconds} uwzględnia zapisane próby, także zakończone błędem i~powtórzenia. Jeśli próba została przerwana i~jej koniec nie jest znany, łącznego czasu rzeczywistego nie oblicza się, a~pole pozostaje puste. W~polu \texttt{selected\_inference\_seconds} sumuje się czasy zapisanych przebiegów predykcji konfiguracji o~dodatniej wadze. Końcowa latencja całego zespołu, wraz ze wszystkimi kosztami składania wyników, wymagałaby osobnego pomiaru. Czas wyboru z~pamięci podręcznej raportowany jest osobno. Koszt znalezienia kandydatów jest wspólny dla D, T i~T+E, dlatego sumowanie tych wierszy prowadziłoby do jego wielokrotnego naliczenia.
 
-\texttt{selected\_inference\_seconds} sumuje zapisane przebiegi predykcji konfiguracji o~dodatniej wadze. Nie jest nowym pomiarem końcowej latencji całego zespołu i~nie obejmuje automatycznie wszystkich kosztów składania wyników. Czas wyboru z~pamięci podręcznej raportowany jest osobno. Koszt znalezienia kandydatów jest wspólny dla D, T i~T+E, dlatego sumowanie tych wierszy prowadziłoby do jego wielokrotnego naliczenia.
-
-Warunki wykonania obejmują cztery wątki CPU oraz limit partii predykcji 4096, przekazywany lokalnym MLP, FT-Transformerowi i~TabNet. W~dwóch pierwszych metodach obowiązuje również ograniczenie partią uczenia. Natywne integracje i~TabPFN określają podział predykcji na partie we własnych implementacjach. Zakres pomiarów zestawiono w~tabeli~\ref{tab:zakres-pomiarow}.
+Przyjęto cztery wątki CPU oraz limit partii predykcji 4096, przekazywany lokalnym MLP, FT-Transformerowi i~TabNet. W~dwóch pierwszych metodach obowiązuje również ograniczenie partią uczenia. Natywne integracje i~TabPFN określają podział predykcji na partie we własnych implementacjach. Zakres pomiarów zestawiono w~tabeli~\ref{tab:zakres-pomiarow}.
 
 \begin{table}[tbp]
 \centering\small
@@ -149,29 +143,27 @@ Dostępność śledzenia & Znacznik w~bloku \texttt{memory\_usage} & Brak pomiar
 
 Pomiary pamięci są zapisywane w~bloku \texttt{memory\_usage} rekordu konfiguracji i~obejmują dopasowanie. Nie wyznaczają szczytu całej próby ani pamięci testowej predykcji. Osobny pomiar inferencji jest szczególnie istotny dla KNN i~TabPFN, które zachowują zbiór odniesienia lub kontekst zadania. Zewnętrzne pretrenowanie TabPFN pozostaje poza kosztem lokalnego wykonania.
 
-Współdzielenie GPU wymaga dodatkowej kontroli: zapis modelu urządzenia i~jego pamięci nie określa obciążenia przez inne procesy. Przy interpretacji czasu oraz niepowodzeń należy powiązać próby z~dostępnymi zapisami warunków wykonania. Sam komunikat o~wyczerpaniu pamięci nie pozwala przypisać całego zużycia badanemu modelowi.
+Przy interpretacji czasu oraz niepowodzeń na współdzielonym GPU należy powiązać próby z~dostępnymi zapisami obciążenia urządzenia przez inne procesy. Dotyczy to również przypisywania zużycia pamięci badanemu modelowi po komunikacie o~jej wyczerpaniu.
 
-Moduł metryk zapisuje nieokreślone ROC AUC jako brak wartości, lecz nie zapisuje osobnego pola z~przyczyną. Dla precyzji, czułości i~F1 stosuje natomiast konwencję \texttt{zero\_division=0}: przy zerowym mianowniku zwraca zero. Rozróżnienie tych przypadków od zerowej wartości poprawnie określonej miary wymaga uwzględnienia liczności klas i~macierzy pomyłek.
+Moduł metryk zapisuje nieokreślone ROC AUC jako brak wartości, lecz nie zapisuje osobnego pola z~przyczyną. Dla precyzji, czułości i~F1 stosuje natomiast konwencję \texttt{zero\_division=0}: przy zerowym mianowniku zwraca zero. Aby odróżnić te przypadki od zerowej wartości poprawnie określonej miary, należy sprawdzić liczności klas i~macierz pomyłek.
 
 \subsection{Weryfikacja poprawności platformy}
 \label{sec:kwalifikacja}
 
-Poprawność platformy ocenia się od wejściowych danych po odtworzony raport. Kontrole wymiarów i~prawdopodobieństw wykrywają błędy interfejsów, a~porównanie identyfikatorów wierszy i~grup sprawdza przepływ informacji między treningiem, walidacją i~testem. Integralność artefaktów dopełnia tę kontrolę na etapie zapisu i~wznowienia.
+Poprawność platformy ocenia się od wejściowych danych po odtworzony raport. Kontrole wymiarów i~prawdopodobieństw wykrywają błędy interfejsów, a~porównanie identyfikatorów wierszy i~grup sprawdza przepływ informacji między treningiem, walidacją i~testem. Na etapie zapisu i~wznowienia sprawdza się również integralność artefaktów.
 
-Test syntetyczny \texttt{smoke} obejmuje niewielki przebieg z~regresją logistyczną i~dwuepokowym MLP. Służy kontroli uruchamiania, zapisu, wznowienia i~raportowania. Jego kryterium stanowi spójność artefaktów i~przebiegu, a~nie jakość predykcji. Test wznowienia wymaga zachowania ukończonych rekordów i~ponowienia wyłącznie tych konfiguracji, dla których nie istnieje kompletny, zgodny zapis.
-
-Poprawność podziału grupowego oznacza rozłączność pacjentów na każdym poziomie, zachowanie wymaganych klas oraz dokładnie jednokrotne pokrycie obserwacji predykcjami OOF. Sam brak wspólnych indeksów wierszy nie wystarcza, ponieważ różne pobyty mogą dotyczyć tej samej osoby. Analogicznie numeryczna poprawność macierzy prawdopodobieństw nie zastępuje zgodności znaczenia jej kolumn.
+W~teście syntetycznym \texttt{smoke} wykonuje się niewielki przebieg z~regresją logistyczną i~dwuepokowym MLP, sprawdzając spójność artefaktów i~przebiegu przy uruchamianiu, zapisie, wznowieniu i~raportowaniu. Test wznowienia wymaga zachowania ukończonych rekordów i~ponowienia wyłącznie tych konfiguracji, dla których nie istnieje kompletny, zgodny zapis. W~podziale grupowym sprawdza się rozłączność pacjentów na każdym poziomie, zachowanie wymaganych klas oraz dokładnie jednokrotne pokrycie obserwacji predykcjami OOF. Kontrolę prowadzi się po identyfikatorach pacjentów, ponieważ różne wiersze mogą opisywać pobyty tej samej osoby.
 
 Dowód weryfikacji odnosi się do konkretnej rewizji programu, danych i~środowiska. Zmiana tych składników ogranicza możliwość przenoszenia wcześniejszych sprawdzeń na nowe wykonanie. Szczególne znaczenie mają granice pamięci, asynchroniczność GPU oraz zależność kosztu inferencji TabPFN od rozmiaru kontekstu.
 
 \subsection{Środowisko wykonania i procedura kampanii}
 \label{sec:wykonanie-kampanii}
 
-Podstawą odtworzenia środowiska jest Python~3.11 na Linux x86-64 oraz plik \path{uv.lock}. Istotne deklarowane wersje zestawiono w~tabeli~\ref{tab:wersje}. Wersje pakietów identyfikują implementacje i~nie są tożsame z~datami publikacji metod. Wersja pakietu \texttt{tabpfn} nie zastępuje identyfikacji konkretnego checkpointu modelu.
+Środowisko odtwarza się na Pythonie~3.11 i~Linux x86-64 z~pliku \path{uv.lock}. Istotne deklarowane wersje zestawiono w~tabeli~\ref{tab:wersje}. Dla pakietu \texttt{tabpfn} zapisuje się również tożsamość checkpointu modelu.
 
 \begin{table}[tbp]
 \centering\small
-\caption{Wybrane przypięcia zależności środowiska. Pełna tożsamość wymaga zachowania pliku blokady i~manifestu uruchomienia.}
+\caption{Wybrane przypięcia zależności środowiska.}
 \label{tab:wersje}
 \begin{tabularx}{\linewidth}{YY}
 \toprule
@@ -192,6 +184,6 @@ PyTorch & 2.13.0 \\
 \end{tabularx}
 \end{table}
 
-Odtworzenie kampanii wymaga kolejno przygotowania środowiska z~zamrożonych zależności, audytu i~przygotowania danych, udostępnienia checkpointu oraz sprawdzenia GPU. Rewizję, nazwę pliku i~hash wag wskazuje konfiguracja. Powiązanie tych identyfikatorów z~manifestem wykonania rozróżnia modele korzystające z~tej samej wersji pakietu, lecz innych wag.
+Kampanię odtwarza się kolejno przez przygotowanie środowiska z~zamrożonych zależności, audyt i~przygotowanie danych, udostępnienie checkpointu oraz sprawdzenie GPU. Rewizję, nazwę pliku i~hash wag wskazuje konfiguracja. Powiązanie tych identyfikatorów z~manifestem wykonania rozróżnia modele korzystające z~tej samej wersji pakietu, lecz innych wag.
 
-Manifesty, indeksy, historia prób i~predykcje tworzą podstawę odtworzenia raportów. Interpretacja naukowa pozostaje odrębna od działania raportera: wymaga określenia populacji porównania, znaczenia różnic i~zakresu niepewności.
+Raporty odtwarza się z~manifestów, indeksów, historii prób i~predykcji. Na ich podstawie można następnie interpretować różnice, uwzględniając populację porównania i~zakres niepewności.
