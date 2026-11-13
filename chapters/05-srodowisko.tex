@@ -39,23 +39,15 @@ Raportowanie & \path{reporting.py}, \path{evaluation/metrics.py} & Wybór OOF, z
 
 Główna ścieżka wykorzystuje sześć lokalnych integracji: MLP, TabNet, FT-Transformer, regresję logistyczną, XGBoost i~CatBoost. KNN, RealMLP, ModernNCA oraz TabM są uruchamiane przez natywne ścieżki przypiętych bibliotek. Osobny adapter obsługuje stały TabPFN. Wspólny katalog eksperymentów łączy te ścieżki, dzięki czemu dodanie natywnej integracji nie wymaga powielania jej procedury uczenia w~lokalnym adapterze.
 
-Wejście backendu zachowuje role surowych cech. Automatyczne wspólne przygotowanie cech jest wyłączone, a~za przekształcenia odpowiada właściwa integracja. Przy GPU pomiar dopasowania i~predykcji jest otoczony synchronizacją urządzenia. Ogranicza to błąd wynikający z~asynchronicznego wykonania operacji, ale nie usuwa konieczności precyzyjnego określenia granic pomiaru.
+Moduł wykonawczy otrzymuje dane z~zachowaniem ról cech numerycznych i~kategorycznych. Automatyczne wspólne przygotowanie cech jest wyłączone, a~za przekształcenia odpowiada właściwa integracja. Przy GPU pomiar dopasowania i~predykcji jest otoczony synchronizacją urządzenia. Ogranicza to błąd wynikający z~asynchronicznego wykonania operacji, ale nie usuwa konieczności precyzyjnego określenia granic pomiaru.
 
-Schemat~\ref{fig:architektura} przedstawia zależności komponentów i~oddzielenie uczenia od wtórnego odczytu zapisanych predykcji. Interfejs wiersza poleceń znajduje się w~\path{experiments/cli.py}; konfiguracja jest rozwiązywana przed wywołaniem właściwego polecenia.
+Rysunek~\ref{fig:architektura} przedstawia zależności komponentów i~oddzielenie uczenia od wtórnego odczytu zapisanych predykcji. Interfejs wiersza poleceń znajduje się w~\path{experiments/cli.py}; konfiguracja jest rozwiązywana przed wywołaniem właściwego polecenia.
 
-\plannedfigure
-{figures/ch05/architektura.pdf}
-{Schemat lokalnej platformy oraz przepływu artefaktów; opracowanie własne.}
-{fig:architektura}
-{Konfiguracja YAML i~manifest danych\\
-$\downarrow$\\
-Katalog metod i~konfiguracji\\
-$\downarrow$\\
-Moduł wykonawczy: TabArena, AutoGluon i~adaptery\\
-$\downarrow$\\
-Predykcje OOF i~testowe, metadane, historia prób\\
-$\downarrow$\\
-Niezależne raportowanie D, T i~T+E z~zapisanych predykcji}
+\begin{figure}[tbp]\centering\small
+\input{figures/source/architektura.tex}
+\caption{Schemat lokalnej platformy oraz przepływu artefaktów; opracowanie własne.}
+\label{fig:architektura}
+\end{figure}
 
 \subsection{Izolacja informacji i identyfikowalność danych}
 \label{sec:izolacja-platformy}
@@ -68,12 +60,12 @@ Zewnętrzne podziały zachowują identyfikatory wierszy, etykiety i~grupy pacjen
 
 Ustawienie pola czasowego w~definicji zadania prowadzi do jawnego odrzucenia niewspieranego podziału czasowego. Kontrola techniczna blokuje zatem niewspieraną procedurę, ale nie zastępuje naukowego uzasadnienia podziału IID.
 
-Raport zachowuje odziedziczoną nazwę pola \texttt{log\_loss\_val}, chociaż zawarta w~nim wartość jest stratą na zewnętrznym teście. Przy przenoszeniu wyników do tabel pracy rozstrzygająca jest populacja powstania predykcji. Podobnie zbiorcze binarne AP odnosi się do klasy zakodowanej jako~1; badanie~A wymaga mapowania na rzeczywistą etykietę zdarzenia rzadkiego. Te rozbieżności między nazwą techniczną a~interpretacją pomiaru muszą być uwzględnione w~analizie.
+Raport zachowuje odziedziczoną nazwę pola \texttt{log\_loss\_val}, chociaż zawarta w~nim wartość jest stratą na zewnętrznym teście. Przy przenoszeniu wyników do tabel pracy rozstrzygająca jest populacja powstania predykcji. Podobnie zbiorcze binarne AP odnosi się do klasy zakodowanej jako~1; do oceny rzadkiej klasy służy AP zapisane osobno dla każdej klasy w~\texttt{per\_class}. Kolumnę wybiera się na podstawie mapowania rzeczywistej etykiety zdarzenia, a~nie założenia, że ma ona kod~1. Te rozbieżności między nazwą techniczną a~interpretacją pomiaru muszą być uwzględnione w~analizie.
 
 \subsection{Artefakty, awarie i wznowienie}
 \label{sec:artefakty-wznowienie}
 
-Identyfikator badania jest wyznaczany z~efektywnych ustawień, ścieżek, manifestów danych, skrótu źródeł i~pliku zależności, wybranych wersji pakietów oraz zapisanej charakterystyki sprzętu. Dane są serializowane w~ustalonej postaci i~identyfikowane przez SHA-256. Skrót źródeł obejmuje moduły wykonawcze, \path{pyproject.toml} i~\path{uv.lock}; nie obejmuje automatycznie dokumentacji, testów ani skryptów wdrożeniowych. Identyfikator commitu i~obrazu kontenera należy zachować osobno. Zmiana ścieżek może zmienić tożsamość mimo tej samej treści danych.
+Artefakty zestawione w~tabeli~\ref{tab:artefakty} pozwalają wznowić obliczenia bez pomieszania wyników różnych konfiguracji. Identyfikator badania jest wyznaczany z~efektywnych ustawień, ścieżek, manifestów danych, skrótu źródeł i~pliku zależności, wybranych wersji pakietów oraz zapisanej charakterystyki sprzętu. Dane są serializowane w~ustalonej postaci i~identyfikowane przez SHA-256. Skrót źródeł obejmuje moduły wykonawcze, \path{pyproject.toml} i~\path{uv.lock}; nie obejmuje automatycznie dokumentacji, testów ani skryptów wdrożeniowych. Identyfikator commitu i~obrazu kontenera należy zachować osobno. Zmiana ścieżek może zmienić tożsamość mimo tej samej treści danych.
 
 \begin{table}[tbp]
 \centering\small
@@ -105,6 +97,32 @@ Awarie są zapisywane wraz z~diagnostyką, a~niezależne zadania mogą być kont
 
 Po próbie usuwane są dopasowane modele, a~pozostają predykcje i~metadane. Umożliwia to ponowne wyliczenie raportu bez zachowania wszystkich sieci. Nie umożliwia jednak wznowienia w~środku foldu ani wykorzystania usuniętego modelu do nowych predykcji. Konfigurację przerwaną bez kompletnego zapisu wyników trzeba dopasować ponownie w~całości; poprawne zakończenie uczenia wskutek ograniczenia budżetu nie wymaga takiego powtórzenia. Tożsamość badania i~kontrole zgodności ograniczają również automatyczne przenoszenie wyników do zmienionego eksperymentu.
 
+\subsection{Dobór partii i ograniczenia pamięci}
+\label{sec:partie-platformy}
+
+W~MLP, FT-Transformerze i~TabNet rozmiar partii wynika z~liczności treningowej części danego foldu. Strojenie obejmuje mnożnik tej bazowej wartości, wybierany ze zbioru $\{0{,}5;\,1;\,2\}$; w~konfiguracji domyślnej wynosi on~1. Dla MLP i~FT-Transformera podstawą doboru jest liczba przykładów treningowych~$n$. TabNet uwzględnia dodatkowo kategorie: progi stosuje się do wartości $n'=n(1+C/5000)$, gdzie $C$ oznacza sumę liczności słowników kategorii utworzonych na treningu danego foldu, wraz z~pozycjami zarezerwowanymi dla nieznanych wartości. Przyjęte progi zestawiono w~tabeli~\ref{tab:dobor-partii}. Jest to heurystyka wykonania, której nie należy utożsamiać z~empirycznie potwierdzonym optymalnym doborem partii.
+
+\begin{table}[tbp]
+\centering\small
+\caption{Bazowe rozmiary partii w~lokalnych integracjach. Próg odnosi się do $n$ dla MLP i~FT-Transformera oraz do $n'$ dla TabNet.}
+\label{tab:dobor-partii}
+\begin{tabular}{lrrr}
+\toprule
+Przedział & MLP i~FT-Transformer & TabNet & Partia wirtualna TabNet \\
+\midrule
+$[0, 2000)$ & 64 & 128 & 128 \\
+$[2000, 8000)$ & 128 & 256 & 128 \\
+$[8000, 32000)$ & 256 & 1024 & 128 \\
+$[32000, 128000)$ & 512 & 2048 & 256 \\
+$[128000, \infty)$ & 1024 & 4096 & 512 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Po zastosowaniu mnożnika rozmiar partii zaokrągla się w~dół do potęgi dwójki, z~minimum ośmiu przykładów. Następnie uwzględnia się ograniczenie pamięci FT-Transformera opisane w~sekcji~\ref{sec:koszt-metodyka} lub korektę TabNet zapobiegającą pozostawieniu jednoelementowej partii. W~TabNet osobno dobierana jest partia wirtualna, czyli rozmiar fragmentów partii wykorzystywanych przy normalizacji. Jej wartość bazowa pochodzi z~tej samej tabeli, lecz nie jest skalowana mnożnikiem. Ogranicza się ją do rozmiaru partii uczenia, po czym w~razie potrzeby zwiększa, aby uniknąć jednoelementowych fragmentów także w~ostatniej, niepełnej partii. Jawne zadanie całkowitego rozmiaru partii wyłącza automatyczny dobór i~działanie mnożnika, ale pozostawia wymienione ograniczenia wykonania.
+
+W~FT-Transformerze efektywny rozmiar partii jest dodatkowo ograniczany na podstawie liczby cech i~głów uwagi. Dla $d$ predyktorów i~$H$ głów przyjmuje się $4H(d+1)^2$ bajtów na przykład dla pojedynczego tensora wyników uwagi w~formacie float32, z~uwzględnieniem tokenu klasyfikacyjnego. Z~przydziału 4~GiB wyznacza się limit liczby przykładów, zaokrąglany w~dół do potęgi dwójki, z~dolnym ograniczeniem tego limitu do ośmiu. Efektywna partia jest mniejszą z~wartości uzyskanej po automatycznym doborze i~zastosowaniu mnożnika oraz tak wyznaczonego limitu. Jeżeli rozmiar zadano bezpośrednio jako liczbę całkowitą, limit nakłada się na tę liczbę. Przy 1776 predyktorach limit wynosi 32 przykłady dla ośmiu głów oraz 64 dla czterech. Ograniczenie obowiązuje także podczas walidacji i~predykcji. Jest to heurystyka pamięciowa dotycząca jednego tensora, nie gwarancja zmieszczenia pełnego przebiegu w~VRAM. Ponieważ zmniejszenie partii zmienia również liczbę aktualizacji parametrów na epokę, efektywny rozmiar należy uwzględniać przy interpretacji zarówno kosztu, jak i~jakości modelu.
+
 \subsection{Pomiar kosztu i interpretacja raportu}
 \label{sec:pomiary-platformy}
 
@@ -112,7 +130,26 @@ Koszt wyszukiwania i~suma czasów dopasowania konfiguracji wybranych do użycia 
 
 \texttt{selected\_inference\_seconds} sumuje zapisane przebiegi predykcji konfiguracji o~dodatniej wadze. Nie jest nowym pomiarem końcowej latencji całego zespołu i~nie obejmuje automatycznie wszystkich kosztów składania wyników. Czas wyboru z~pamięci podręcznej raportowany jest osobno. Koszt znalezienia kandydatów jest wspólny dla D, T i~T+E, dlatego sumowanie tych wierszy prowadziłoby do jego wielokrotnego naliczenia.
 
-Opis warunków pomiaru obejmuje CPU, GPU, RAM, VRAM, liczbę wątków, rozmiar partii predykcji i~granice pomiarów. Ustawienia obejmują cztery wątki CPU. Limit partii predykcji~4096 jest przekazywany lokalnym adapterom i~wykorzystywany przez MLP, FT-Transformer oraz TabNet. Dla MLP i~FT-Transformer obowiązuje dodatkowo ograniczenie efektywnym rozmiarem partii uczenia. Natywne KNN, RealMLP, ModernNCA i~TabM oraz stały TabPFN nie otrzymują tego ustawienia; podział predykcji na partie określają te implementacje. W~przyjętym podziale zasobów sześć uczonych metod neuronowych korzysta z~GPU, a~odniesienia konwencjonalne z~CPU. Porównanie kosztu na takim podziale zasobów nie izoluje efektu architektury. Backend zapisuje pomiary pamięci w~bloku \texttt{memory\_usage} rekordu konfiguracji, a~nie w~kolumnach zbiorczego CSV. Śledzenie obejmuje wyłącznie dopasowanie: RSS procesu na CPU oraz pamięć przydzieloną i~rezerwowaną przez PyTorch na GPU. Interpretacja odczytu GPU zależy od znacznika dostępności śledzenia. Pomiary te nie określają pełnego zużycia VRAM procesu, szczytu całej próby ani pamięci testowej predykcji. Ta ostatnia wymaga osobnego pomiaru, szczególnie dla KNN i~TabPFN. Zakres pomiaru nie obejmuje zewnętrznego pretrenowania TabPFN, kosztu finansowego ani emisji.
+Warunki wykonania obejmują cztery wątki CPU oraz limit partii predykcji 4096, przekazywany lokalnym MLP, FT-Transformerowi i~TabNet. W~dwóch pierwszych metodach obowiązuje również ograniczenie partią uczenia. Natywne integracje i~TabPFN określają podział predykcji na partie we własnych implementacjach. Zakres pomiarów zestawiono w~tabeli~\ref{tab:zakres-pomiarow}.
+
+\begin{table}[tbp]
+\centering\small
+\caption{Zakres pomiarów pamięci podczas dopasowania.}
+\label{tab:zakres-pomiarow}
+\begin{tabularx}{\linewidth}{P{0.18\linewidth}YY}
+\toprule
+Miara & Zakres & Granica interpretacji \\
+\midrule
+RSS & Pamięć rezydentna procesu na CPU & Nie jest pomiarem całej maszyny \\
+Pamięć PyTorch & Pamięć przydzielona i~rezerwowana na GPU & Nie obejmuje wszystkich alokacji procesu ani innych użytkowników GPU \\
+Dostępność śledzenia & Znacznik w~bloku \texttt{memory\_usage} & Brak pomiaru nie oznacza zerowego zużycia \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Pomiary pamięci są zapisywane w~bloku \texttt{memory\_usage} rekordu konfiguracji i~obejmują dopasowanie. Nie wyznaczają szczytu całej próby ani pamięci testowej predykcji. Osobny pomiar inferencji jest szczególnie istotny dla KNN i~TabPFN, które zachowują zbiór odniesienia lub kontekst zadania. Zewnętrzne pretrenowanie TabPFN pozostaje poza kosztem lokalnego wykonania.
+
+Współdzielenie GPU wymaga dodatkowej kontroli: zapis modelu urządzenia i~jego pamięci nie określa obciążenia przez inne procesy. Przy interpretacji czasu oraz niepowodzeń należy powiązać próby z~dostępnymi zapisami warunków wykonania. Sam komunikat o~wyczerpaniu pamięci nie pozwala przypisać całego zużycia badanemu modelowi.
 
 Moduł metryk zapisuje nieokreślone ROC AUC jako brak wartości, lecz nie zapisuje osobnego pola z~przyczyną. Dla precyzji, czułości i~F1 stosuje natomiast konwencję \texttt{zero\_division=0}: przy zerowym mianowniku zwraca zero. Rozróżnienie tych przypadków od zerowej wartości poprawnie określonej miary wymaga uwzględnienia liczności klas i~macierzy pomyłek.
 
@@ -141,6 +178,10 @@ Podstawą odtworzenia środowiska jest Python~3.11 na Linux x86-64 oraz plik \pa
 Składnik & Wersja \\
 \midrule
 TabArena & 0.1.0 \\
+scikit-learn & 1.9.0 \\
+XGBoost & 3.2.0 \\
+CatBoost & 1.2.10 \\
+
 AutoGluon core i~tabular & 1.6.3b20260918 \\
 PyTorch & 2.13.0 \\
 \texttt{pytabkit} & 1.8.0 \\
@@ -152,6 +193,6 @@ PyTorch & 2.13.0 \\
 \end{tabularx}
 \end{table}
 
-Odtworzenie kampanii wymaga kolejno przygotowania środowiska z~zamrożonych zależności, audytu i~przygotowania danych, udostępnienia checkpointu oraz kwalifikacji urządzenia. Rewizję, nazwę pliku i~hash wag wskazuje konfiguracja. Powiązanie tych identyfikatorów z~manifestem wykonania rozróżnia modele korzystające z~tej samej wersji pakietu, lecz innych wag.
+Odtworzenie kampanii wymaga kolejno przygotowania środowiska z~zamrożonych zależności, audytu i~przygotowania danych, udostępnienia checkpointu oraz sprawdzenia GPU. Rewizję, nazwę pliku i~hash wag wskazuje konfiguracja. Powiązanie tych identyfikatorów z~manifestem wykonania rozróżnia modele korzystające z~tej samej wersji pakietu, lecz innych wag.
 
 Manifesty, indeksy, historia prób i~predykcje tworzą podstawę odtworzenia raportów. Interpretacja naukowa pozostaje odrębna od działania raportera: wymaga określenia populacji porównania, znaczenia różnic i~zakresu niepewności.

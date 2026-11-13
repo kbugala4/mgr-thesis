@@ -1,0 +1,9 @@
+% Opracowanie własne; schemat procedury opisanej w rozdziałach 3–5.
+\begin{minipage}[t]{0.31\linewidth}\centering\textbf{Wewnątrz TabM}\par\medskip
+\fbox{\parbox{0.85\linewidth}{\centering Wspólne macierze wag}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Odrębne modulacje podmodeli}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Średnia prawdopodobieństw}}\end{minipage}
+\hfill
+\begin{minipage}[t]{0.31\linewidth}\centering\textbf{Jedna konfiguracja}\par\medskip
+\fbox{\parbox{0.85\linewidth}{\centering Osiem treningów foldów}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Osiem modeli}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Średnia predykcji testowych}}\end{minipage}
+\hfill
+\begin{minipage}[t]{0.31\linewidth}\centering\textbf{Wiele konfiguracji}\par\medskip
+\fbox{\parbox{0.85\linewidth}{\centering Predykcje OOF}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Wybór wag}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Ważona suma predykcji testowych}}\end{minipage}\par\medskip Zwykłe D i~T: średnia foldów. T+E: dodatkowo wagi konfiguracji.\par IID KNN: pojedyncze dopasowanie LOO. Stały TabPFN: bez zespołu foldów.

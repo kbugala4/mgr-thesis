@@ -1,3 +1,5 @@
+Aktualizacja: schematy rozdziałów 2–5 są składane bezpośrednio z plików LaTeX w `figures/source/`. Ścieżki PDF w poniższym rejestrze pozostają opcjonalnymi lokalizacjami eksportu, nie brakującymi plikami wymaganymi do kompilacji.
+
 # Rysunki i wykresy: co przygotować i gdzie wstawić
 
 Rozdziały 1–5 są napisane jako tekst z tabelami LaTeX. Pozostawiono sześć miejsc na autorskie schematy objaśniające, które można przygotować przed eksperymentami. Rozdziały 6–7 są szkieletami z sześcioma miejscami na przyszłe wykresy wyników. Wykresów tych nie wolno tworzyć bez rzeczywistych artefaktów kampanii. Same teksty i ramki można składać bez plików graficznych.
@@ -9,8 +11,8 @@ Rozdziały 1–5 są napisane jako tekst z tabelami LaTeX. Pozostawiono sześć 
 | Miejsce | Oczekiwany plik wynikowy | Etykieta LaTeX | Co należy pokazać | Edytowalne źródło do zachowania |
 | --- | --- | --- | --- | --- |
 | Rozdział 2, sekcja „Rozwój metod: od drzew do modeli pretrenowanych” | `figures/ch02/mapa-podejsc.pdf` | `fig:mapa-podejsc` | Role metod: MLP; TabNet i FT-Transformer; RealMLP; ModernNCA; TabM; TabPFN-3.5. Obok cztery odniesienia: regresja logistyczna, KNN, XGBoost, CatBoost. Role mogą się nakładać. Bez rankingów i osi sugerującej poprawę wraz z datą. | `figures/source/mapa-podejsc.tex` — autorski schemat składany bezpośrednio przez LaTeX; zewnętrzny PDF jest opcjonalny. |
-| Rozdział 3, po opisie FT-Transformer | `figures/ch03/przeplyw-reprezentacji.pdf` | `fig:reprezentacje` | Trzy równoległe ścieżki dla tej samej przykładowej obserwacji: MLP z wektorem wejściowym; TabNet z kolejnymi maskami; FT-Transformer z tokenami poszczególnych kolumn. Każda kończy się prawdopodobieństwami klas. | Np. `figures/source/przeplyw-reprezentacji.svg`. |
-| Rozdział 3, sekcja „TabM i poziomy łączenia predykcji” | `figures/ch03/poziomy-zespolow.pdf` | `fig:zespoly` | Trzy osobne panele: wewnętrzne podmodele TabM; osiem modeli foldów jednej konfiguracji; łączenie konfiguracji z wagami wybranymi na OOF. Wskazać nakładanie się poziomów i wyjątki KNN/TabPFN. | Np. `figures/source/poziomy-zespolow.svg`. |
+| Rozdział 3, po opisie FT-Transformer | `figures/ch03/przeplyw-reprezentacji.pdf` | `fig:reprezentacje` | Trzy równoległe ścieżki dla tej samej przykładowej obserwacji: MLP z wektorem wejściowym; TabNet z kolejnymi maskami; FT-Transformer z tokenami poszczególnych kolumn. Każda kończy się prawdopodobieństwami klas. | `figures/source/przeplyw-reprezentacji.tex` — schemat składany bezpośrednio w dokumencie. |
+| Rozdział 4, warunki raportowania | `figures/ch04/poziomy-zespolow.pdf` | `fig:zespoly` | Trzy osobne panele: wewnętrzne podmodele TabM; osiem modeli foldów jednej konfiguracji; łączenie konfiguracji z wagami wybranymi na OOF. Wskazać nakładanie się poziomów i wyjątki KNN/TabPFN. | `figures/source/poziomy-zespolow.tex` — schemat składany bezpośrednio w dokumencie. |
 
 Trzy ilustracje wymienione powyżej są schematami pojęciowymi, a nie wynikami. Liczby lub wymiary użyte jako przykład trzeba podpisać jako przykładowe. Nie przypisywać im wartości zmierzonych w kampanii. Diagram MLP/TabNet/FT-Transformer nie musi odwzorowywać każdej warstwy implementacji; jego zadaniem jest porównanie sposobu traktowania cech.
 
@@ -67,7 +69,7 @@ Przykład istniejącego wywołania:
 
 ```tex
 \plannedfigure
-    {figures/ch03/poziomy-zespolow.pdf}
+    {figures/ch04/poziomy-zespolow.pdf}
     {Podpis rysunku ze wskazaniem źródła.}
     {fig:zespoly}
     {Opis oczekiwanej zawartości, widoczny tylko przy braku pliku.}
