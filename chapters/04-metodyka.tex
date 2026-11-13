@@ -2,12 +2,12 @@
 \section{Metodyka badań}
 \label{chap:metodyka}
 
-Metodyka obejmuje porównanie kompletnych procedur predykcyjnych oraz dwa badania kontrolowane: ważenia klas i~regularyzacji MLP. Wspólny podział zewnętrzny wyznacza populację oceny, natomiast walidacja wewnętrzna służy selekcji konfiguracji i~łączeniu predykcji.
+Projekt badania rozdziela ocenę kompletnych procedur predykcyjnych od analizy wybranych mechanizmów uczenia. Pierwszej służy wspólny test zewnętrzny oraz walidacyjny wybór konfiguracji i~zespołów. Drugą prowadzi się w~dwóch porównaniach kontrolowanych, dotyczących ważenia klas i~regularyzacji MLP.
 
 \subsection{Projekt badania i jednostki analizy}
 \label{sec:projekt-badania}
 
-Każda para zbiór--metoda podlega ocenie na wspólnym zewnętrznym zbiorze testowym danego zadania. Porównaniu podlegają kompletne procedury, obejmujące przygotowanie cech, uczenie, wybór hiperparametrów i~łączenie predykcji. Różnica między dwiema takimi procedurami nie identyfikuje wpływu pojedynczego składnika architektury.
+Wspólny zbiór testowy zapewnia, że metody ocenia się na tych samych obserwacjach danego zadania. Porównanie obejmuje jednak całe potoki: przygotowanie cech, uczenie, wybór hiperparametrów i~łączenie predykcji. Wynik wskazuje więc różnicę między procedurami, której przyczyny mogą leżeć w~więcej niż jednym składniku.
 
 Jednostką porównania między zadaniami jest zbiór danych. Foldy wewnętrzne, konfiguracje hiperparametrów i~warunki raportowania są zależnymi elementami procedury ocenianej na tym samym zadaniu; nie zwiększają liczby niezależnych jednostek~\cite{demsar2006comparisons}. W~badaniach mechanizmów jednostką dopasowania porównań jest natomiast para warunków o~wspólnym podziale, podzbiorze i~ziarnie. Rozdzielenie tych poziomów określa zakres agregacji i~interpretację niepewności w~sekcji~\ref{sec:analiza-plan}.
 
@@ -16,7 +16,7 @@ Dwa badania uzupełniające wprowadzają kontrolowane zmiany przy zachowaniu poz
 \subsection{Dobór i audyt zbiorów danych}
 \label{sec:dane-audyt}
 
-Dobór dwunastu zadań jest celowy. Ma uwzględnić różne liczności, typy cech, liczbę klas oraz relację liczby cech do liczby przykładów. Tabela~\ref{tab:rejestr-zadan} zestawia rozmiary zbiorów i~ich role w~badaniu; nazwy zbiorów są odnośnikami do opisów źródłowych. Podane liczności odnoszą się do zbiorów przed podziałem na uczenie i~test, a~liczby cech do reprezentacji wejściowej, bez etykiety docelowej i~identyfikatorów wyłączonych z~predyktorów. Są to rozmiary referencyjne, nie wymiary macierzy po przetwarzaniu właściwym poszczególnym metodom. HIGGS oznacza wybrany podzbiór OpenML, a~nie pełny pierwotny zbiór; Santander obejmuje oznakowane dane treningowe konkursu.
+Pula dwunastu zadań ma objąć różne liczności, typy cech i~liczby klas, a~także odmienne relacje szerokości tabeli do liczby przykładów. Rozmiary i~role zbiorów zestawiono w~tabeli~\ref{tab:rejestr-zadan}, której nazwy prowadzą do opisów źródłowych. Podane liczności dotyczą danych przed podziałem, a~liczby cech --- wejścia po wyłączeniu etykiety i~wskazanych identyfikatorów, przed przetwarzaniem właściwym metodzie. HIGGS oznacza podzbiór OpenML, natomiast Santander obejmuje oznakowane dane treningowe konkursu.
 
 \begin{table}[tbp]
 \centering\small
@@ -48,12 +48,13 @@ W~Diabetes identyfikator pacjenta służy grupowaniu, a~identyfikatory pacjenta 
 
 \subsection{Podziały i przepływ informacji}
 \label{sec:podzialy}
+\label{sec:przygotowanie-procedura}
 
 Dla zadań traktowanych jako IID (ang. \textit{independent and identically distributed}), czyli z~obserwacjami niezależnymi o~jednakowym rozkładzie, wykorzystuje się pierwszy podział stratyfikowanej procedury trójfoldowej z~tasowaniem i~ziarnem~42. Około dwie trzecie obserwacji przypada na część przeznaczoną na uczenie i~walidację, dalej nazywaną częścią rozwojową, a~jedna trzecia na test. Pozostałe dwa podziały zewnętrzne nie są wykorzystywane jako powtórzenia eksperymentu. W~części rozwojowej zwykłe procedury uczone wykorzystują osiem foldów wewnętrznych w~jednym powtórzeniu. Aby zachować ten sam schemat oceny między zadaniami, wyłączono automatyczne przechodzenie do powtarzanej walidacji dla małych zbiorów.
 
-Predykcje OOF (ang. \textit{out-of-fold}) są wyznaczane dla obserwacji spoza części treningowej danego foldu. W~lokalnych MLP, FT-Transformerze i~TabNet etykiety walidacyjne służą wyborowi epoki i~wcześniejszemu zatrzymaniu, choć nie uczestniczą w~obliczaniu gradientów. MLP i~FT-Transformer wykorzystują stratę walidacyjną, natomiast TabNet --- AUC dla klasyfikacji binarnej i~stratę logarytmiczną dla wieloklasowej. Cierpliwość wynosi dziesięć epok. OOF nie jest więc oceną na danych całkowicie niewykorzystanych przy dopasowaniu procedury. Predykcje te służą do wyboru konfiguracji i~wag zespołu. Zewnętrzny zbiór testowy służy niezależnej ocenie wybranej procedury~\cite{cawley2010selection}.
+Wybór konfiguracji opiera się na predykcjach OOF (ang. \textit{out-of-fold}), wyznaczanych dla obserwacji poza treningiem danego foldu. Walidacja pełni jednak również rolę w~samym uczeniu: w~lokalnych MLP i~FT-Transformerze służy wyborowi epoki według straty, a~w~TabNet według AUC dla klasyfikacji binarnej lub straty logarytmicznej dla wieloklasowej. Cierpliwość wynosi dziesięć epok. Etykiety walidacyjne nie uczestniczą w~obliczaniu gradientów, ale wpływają na zachowany stan modelu, dlatego niezależną ocenę wybranej procedury zapewnia dopiero zewnętrzny test~\cite{cawley2010selection}.
 
-Dla Diabetes stosuje się stratyfikowane podziały grupowe na obu poziomach. Wszystkie pobyty jednego pacjenta muszą należeć do tej samej strony danego podziału. Kryteria poprawności podziału obejmują rozłączność grup, obecność klas oraz dokładnie jednokrotne przypisanie obserwacji do walidacji wewnętrznej. Udziały i~proporcje klas przy podziale grupowym mogą różnić się od idealnie równych; raport obejmuje rzeczywiste liczności.
+W~Diabetes jednostką podziału jest pacjent, ponieważ jego różne pobyty mogą być do siebie podobne. Stratyfikację grupową stosuje się zarówno na zewnątrz, jak i~wewnątrz części rozwojowej, zachowując wszystkie pobyty jednej osoby po tej samej stronie podziału. Kontrola obejmuje rozłączność pacjentów, obecność klas i~jednokrotne pokrycie obserwacji walidacją. Rzeczywiste liczności są zapisywane, gdyż ograniczenie grupowe może uniemożliwić uzyskanie idealnie równych udziałów.
 
 Rysunek~\ref{fig:podzial-selekcja} przedstawia dopuszczalny przepływ informacji.
 
@@ -63,11 +64,9 @@ Rysunek~\ref{fig:podzial-selekcja} przedstawia dopuszczalny przepływ informacji
 \label{fig:podzial-selekcja}
 \end{figure}
 
-\label{sec:przygotowanie-procedura}
+Wspólność danych wejściowych nie wymaga identycznego kodowania dla wszystkich metod. Zachowuje się wartości, typy cech i~mapowanie klas, natomiast przekształcenia pozostawia właściwej integracji. Wyuczone elementy przetwarzania zwykłych modeli dopasowuje się wyłącznie na treningu danego foldu, ustalając przy tym obsługę braków i~nieznanych kategorii przed transformacją walidacji oraz testu.
 
-Wspólne dane wejściowe zachowują wartości i~typy cech oraz ustalone mapowanie klas. Nie narzuca się wszystkim metodom identycznego kodowania ani skalowania. Przygotowanie danych stanowi część badanego potoku, a~wyuczone przekształcenia zwykłych modeli są dopasowywane wyłącznie na treningu odpowiedniego foldu. Obsługa braków i~nieznanych kategorii musi być określona przed transformacją walidacji i~testu. Odmienne przetwarzanie kategorii jest właściwością porównywanych procedur, a~nie wyizolowanym czynnikiem eksperymentalnym.
-
-Wyjątek stanowi natywny KNN w~zadaniach traktowanych jako IID. Korzysta on z~predykcji leave-one-out, dalej LOO, pojedynczego modelu potomnego. Etykieta przewidywanej obserwacji zostaje wyłączona z~jej sąsiedztwa, ale przygotowanie cech obejmuje całą rozwojową populację wejściową. Nie jest to ponowne dopasowanie wszystkich przekształceń po usunięciu każdego wiersza. Kategorie KNN kodowane są ustalonym kodowaniem zero-jedynkowe; efektywna liczba sąsiadów i~ewentualne ograniczenie zbioru odniesienia przez budżet należą do metadanych wykonania. W~Diabetes KNN korzysta z~ośmiu foldów grupowych.
+Wyjątek stanowi natywny KNN w~zadaniach traktowanych jako IID. Korzysta on z~predykcji leave-one-out, dalej LOO, pojedynczego modelu potomnego. Etykieta przewidywanej obserwacji zostaje wyłączona z~jej sąsiedztwa, ale przygotowanie cech obejmuje całą rozwojową populację wejściową. Nie jest to ponowne dopasowanie wszystkich przekształceń po usunięciu każdego wiersza. Kategorie KNN kodowane są ustalonym kodowaniem zero-jedynkowym. Efektywna liczba sąsiadów i~ewentualne ograniczenie zbioru odniesienia przez budżet należą do metadanych wykonania. W~Diabetes KNN korzysta z~ośmiu foldów grupowych.
 
 Stały TabPFN-3.5 wykorzystuje pełną część rozwojową jako oznakowany kontekst. Nie tworzy OOF, nie przechodzi strojenia i~nie otrzymuje zespołu foldów. Jego osiem estymatorów inferencji nie jest ośmioma modelami walidacji. Porównanie obejmuje lokalny model o~ustalonej wersji wag; wiedza uzyskana podczas pretrenowania pozostaje zewnętrznym zasobem tej procedury.
 
@@ -173,15 +172,15 @@ gdzie \(K\) oznacza liczbę klas, a~\(n_{c,\mathrm{tr}}\) --- liczbę treningowy
 
 Pozostałe hiperparametry są określane na podstawie wyboru OOF w~badaniu głównym. Porównanie wykorzystuje te same foldy i~trzy sparowane ziarna uczenia. W~ten sposób porównanie odpowiada na pytanie o~interwencję przy ustalonej procedurze, a~nie o~najlepszy wynik dwóch osobno strojonych rodzin. Nakład obliczeń tego porównania zestawiono w~tabeli~\ref{tab:skala-badania}.
 
-Zgodnie z~analizą w~sekcji~\ref{sec:trudne-rezimy} wzrost czułości po ważeniu może wynikać z~przesunięcia punktu pracy bez poprawy rankingu. AP, ROC AUC i~nieważona strata logarytmiczna pozwalają rozdzielić te efekty. Precyzja, czułość, liczby FP i~FN oraz udział alarmów podlegają ocenie przy progach określonych na OOF. Wybór progu na walidacji definiuje badawczy punkt pracy; bez kosztów błędów nie stanowi optimum wdrożeniowego. Próg wybrany na OOF będzie stosowany do średniej predykcji foldów, dlatego jego przenoszenie między tymi rozkładami ocen stanowi dodatkowe ograniczenie interpretacji.
+Ważenie może zwiększyć czułość przez przesunięcie punktu pracy, nawet gdy uporządkowanie obserwacji się nie poprawi; zależność tę wyprowadzono w~sekcji~\ref{sec:trudne-rezimy}. Dlatego AP i~ROC AUC zestawia się z~nieważoną stratą logarytmiczną oraz precyzją, czułością, liczbami FP i~FN i~udziałem alarmów. Progi określa się na OOF, po czym stosuje do średnich predykcji testowych modeli foldów. Uzyskany punkt pracy ma znaczenie badawcze. Bez kosztów błędów nie jest optimum wdrożeniowym, a~jego interpretacja wymaga uwzględnienia różnicy między predykcjami OOF i~średnią foldów.
 
 \subsection{Badanie B: regularyzacja i liczność treningu}
 \label{sec:projekt-regularyzacja}
 % TODO(D1,D2): Wybrać opublikowaną recepturę MLP, parametry i kontrolę liczby aktualizacji w mgr-repo. Nie zakładać automatycznie RealMLP-TD.
 
-Badanie obejmuje German Credit, Ionosphere i~Bioresponse. Jako punkt odniesienia zaplanowano procedurę uczenia MLP opartą na opublikowanym rozwiązaniu, wybraną niezależnie od wyników strojenia na tych trzech zadaniach. Procedura musi zawierać niezerowy dropout oraz niezerowy zanik wag. Nie należy utożsamiać jej automatycznie z~lokalnym bazowym MLP badania głównego. Przedmiotem porównania są pełna procedura, wariant bez dropoutu i~wariant bez zaniku wag.
+Aby ocenić zależność działania regularyzacji od liczności treningu, w~German Credit, Ionosphere i~Bioresponse porównuje się trzy warianty tej samej procedury MLP. Wariant odniesienia ma niezerowy dropout i~zanik wag, a~dwie ablacje wyłączają po jednym z~tych składników. Jako podstawę zaplanowano opublikowaną recepturę wybraną niezależnie od wyników strojenia na tych zadaniach. Nie jest ona automatycznie tożsama z~lokalnym MLP badania głównego.
 
-Dla każdego treningowego foldu tworzy się zagnieżdżone, stratyfikowane podzbiory o~udziałach 25\%, 50\% i~100\%. Redukcja obejmuje wyłącznie trening, z~ponownym dopasowaniem jego przekształceń. Walidacja i~test pozostają stałe. Definicja podzbioru obejmuje rzeczywiste liczności klas po zaokrągleniach; nominalny udział nie wystarcza do odtworzenia małych podzbiorów. Te same indeksy i~trzy sparowane ziarna są stosowane dla wszystkich trzech wariantów regularyzacji.
+Z~treningowej części każdego foldu wydziela się zagnieżdżone, stratyfikowane podzbiory o~udziałach 25\%, 50\% i~100\%. Każdy otrzymuje własne dopasowanie przekształceń, natomiast walidacja i~test pozostają niezmienione. Porównania trzech wariantów wykorzystują wspólne indeksy i~trzy sparowane ziarna, dzięki czemu różnicy regularyzacji nie towarzyszy zmiana wylosowanych przykładów. Zapisuje się również rzeczywiste liczności klas po zaokrągleniach, szczególnie istotne w~najmniejszych podzbiorach.
 
 Rysunek~\ref{fig:podzbiory} pozwala oddzielić interwencję regularyzacyjną od zmiany składu walidacji. Nie jest krzywą kosztu etykietowania: nawet najmniejszy trening korzysta z~niezmniejszonej walidacji. Nie przeprowadza się odrębnego przeszukiwania 26 konfiguracji dla każdej komórki projektu.
 
@@ -191,7 +190,7 @@ Rysunek~\ref{fig:podzbiory} pozwala oddzielić interwencję regularyzacyjną od 
 \label{fig:podzbiory}
 \end{figure}
 
-Analiza generalizacji łączy testowe AUC z~historią uczenia oraz nieważoną stratą logarytmiczną na treningu i~walidacji. Luka jest definiowana dla tej samej sieci foldu, w~trybie ewaluacji z~wyłączonym dropoutem. Różnica między stratą treningową pojedynczej sieci a~testową stratą zespołu ośmiu sieci nie jest luką generalizacji tej samej procedury. Mniejsza luka sama w~sobie nie oznacza lepszej generalizacji; może towarzyszyć pogorszeniu obu ocen.
+Samo zmniejszenie luki między stratą treningową i~walidacyjną może oznaczać zarówno poprawę generalizacji, jak i~silniejsze niedopasowanie. Ocenę opiera się więc łącznie na obu stratach, historii uczenia i~testowym AUC. Lukę wyznacza się dla tej samej sieci foldu, w~trybie ewaluacji z~wyłączonym dropoutem. Zestawienie jej straty treningowej ze stratą testową zespołu ośmiu sieci opisywałoby już dwie różne procedury.
 
 \subsection{Analiza porównawcza i niepewność}
 \label{sec:analiza-plan}
@@ -219,7 +218,7 @@ Kontrasty o~bezpośredniej interpretacji metodologicznej to RealMLP\allowbreak{}
 
 Wnioskowanie o~przewadze między zadaniami wymaga określenia modelu losowego, rodziny porównań i~sposobu postępowania z~remisami. Test znaków dotyczy częstości kierunku różnicy, nie jej wielkości; równoczesne testowanie wielu par wymaga kontroli wielokrotności. Dobór celowy nie gwarantuje niezależności zadań ani modelu losowego uzasadniającego test. Jeżeli założeń nie da się obronić, analiza ma charakter opisowy. Niewielka liczba zadań ogranicza moc, a~brak istotności nie potwierdza równoważności.
 
-Niepewność różnicy na pojedynczym zadaniu można analizować przez sparowany bootstrap zapisanych predykcji. Przy założeniu IID jednostką losowania jest wiersz, z~warstwowaniem po klasie. Dla Diabetes jednostkę stanowi pacjent ze wszystkimi jego pobytami. Te same repliki muszą służyć obu modelom. Liczba replik z~nieokreśloną metryką stanowi część opisu resamplingu. Takie przedziały są warunkowe względem ustalonego podziału i~wytrenowanych modeli; nie mierzą zmienności ponownego uczenia.
+Dla pojedynczego zadania niepewność różnicy można oszacować przez sparowany bootstrap zapisanych predykcji. Oba modele muszą korzystać z~tych samych replik: w~zadaniach IID losuje się wiersze z~warstwowaniem po klasie, a~w~Diabetes pacjentów wraz ze wszystkimi ich pobytami. Raport uwzględnia repliki, dla których metryka jest nieokreślona. Tak wyznaczony przedział opisuje niepewność warunkową względem ustalonego podziału i~wytrenowanych modeli, bez zmienności wynikającej z~ponownego uczenia.
 
 W~badaniach~A i~B przedmiotem analizy są wyniki wszystkich trzech sparowanych ziaren, średnia różnica i~jej zakres. Zakres nie jest przedziałem ufności. Foldy nie są traktowane jako niezależne replikacje, a~trzy zadania każdego badania nie uzasadniają przewagi populacyjnej. Pełne zestawienie jedenastu metod nie wymaga testowania wszystkich 55 par; niezgodne skale metryk pozostają rozdzielone.
 
