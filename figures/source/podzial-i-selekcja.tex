@@ -1,4 +1,5 @@
 % Opracowanie własne; schemat procedury opisanej w rozdziałach 3–5.
+\begin{minipage}{\linewidth}
 \begin{minipage}[t]{0.31\linewidth}\centering\textbf{Podział zewnętrzny}\par\medskip
 \fbox{\parbox{0.85\linewidth}{\centering Dane zadania}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Część rozwojowa: około $2/3$\par\medskip Test: około $1/3$}}\end{minipage}
 \hfill
@@ -6,4 +7,5 @@
 \fbox{\parbox{0.85\linewidth}{\centering Osiem foldów}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Uczenie i~predykcje OOF}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Wybór konfiguracji i~wag}}\end{minipage}
 \hfill
 \begin{minipage}[t]{0.31\linewidth}\centering\textbf{Ocena testowa}\par\medskip
-\fbox{\parbox{0.85\linewidth}{\centering Zapisane predykcje modeli foldów}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Agregacja według wyboru OOF}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Metryki na etykietach testowych}}\end{minipage}\par\medskip Etykiety testowe nie uczestniczą w~wyborze.\par IID KNN: leave-one-out (LOO). TabPFN: pełny kontekst rozwojowy, bez OOF.
+\fbox{\parbox{0.85\linewidth}{\centering Zapisane predykcje modeli foldów}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Agregacja według wyboru OOF}}\par\smallskip$\downarrow$\par\smallskip\fbox{\parbox{0.85\linewidth}{\centering Metryki na etykietach testowych}}\end{minipage}\par\medskip Etykiety testowe nie uczestniczą w~wyborze.\par IID KNN: LOO\footnote{Walidacja z~pominięciem jednej obserwacji (ang. \textit{leave-one-out}).}. TabPFN: pełny kontekst rozwojowy, bez OOF.
+\end{minipage}

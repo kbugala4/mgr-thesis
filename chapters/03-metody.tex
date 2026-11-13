@@ -9,27 +9,29 @@ Dobierając metody, uwzględniono zarówno konstrukcję predyktora, jak i~proble
 
 Porównuje się \emph{potoki uczenia}, obejmujące przygotowanie cech, dopasowanie modelu i~wyznaczanie predykcji. Kontrolowane badanie regularyzacji opisano oddzielnie w~sekcji~\ref{sec:projekt-regularyzacja}, a~implementacje zestawiono w~tabeli~\ref{tab:konfiguracje-metod}.
 
-\begin{table}[tbp]
+\begin{table}[!htbp]
 \centering\small
 \caption{Implementacje i~warianty metod. Wersje bibliotek podano w~tabeli~\ref{tab:wersje}.}
 \label{tab:konfiguracje-metod}
+\begin{minipage}{\linewidth}
 \begin{tabularx}{\linewidth}{P{0.22\linewidth}YP{0.30\linewidth}}
 \toprule
 Metoda & Implementacja i~wariant & Dobór ustawień; urządzenie \\
 \midrule
-Regresja logistyczna & Lokalna integracja scikit-learn & Strojenie; CPU \\
+Regresja logistyczna & Lokalna integracja scikit-learn & Strojenie; CPU\footnote{Procesor główny (ang. \textit{central processing unit}).} \\
 KNN & Natywna integracja TabArena & Strojenie; CPU \\
 XGBoost & Lokalna integracja XGBoost & Strojenie; CPU \\
 CatBoost & Lokalna integracja CatBoost & Strojenie; CPU \\
-MLP & Lokalna sieć ReLU w~PyTorch & Strojenie; GPU \\
+MLP & Lokalna sieć ReLU\footnote{Prostowana jednostka liniowa (ang. \textit{rectified linear unit}).} w~PyTorch & Strojenie; GPU\footnote{Procesor graficzny (ang. \textit{graphics processing unit}).} \\
 TabNet & pytorch-tabnet & Strojenie; GPU \\
 FT-Transformer & rtdl-revisiting-models & Strojenie; GPU \\
 RealMLP & RealMLP-TD, pytabkit przez TabArena & Strojenie; GPU \\
 ModernNCA & Implementacja TALENT przez TabArena & Strojenie; GPU \\
 TabM & TabM-mini, 32 podmodele przez TabArena & Strojenie; GPU \\
-TabPFN-3.5 & Lokalny checkpoint podstawowego wariantu & Stała konfiguracja; GPU \\
+TabPFN-3.5 & Lokalny checkpoint\footnote{Zapisany stan wag modelu (ang. \textit{checkpoint}).} podstawowego wariantu & Stała konfiguracja; GPU \\
 \bottomrule
 \end{tabularx}
+\end{minipage}
 \end{table}
 
 \subsection{Metody konwencjonalne}
@@ -70,7 +72,7 @@ W~badaniu CatBoost zachowuje dedykowaną obsługę kategorii, szczególnie istot
 \subsection{MLP i mechanizmy regularyzacji}
 \label{sec:mlp}
 
-MLP stanowi punkt odniesienia dla metod, które zmieniają selekcję cech, reprezentację kolumn lub sposób łączenia predykcji. Przy ocenie jego jakości uwzględnia się przygotowanie wejścia i~sposób uczenia. W~badaniu głównym zastosowano lokalny model ReLU z~AdamW, dropoutem i~wyborem stanu według straty walidacyjnej. Domyślnie ma dwie warstwy ukryte o~256 i~128 jednostkach, dropout~0,1, tempo uczenia~0,001, zanik wag~$10^{-4}$ i~limit 100 epok, z~wcześniejszym zatrzymaniem po dziesięciu epokach bez poprawy straty walidacyjnej. Kategorie są kodowane zero-jedynkowo z~limitem 256 kolumn na cechę, a~cechy numeryczne skalowane. Partię dobiera się do treningowej części foldu, czyli podzbioru wydzielonego w~walidacji krzyżowej, zgodnie z~regułą opisaną w~sekcji~\ref{sec:strojenie}.
+MLP stanowi punkt odniesienia dla metod, które zmieniają selekcję cech, reprezentację kolumn lub sposób łączenia predykcji. Przy ocenie jego jakości uwzględnia się przygotowanie wejścia i~sposób uczenia. W~badaniu głównym zastosowano lokalny model z~jednostkami ReLU, optymalizatorem AdamW, dropoutem i~wyborem stanu według straty walidacyjnej. Domyślnie ma dwie warstwy ukryte o~256 i~128 jednostkach, dropout~0,1, tempo uczenia~0,001, zanik wag~$10^{-4}$ i~limit 100 epok, z~wcześniejszym zatrzymaniem po dziesięciu epokach bez poprawy straty walidacyjnej. Kategorie są kodowane zero-jedynkowo z~limitem 256 kolumn na cechę, a~cechy numeryczne skalowane. Rozmiar partii dobiera się do liczby przykładów treningowych pozostałych po wydzieleniu podzbioru walidacyjnego (ang. \textit{fold}) w~walidacji krzyżowej, zgodnie z~regułą opisaną w~sekcji~\ref{sec:strojenie}.
 
 Dropout i~zanik wag ingerują w~uczenie na różnych poziomach. Przy konwencji skalowania w~treningu dropout zastępuje aktywację $h$ przez
 \begin{equation}
@@ -96,28 +98,28 @@ Wpływ obu regularyzatorów ocenia się w~osobnym badaniu~B, którego projekt op
 \subsubsection{TabNet: sekwencyjna selekcja cech}
 \label{sec:tabnet}
 
-Globalny wybór cech narzuca tę samą reprezentację wszystkim obserwacjom. TabNet pozwala natomiast dobierać wykorzystywane informacje osobno dla obserwacji i~kolejnych kroków decyzyjnych, tworząc sekwencję masek cech. Dla jednej obserwacji maskę kroku~$s$ można zapisać jako
+Globalny wybór cech narzuca tę samą reprezentację wszystkim obserwacjom. TabNet pozwala natomiast dobierać wykorzystywane informacje osobno dla obserwacji i~kolejnych kroków decyzyjnych, tworząc sekwencję masek cech. Maski wyznacza się przez rzutowanie na sympleks za pomocą funkcji sparsemax. Dla jednej obserwacji maskę kroku~$s$ można zapisać jako
 \begin{equation}
 M_s=\operatorname{sparsemax}\!\left(P_{s-1}\odot h_s(a_{s-1})\right),
 \qquad P_s=P_{s-1}\odot(\gamma-M_s),
 \label{eq:tabnet-maska}
 \end{equation}
-gdzie $a_{s-1}$ jest reprezentacją przekazywaną z~poprzedniego kroku, $h_s$ uczonym przekształceniem, $P_0$ wektorem jedynek, a~$\gamma$ reguluje możliwość ponownego użycia cech. Sparsemax rzutuje wyniki na sympleks i~może nadawać części współrzędnych dokładne zera. Maska mnoży wejście, którego przekształcona reprezentacja jest dzielona na wkład do decyzji i~informację dla kolejnego kroku. Dodatkowa kara entropijna kontroluje rozproszenie masek~\cite{arik2021tabnet}.
+gdzie $a_{s-1}$ jest reprezentacją przekazywaną z~poprzedniego kroku, $h_s$ uczonym przekształceniem, $P_0$ wektorem jedynek, a~$\gamma$ reguluje możliwość ponownego użycia cech. Takie rzutowanie może nadawać części współrzędnych dokładne zera. Maska mnoży wejście, którego przekształcona reprezentacja jest dzielona na wkład do decyzji i~informację dla kolejnego kroku. Dodatkowa kara entropijna kontroluje rozproszenie masek~\cite{arik2021tabnet}.
 
 Ta sama kolumna może dzięki temu wnosić różny wkład do decyzji dla różnych obserwacji, a~agregując maski, można opisać sposób korzystania z~wejścia. W~pracy ocenia się nadzorowaną klasyfikację z~użyciem TabNet, bez osobnego badania wyjaśnień i~samonadzorowanego pretrenowania.
 
 \subsubsection{FT-Transformer: tokeny cech i uwaga}
 \label{sec:ft-transformer}
 
-Cechy tabeli mają różną semantykę, ale ich znaczenie predykcyjne może zależeć od wzajemnych relacji. FT-Transformer łączy oba aspekty: zachowuje odrębność kolumn w~tokenizacji właściwej każdej cesze, a~następnie uczy interakcji między tokenami. Przy wymiarze tokenu~$h$ reprezentacja numeryczna ma postać $t_j=b_j+x_jw_j$, gdzie $b_j,w_j\in\mathbb{R}^{h}$, natomiast dla kategorii $t_j=b_j+E_j[x_j]$, gdzie $E_j$ jest uczoną tablicą osadzeń. Token klasyfikacyjny dołączony do tokenów cech agreguje informację wykorzystywaną przez głowicę wyjściową~\cite{gorishniy2021revisiting}. Tożsamość kolumny koduje się w~parametrach tokenizatora.
+Cechy tabeli mają różną semantykę, ale ich znaczenie predykcyjne może zależeć od wzajemnych relacji. FT-Transformer łączy oba aspekty: zachowuje odrębność kolumn w~tokenizacji właściwej każdej cesze, a~następnie uczy interakcji między tokenami. Przy wymiarze tokenu~$h$ reprezentacja numeryczna ma postać $t_j=b_j+x_jw_j$, gdzie $b_j,w_j\in\mathbb{R}^{h}$, natomiast dla kategorii $t_j=b_j+E_j[x_j]$, gdzie $E_j$ jest uczoną tablicą osadzeń. Token klasyfikacyjny (ang. \textit{classification token}, CLS) dołączony do tokenów cech agreguje informację wykorzystywaną przez głowicę wyjściową~\cite{gorishniy2021revisiting}. Tożsamość kolumny koduje się w~parametrach tokenizatora.
 
-W~pojedynczej głowie uwagi współczynniki mają postać $A=\operatorname{softmax}(QK^\top/\sqrt{h_a})$, gdzie $h_a$ oznacza wymiar klucza, a~softmax działa wierszami. Agregacja $AV$ łączy reprezentacje cech w~obrębie jednej obserwacji. Pełna macierz uwagi ma $(d+1)^2$ elementów na głowę, a~człon kosztu obliczania podobieństw rośnie jak $O(d^2h_a)$. Szeroki Bioresponse stanowi z~tego względu inny przypadek obliczeniowy niż tabela o~podobnej liczbie wierszy i~kilkudziesięciu cechach.
+W~pojedynczej głowie uwagi stosuje się znormalizowaną funkcję wykładniczą (ang. \textit{softmax}), a~wpółczynniki mają postać $A=\operatorname{softmax}(QK^\top/\sqrt{h_a})$, gdzie $h_a$ oznacza wymiar klucza, a~softmax działa wierszami. Agregacja $AV$ łączy reprezentacje cech w~obrębie jednej obserwacji. Pełna macierz uwagi ma $(d+1)^2$ elementów na głowę, a~człon kosztu obliczania podobieństw rośnie jak $O(d^2h_a)$. Szeroki Bioresponse stanowi z~tego względu inny przypadek obliczeniowy niż tabela o~podobnej liczbie wierszy i~kilkudziesięciu cechach.
 
 W~badaniu wykorzystuje się implementację autorów~\cite{rtdlImplementation}, z~lokalną obsługą uczenia i~ograniczeń pamięci opisanych w~sekcji~\ref{sec:partie-platformy}.
 
 Rysunek~\ref{fig:reprezentacje} zestawia trzy sposoby przetwarzania wejścia: warstwy gęste, sekwencyjne maski oraz uwagę nad tokenami cech.
 
-\begin{figure}[tbp]\centering\small
+\begin{figure}[!htbp]\centering\small
 \input{figures/source/przeplyw-reprezentacji.tex}
 \caption{Przetwarzanie cech w MLP, TabNet i FT-Transformer. Opracowanie własne na podstawie opisów metod~\cite{gorishniy2021revisiting,arik2021tabnet}.}
 \label{fig:reprezentacje}
@@ -146,7 +148,7 @@ a_j(x)=\frac{\exp[-\|\phi_\theta(x)-\phi_\theta(x_j)\|_2^2]}
 p_c(x)=\sum_{j\in\mathcal{B}(x)}a_j(x)\mathbf{1}[y_j=c].
 \label{eq:modernnca}
 \end{equation}
-Podczas uczenia obserwacja nie może być własnym kandydatem. Minimalizacja $-\log p_{y_i}(x_i)$ dopasowuje geometrię bezpośrednio do miękkiej agregacji etykiet. W~stosunku do klasycznej metody NCA (ang. \textit{neighbourhood components analysis})~\cite{goldberger2004nca} zmieniono nie tylko liniową projekcję, lecz także cel uczenia i~regułę predykcji: miękka agregacja pozostaje używana przy ocenie nowych przypadków~\cite{ye2025modernnca}.
+Podczas uczenia obserwacja nie może być własnym kandydatem. Minimalizacja $-\log p_{y_i}(x_i)$ dopasowuje geometrię bezpośrednio do miękkiej agregacji etykiet. W~stosunku do klasycznej analizy składowych sąsiedztwa (ang. \textit{neighbourhood components analysis}, NCA)~\cite{goldberger2004nca} zmieniono nie tylko liniową projekcję, lecz także cel uczenia i~regułę predykcji: miękka agregacja pozostaje używana przy ocenie nowych przypadków~\cite{ye2025modernnca}.
 
 Autorzy stosują nieliniowe bloki reprezentacji i~osadzenia cech numerycznych, a~w~treningu losują kandydatów sąsiedztwa, aby ograniczyć koszt porównywania każdej partii z~całym zbiorem odniesienia. Przy dokładnej predykcji z~$N$ wektorami odniesienia o~wymiarze~$h$ samo obliczenie odległości jednego zapytania wymaga $O(Nh)$ operacji, poza kosztem reprezentacji.
 
@@ -164,16 +166,16 @@ gdzie $W\in\mathbb{R}^{h_{\mathrm{out}}\times h_{\mathrm{in}}}$ jest wspólna, a
 
 Różnica między tymi operacjami jest istotna dla interpretacji zespołu. Średnia strat wymaga użytecznej predykcji od każdego podmodelu; strata obliczona dopiero dla średniej prawdopodobieństw miałaby inny gradient. Przy $R$ podmodelach warstwa z~równania~\ref{eq:tabm-warstwa} wymaga $h_{\mathrm{out}}h_{\mathrm{in}}+R(h_{\mathrm{in}}+2h_{\mathrm{out}})$ parametrów, zamiast $R(h_{\mathrm{out}}h_{\mathrm{in}}+h_{\mathrm{out}})$ dla niezależnych kopii. Oszczędność pamięci parametrów nie usuwa jednak konieczności przetwarzania $R$ reprezentacji i~przechowywania ich aktywacji.
 
-Za pomocą TabM bada się kompromis między jakością zespołu a~kosztem współdzielenia parametrów. Zarówno konfiguracja domyślna, jak i~losowani kandydaci w~przypiętej wersji integracji TabArena, czyli wersji ustalonej dla badania, wykorzystują wariant TabM-mini z~32 podmodelami. Dla cech numerycznych przewidziano osadzenia odcinkowo liniowe, wyłączane przez implementację, gdy nie można wyznaczyć poprawnego podziału na przedziały. Pełne parametry każdej ocenianej konfiguracji są zachowywane razem z~wynikiem.
+Za pomocą TabM bada się kompromis między jakością zespołu a~kosztem współdzielenia parametrów. Zarówno konfiguracja domyślna, jak i~losowani kandydaci w~ustalonej dla tego badania wersji integracji TabArena, wykorzystują wariant TabM-mini z~32 podmodelami. Dla cech numerycznych przewidziano osadzenia odcinkowo liniowe, wyłączane przez implementację, gdy nie można wyznaczyć poprawnego podziału na przedziały. Pełne parametry każdej ocenianej konfiguracji są zachowywane razem z~wynikiem.
 
 \subsection{TabPFN-3.5: pretrenowanie i kontekst zadania}
 \label{sec:tabpfn}
 
 Dotychczas opisane sieci dopasowują wagi na danych bieżącego zadania. TabPFN-3.5 wykorzystuje inną możliwość: przenosi znaczną część uczenia do pretrenowania, a~nowe zadanie przedstawia modelowi jako oznakowany kontekst. Schemat inferencji można zapisać jako $p_{\theta_0}(y_*\mid x_*,\mathcal{D}_{\mathrm{ctx}})$: wagi $\theta_0$ są ustalone, natomiast oznakowany kontekst $\mathcal{D}_{\mathrm{ctx}}$ zmienia się między zadaniami. Adaptacja odbywa się przez warunkowanie predykcji kontekstem, bez ponownego uczenia całej sieci na każdym zbiorze. Rozkład syntetycznych zadań pretrenowania stanowi zatem część założeń indukcyjnych modelu~\cite{jaeger2026tabpfn35}.
 
-Raport wersji~3.5 opisuje kodowanie wartości wykorzystujące zarówno ich skalę numeryczną, jak i~położenie w~empirycznym rozkładzie kolumny kontekstu. Cechy Fouriera reprezentują wartości, a~sygnał ECDF dostarcza informacji rangowej. Zachowane są także wskaźniki braków. Model otrzymuje w~ten sposób różne opisy tej samej kolumny. Sama składowa rangowa jest niezmiennicza względem ściśle rosnącej transformacji, lecz cały model, korzystający również z~wartości, nie musi mieć tej własności~\cite{jaeger2026tabpfn35}.
+Raport wersji~3.5 opisuje kodowanie wartości wykorzystujące zarówno ich skalę numeryczną, jak i~położenie w~empirycznym rozkładzie kolumny kontekstu. Cechy Fouriera reprezentują wartości, a~empiryczna dystrybuanta (ang. \textit{empirical cumulative distribution function}, ECDF) dostarcza informacji rangowej. Zachowane są także wskaźniki braków. Model otrzymuje w~ten sposób różne opisy tej samej kolumny. Sama składowa rangowa jest niezmiennicza względem ściśle rosnącej transformacji, lecz cały model, korzystający również z~wartości, nie musi mieć tej własności~\cite{jaeger2026tabpfn35}.
 
-W~pracy ocenia się podstawowy wariant uruchamiany lokalnie z~ustaloną wersją wag, pełnym kontekstem części rozwojowej i~stałymi ustawieniami inferencji. Nie podlega strojeniu ani nie jest obejmowany zespołem ośmiu foldów. Wykorzystuje się zapisany stan wag (ang. \textit{checkpoint}) \path{tabpfn-v3.5-20260909.safetensors} i~ziarno~0, a~podczas inferencji uśrednia osiem predykcji uzyskanych dla różnie przekształconych danych wejściowych.\footnote{Wyniki wariantów Plus i~Thinking z~raportu dotyczą innych procedur niż wybrany wariant podstawowy.}
+W~pracy ocenia się podstawowy wariant uruchamiany lokalnie z~ustaloną wersją wag, pełnym kontekstem części rozwojowej i~stałymi ustawieniami inferencji. Nie podlega strojeniu ani nie jest obejmowany zespołem ośmiu foldów. Wykorzystuje się zapisany stan wag \path{tabpfn-v3.5-20260909.safetensors} i~ziarno~0, a~podczas inferencji uśrednia osiem predykcji uzyskanych dla różnie przekształconych danych wejściowych.\footnote{Wyniki wariantów Plus i~Thinking z~raportu dotyczą innych procedur niż wybrany wariant podstawowy.}
 
 Przygotowanie kontekstu i~predykcja obciążają bieżące zadanie, natomiast pretrenowanie jest kosztem zewnętrznym. Koszt lokalnej inferencji zależy od liczności i~szerokości kontekstu. W~zadaniach takich jak Helena istotne są ponadto koszt reprezentacji stu klas i~ograniczenia pamięci przy pełnym kontekście.
 

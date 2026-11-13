@@ -50,7 +50,7 @@ Przy przygotowaniu danych trzeba odróżnić brak wartości, wartość zerową i
 
 Rozwój sieci dla danych tabelarycznych odbywał się przy silnej konkurencji ze strony zespołów drzew. XGBoost łączy gradientowe wzmacnianie drzew z~rozwiązaniami umożliwiającymi wydajne uczenie~\cite{chen2016xgboost}. CatBoost poświęca szczególną uwagę cechom kategorycznym i~ograniczaniu obciążenia wynikającego z~wykorzystania etykiet podczas ich kodowania~\cite{prokhorenkova2018catboost}. Dla metod neuronowych stanowi to wymagający punkt odniesienia: większa swoboda reprezentacji musi przynieść korzyść wobec procedur dobrze dostosowanych do tabel.
 
-Jedną z~odpowiedzi była specjalizacja architektury. TabNet wybiera cechy za pomocą sekwencyjnego mechanizmu uwagi, dzięki czemu kolejne kroki przetwarzania mogą wykorzystywać różne fragmenty obserwacji~\cite{arik2021tabnet}. FT-Transformer reprezentuje poszczególne cechy jako tokeny i~łączy informacje za pomocą samouwagi~\cite{gorishniy2021revisiting}. W~obu przypadkach sposób przetwarzania uwzględnia odrębność kolumn, lecz realizuje to inaczej. TabNet steruje dostępem do cech, a~FT-Transformer uczy zależności między ich reprezentacjami.
+Jedną z~odpowiedzi była specjalizacja architektury. TabNet wybiera cechy za pomocą sekwencyjnego mechanizmu uwagi, dzięki czemu kolejne kroki przetwarzania mogą wykorzystywać różne fragmenty obserwacji~\cite{arik2021tabnet}. FT-Transformer reprezentuje poszczególne cechy jako jednostki wejściowe w~postaci wektorów (ang. \textit{tokens}) i~łączy informacje za pomocą samouwagi (ang. \textit{self-attention})~\cite{gorishniy2021revisiting}. W~obu przypadkach sposób przetwarzania uwzględnia odrębność kolumn, lecz realizuje to inaczej. TabNet steruje dostępem do cech, a~FT-Transformer uczy zależności między ich reprezentacjami.
 
 Równolegle rozwijano prostsze sieci gęste. Kadra i~współautorzy pokazali znaczenie wspólnego doboru technik regularyzacji, kierując uwagę na procedurę uczenia MLP~\cite{kadra2021regularization}. W~podobnym kierunku poszli Holzmüller i~współautorzy, proponując RealMLP. Metoda rozwija procedurę uczenia sieci gęstej przez połączenie przygotowania cech, ustawień sieci i~optymalizacji z~hiperparametrami opracowanymi na wielu zadaniach~\cite{holzmueller2024realmlp}. Ustawienia domyślne zawierają w~ten sposób wynik wcześniejszego doboru, wraz z~wiedzą pozyskaną z~danych i~poniesionym kosztem obliczeniowym.
 
@@ -70,7 +70,7 @@ MLP jest podstawą bardziej rozbudowanych procedur, a~reprezentacja cech, regula
 \subsection{Badania porównawcze}
 \label{sec:benchmarki}
 
-W~przeglądzie narracyjnym uwzględniono wybrane publikacje dostępne w~momencie przygotowywania pracy, istotne dla doboru metod i~projektu eksperymentów. Wykorzystane wersje preprintów wskazano w~bibliografii.
+W~przeglądzie narracyjnym uwzględniono wybrane publikacje dostępne w~momencie przygotowywania pracy, istotne dla doboru metod i~projektu eksperymentów. W~bibliografii wskazano wykorzystane wersje przedpublikacyjne (ang. \textit{preprints}).
 
 \subsubsection{Od porównania architektur do analizy warunków}
 

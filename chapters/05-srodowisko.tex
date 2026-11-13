@@ -50,7 +50,7 @@ Rysunek~\ref{fig:architektura} przedstawia zależności komponentów i~oddzielen
 \subsection{Izolacja informacji i identyfikowalność danych}
 \label{sec:izolacja-platformy}
 
-Przygotowane dane są przechowywane jako plik Parquet z~manifestem i~sumami kontrolnymi. Źródła OpenML mają określone identyfikatory i~wersje, natomiast tożsamość pobieranych archiwów UCI ustala się przez sumę kontrolną zawartości. Santander jest pobierany automatycznie z~OpenML (identyfikator 46859, wersja~2) w~ramach wspólnej procedury przygotowania danych. Kontrola zgodności schematu i~hashu chroni przed niezamierzoną podmianą danych. Ich audyt opisano w~sekcji~\ref{sec:dane-audyt}.
+Przygotowane dane są przechowywane jako plik Parquet z~manifestem i~sumami kontrolnymi. Źródła OpenML mają określone identyfikatory i~wersje, natomiast tożsamość pobieranych archiwów UCI ustala się przez sumę kontrolną zawartości. Santander jest pobierany automatycznie z~OpenML (identyfikator 46859, wersja~2) w~ramach wspólnej procedury przygotowania danych. Kontrola zgodności schematu i~wyniku funkcji haszującej (ang. \textit{hash}) chroni przed niezamierzoną podmianą danych. Ich audyt opisano w~sekcji~\ref{sec:dane-audyt}.
 
 Zewnętrzne podziały zachowują identyfikatory wierszy, etykiety i~grupy pacjentów. Kolumny grupujące nie wchodzą do predyktorów. Moduł wykonawczy zapisuje rzeczywiste indeksy walidacji wewnętrznej, co umożliwia późniejszą kontrolę pokrycia OOF i~rozłączności pacjentów. Zdefiniowano także zastrzeżone nazwy pomocniczych kolumn, a~konflikt z~danymi wejściowymi powoduje odrzucenie danych, aby uniknąć nadpisania cechy.
 
@@ -63,7 +63,7 @@ Raport zachowuje odziedziczoną nazwę pola \texttt{log\_loss\_val}, chociaż za
 \subsection{Artefakty, awarie i wznowienie}
 \label{sec:artefakty-wznowienie}
 
-Obliczenia wznawia się z~wykorzystaniem artefaktów zestawionych w~tabeli~\ref{tab:artefakty}, przypisanych do tożsamości danego badania. Identyfikator badania jest wyznaczany z~efektywnych ustawień, ścieżek, manifestów danych, skrótu źródeł i~pliku zależności, wybranych wersji pakietów oraz zapisanej charakterystyki sprzętu. Dane są serializowane w~ustalonej postaci i~identyfikowane przez SHA-256. Skrót źródeł obejmuje moduły wykonawcze, \path{pyproject.toml} i~\path{uv.lock}, z~pominięciem dokumentacji, testów i~skryptów wdrożeniowych. Identyfikator commitu i~obrazu kontenera należy zachować osobno. Zmiana ścieżek może zmienić tożsamość mimo tej samej treści danych.
+Obliczenia wznawia się z~wykorzystaniem artefaktów zestawionych w~tabeli~\ref{tab:artefakty}, przypisanych do tożsamości danego badania. Identyfikator badania jest wyznaczany z~efektywnych ustawień, ścieżek, manifestów danych, skrótu źródeł i~pliku zależności, wybranych wersji pakietów oraz zapisanej charakterystyki sprzętu. Dane są serializowane w~ustalonej postaci i~identyfikowane przez SHA-256. Skrót źródeł obejmuje moduły wykonawcze, \path{pyproject.toml} i~\path{uv.lock}, z~pominięciem dokumentacji, testów i~skryptów wdrożeniowych. Identyfikatory zapisu zmian w~repozytorium (ang. \textit{commit}) i~obrazu kontenera należy zachować osobno. Zmiana ścieżek może zmienić tożsamość mimo tej samej treści danych.
 
 \begin{table}[tbp]
 \centering\small
@@ -117,7 +117,7 @@ $[128000, \infty)$ & 1024 & 4096 & 512 \\
 
 Po zastosowaniu mnożnika rozmiar partii zaokrągla się w~dół do potęgi dwójki, z~minimum ośmiu przykładów. Następnie uwzględnia się opisane poniżej ograniczenie pamięci FT-Transformera lub korektę TabNet zapobiegającą pozostawieniu jednoelementowej partii. W~TabNet osobno dobierana jest partia wirtualna, czyli rozmiar fragmentów partii wykorzystywanych przy normalizacji. Jej wartość bazowa pochodzi z~tej samej tabeli, lecz nie jest skalowana mnożnikiem. Ogranicza się ją do rozmiaru partii uczenia, po czym w~razie potrzeby zwiększa, aby uniknąć jednoelementowych fragmentów także w~ostatniej, niepełnej partii. Jawne zadanie całkowitego rozmiaru partii wyłącza automatyczny dobór i~działanie mnożnika, ale pozostawia wymienione ograniczenia wykonania.
 
-W~FT-Transformerze efektywny rozmiar partii jest dodatkowo ograniczany na podstawie liczby cech i~głów uwagi. Dla $d$ predyktorów i~$H$ głów przyjmuje się $4H(d+1)^2$ bajtów na przykład dla pojedynczego tensora wyników uwagi w~formacie float32, z~uwzględnieniem tokenu klasyfikacyjnego. Z~przydziału 4~GiB wyznacza się limit liczby przykładów, zaokrąglany w~dół do potęgi dwójki, z~dolnym ograniczeniem tego limitu do ośmiu. Efektywna partia jest mniejszą z~wartości uzyskanej po automatycznym doborze i~zastosowaniu mnożnika oraz tak wyznaczonego limitu. Jeżeli rozmiar zadano bezpośrednio jako liczbę całkowitą, limit nakłada się na tę liczbę. Przy 1776 predyktorach limit wynosi 32 przykłady dla ośmiu głów oraz 64 dla czterech. Ograniczenie obowiązuje także podczas walidacji i~predykcji. Jest to heurystyka pamięciowa dotycząca jednego tensora, nie gwarancja zmieszczenia pełnego przebiegu w~VRAM. Ponieważ zmniejszenie partii zmienia również liczbę aktualizacji parametrów na epokę, efektywny rozmiar należy uwzględniać przy interpretacji zarówno kosztu, jak i~jakości modelu.
+W~FT-Transformerze efektywny rozmiar partii jest dodatkowo ograniczany na podstawie liczby cech i~głów uwagi. Dla $d$ predyktorów i~$H$ głów przyjmuje się $4H(d+1)^2$ bajtów na przykład dla pojedynczego tensora wyników uwagi w~32-bitowym formacie zmiennoprzecinkowym o pojedynczej precyzji \texttt{float32}, z~uwzględnieniem tokenu klasyfikacyjnego. Z~przydziału 4~GiB wyznacza się limit liczby przykładów, zaokrąglany w~dół do potęgi dwójki, z~dolnym ograniczeniem tego limitu do ośmiu. Efektywna partia jest mniejszą z~wartości uzyskanej po automatycznym doborze i~zastosowaniu mnożnika oraz tak wyznaczonego limitu. Jeżeli rozmiar zadano bezpośrednio jako liczbę całkowitą, limit nakłada się na tę liczbę. Przy 1776 predyktorach limit wynosi 32 przykłady dla ośmiu głów oraz 64 dla czterech. Ograniczenie obowiązuje także podczas walidacji i~predykcji. Jest to heurystyka pamięciowa dotycząca jednego tensora, nie gwarancja zmieszczenia pełnego przebiegu w~pamięci urządzenia graficznego (ang. \textit{video random access memory}, VRAM). Ponieważ zmniejszenie partii zmienia również liczbę aktualizacji parametrów na epokę, efektywny rozmiar należy uwzględniać przy interpretacji zarówno kosztu, jak i~jakości modelu.
 
 \subsection{Pomiar kosztu i interpretacja raportu}
 \label{sec:pomiary-platformy}
@@ -126,19 +126,21 @@ Koszt wyszukiwania i~suma czasów dopasowania konfiguracji wybranych do użycia 
 
 Przyjęto cztery wątki CPU oraz limit partii predykcji 4096, przekazywany lokalnym MLP, FT-Transformerowi i~TabNet. W~dwóch pierwszych metodach obowiązuje również ograniczenie partią uczenia. Natywne integracje i~TabPFN określają podział predykcji na partie we własnych implementacjach. Zakres pomiarów zestawiono w~tabeli~\ref{tab:zakres-pomiarow}.
 
-\begin{table}[tbp]
+\begin{table}[!htbp]
 \centering\small
 \caption{Zakres pomiarów pamięci podczas dopasowania.}
 \label{tab:zakres-pomiarow}
+\begin{minipage}{\linewidth}
 \begin{tabularx}{\linewidth}{P{0.18\linewidth}YY}
 \toprule
 Miara & Zakres & Granica interpretacji \\
 \midrule
-RSS & Pamięć rezydentna procesu na CPU & Nie jest pomiarem całej maszyny \\
+RSS\footnote{Rozmiar pamięci rezydentnej procesu (ang. \textit{resident set size}).} & Pamięć rezydentna procesu na CPU & Nie jest pomiarem całej maszyny \\
 Pamięć PyTorch & Pamięć przydzielona i~rezerwowana na GPU & Nie obejmuje wszystkich alokacji procesu ani innych użytkowników GPU \\
 Dostępność śledzenia & Znacznik w~bloku \texttt{memory\_usage} & Brak pomiaru nie oznacza zerowego zużycia \\
 \bottomrule
 \end{tabularx}
+\end{minipage}
 \end{table}
 
 Pomiary pamięci są zapisywane w~bloku \texttt{memory\_usage} rekordu konfiguracji i~obejmują dopasowanie. Nie wyznaczają szczytu całej próby ani pamięci testowej predykcji. Osobny pomiar inferencji jest szczególnie istotny dla KNN i~TabPFN, które zachowują zbiór odniesienia lub kontekst zadania. Zewnętrzne pretrenowanie TabPFN pozostaje poza kosztem lokalnego wykonania.
@@ -152,7 +154,7 @@ Moduł metryk zapisuje nieokreślone ROC AUC jako brak wartości, lecz nie zapis
 
 Poprawność platformy ocenia się od wejściowych danych po odtworzony raport. Kontrole wymiarów i~prawdopodobieństw wykrywają błędy interfejsów, a~porównanie identyfikatorów wierszy i~grup sprawdza przepływ informacji między treningiem, walidacją i~testem. Na etapie zapisu i~wznowienia sprawdza się również integralność artefaktów.
 
-Test syntetyczny \texttt{smoke} jest krótkim sprawdzeniem podstawowych operacji platformy: w~niewielkim przebiegu z~regresją logistyczną i~dwuepokowym MLP kontroluje się spójność artefaktów i~przebiegu przy uruchamianiu, zapisie, wznowieniu i~raportowaniu. Test wznowienia wymaga zachowania ukończonych rekordów i~ponowienia wyłącznie tych konfiguracji, dla których nie istnieje kompletny, zgodny zapis. W~podziale grupowym sprawdza się rozłączność pacjentów na każdym poziomie, zachowanie wymaganych klas oraz dokładnie jednokrotne pokrycie obserwacji predykcjami OOF. Kontrolę prowadzi się po identyfikatorach pacjentów, ponieważ różne wiersze mogą opisywać pobyty tej samej osoby.
+Szeroko zakreślony syntetyczny test podstawowego działania (ang. \textit{smoke test}), oznaczony w~kodzie jako \texttt{smoke}, wykorzystuje dane syntetyczne: w~niewielkim przebiegu z~regresją logistyczną i~dwuepokowym MLP kontroluje się spójność artefaktów i~przebiegu przy uruchamianiu, zapisie, wznowieniu i~raportowaniu. Test wznowienia wymaga zachowania ukończonych rekordów i~ponowienia wyłącznie tych konfiguracji, dla których nie istnieje kompletny, zgodny zapis. W~podziale grupowym sprawdza się rozłączność pacjentów na każdym poziomie, zachowanie wymaganych klas oraz dokładnie jednokrotne pokrycie obserwacji predykcjami OOF. Kontrolę prowadzi się po identyfikatorach pacjentów, ponieważ różne wiersze mogą opisywać pobyty tej samej osoby.
 
 Zmiana rewizji programu, danych lub środowiska ogranicza możliwość przenoszenia wcześniejszych sprawdzeń na nowe wykonanie. Szczególne znaczenie mają granice pamięci, asynchroniczność GPU oraz zależność kosztu inferencji TabPFN od rozmiaru kontekstu.
 
