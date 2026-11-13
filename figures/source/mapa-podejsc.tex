@@ -1,0 +1,33 @@
+% Autorski schemat pojęciowy. Podstawę stanowią cytowane opisy metod w rozdziałach 2–3.
+% Strzałki wskazują wspólną ideę; układ nie przedstawia rankingu ani chronologii.
+\begin{minipage}[t]{0.30\linewidth}
+\centering
+\textbf{Przetwarzanie cech}\par\medskip
+\fbox{\parbox{0.85\linewidth}{\centering TabNet\\sekwencyjny wybór cech}}\par\medskip
+\fbox{\parbox{0.85\linewidth}{\centering FT-Transformer\\uwaga między tokenami}}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.30\linewidth}
+\centering
+\textbf{Sieci gęste}\par\medskip
+\fbox{\strut MLP}\par
+$\Downarrow$\par
+\textit{wspólna podstawa}\par\smallskip
+\fbox{\parbox{0.85\linewidth}{\centering
+RealMLP\\przygotowanie danych i~procedura uczenia\par\medskip
+TabM\\podmodele ze wspólnymi parametrami}}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.30\linewidth}
+\centering
+\textbf{Sąsiedztwo}\par\medskip
+\fbox{\strut KNN}\par
+$\Downarrow$\par
+\textit{wspólna idea}\par\smallskip
+\fbox{\parbox{0.85\linewidth}{\centering ModernNCA\\sąsiedztwo w~uczonej reprezentacji}}
+\end{minipage}
+\par\bigskip
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Wiedza przenoszona między zadaniami}\\
+Pretrenowanie $\longrightarrow$ TabPFN-3.5 $\longleftarrow$ oznakowany kontekst zadania}}
+\par\medskip
+\textbf{Pozostałe odniesienia konwencjonalne}\\
+Regresja logistyczna: model liniowy; XGBoost i~CatBoost: wzmacniane drzewa.

@@ -2,12 +2,12 @@
 \section{Specyfika danych tabelarycznych i stan badań}
 \label{chap:stan-badan}
 
-\subsection{Definicja zadania i właściwości danych}
+\subsection{Specyfika danych tabelarycznych}
 \label{sec:definicja-tabel}
 
-Rozpatrywane zadanie opisuje zbiór $\mathcal{D}=\{(x_i,y_i)\}_{i=1}^{n}$, gdzie $x_i\in\mathcal{X}_1\times\cdots\times\mathcal{X}_d$ jest obserwacją o~ustalonym schemacie cech, a~$y_i\in\{1,\ldots,K\}$ jest etykietą klasy. Klasyfikator zwraca wektor prawdopodobieństw $p_\theta(y\mid x)$. Oznaczenia $n$, $d$ i~$K$ odnoszą się odpowiednio do liczby obserwacji, cech i~klas. Dodatkowo, wymiar reprezentacji po kodowaniu może różnić się od~$d$.
+Specyfika tabel nie sprowadza się do współwystępowania zmiennych numerycznych i~kategorycznych. Poszczególne kolumny mają odrębne znaczenie, rozkłady i~mechanizmy powstawania braków, a~wybór ich kodowania określa geometrię wejścia dostępną modelowi~\cite{borisov2022survey}. Traktowanie kodu kategorii jako wielkości porządkowej wprowadza dodatkowe założenie o~relacji między wartościami. Znaczenie tego założenia zależy od metody: kod kategorii inaczej wpływa na obliczanie odległości, a~inaczej na model z~uczonymi osadzeniami.
 
-Specyfika tabel nie sprowadza się do współwystępowania zmiennych numerycznych i~kategorycznych. Poszczególne kolumny mają odrębne znaczenie, rozkłady i~mechanizmy powstawania braków, a~wybór ich kodowania określa geometrię wejścia dostępną modelowi~\cite{borisov2022survey}. Traktowanie kodu kategorii jako wielkości porządkowej wprowadza dodatkowe założenie o~relacji między wartościami. W~badaniu znaczenie tego założenia ujawnia się szczególnie w~zestawieniu metod odległościowych, sieci z~osadzeniami i~drzew z~natywną obsługą kategorii.
+Rozpatrywane zadanie opisuje zbiór $\mathcal{D}=\{(x_i,y_i)\}_{i=1}^{n}$, gdzie $x_i\in\mathcal{X}_1\times\cdots\times\mathcal{X}_d$ jest obserwacją o~ustalonym schemacie cech, a~$y_i\in\{1,\ldots,K\}$ jest etykietą klasy. Klasyfikator zwraca wektor prawdopodobieństw $p_\theta(y\mid x)$. Oznaczenia $n$, $d$ i~$K$ odnoszą się odpowiednio do liczby obserwacji, cech i~klas. Wymiar reprezentacji po kodowaniu może różnić się od~$d$.
 
 Definicja zadania wymaga również określenia, czego dotyczy pojedyncza predykcja oraz jakie zależności mogą występować między obserwacjami. W~danych szpitalnych jeden wiersz może opisywać pojedynczy pobyt, choć wiele pobytów dotyczy tego samego pacjenta. Jeżeli celem jest ocena generalizacji na nowych pacjentów, wszystkie obserwacje jednej osoby powinny należeć do tej samej części podziału na dane uczące i~testowe. Identyfikator pacjenta pełni wówczas funkcję metadanych służących do podziału, a~nie cechy wejściowej modelu. Rozróżnienie predyktorów, etykiety docelowej i~metadanych porządkujących ocenę przedstawiono w~tabeli~\ref{tab:role-kolumn}.
 
@@ -30,22 +30,20 @@ Etykieta docelowa & Znaczenie zdarzenia i~mapowanie klas & Wybór klasy dodatnie
 \end{tabularx}
 \end{table}
 
-\subsection{Reprezentacja danych i założenia indukcyjne}
+\subsubsection{Znaczenie reprezentacji kolumn}
 \label{sec:reprezentacja-zalozenia}
 
-\subsubsection{Znaczenie reprezentacji kolumn}
+W~danych tabelarycznych naturalny układ współrzędnych niesie informację: poszczególne osie odpowiadają określonym pomiarom lub kategoriom~\cite{grinsztajn2022trees}. Przestawienie kolumn razem z~ich definicjami jest zmianą zapisu, natomiast obrót mieszający cechy numeryczne zmienia sposób udostępnienia ich znaczenia modelowi. Nie ma podstaw, aby te dwie operacje traktować jako równoważne. Podobnie sąsiedztwo kolumn nie uzasadnia lokalności ani translacyjnego współdzielenia parametrów znanego z~przetwarzania obrazów~\cite{borisov2022survey}.
 
-W~danych tabelarycznych naturalny układ współrzędnych niesie informację: poszczególne osie odpowiadają określonym pomiarom lub kategoriom. Przestawienie kolumn razem z~ich definicjami jest zmianą zapisu, natomiast obrót mieszający cechy numeryczne zmienia sposób udostępnienia ich znaczenia modelowi. Nie ma podstaw, aby te dwie operacje traktować jako równoważne. Podobnie sąsiedztwo kolumn nie uzasadnia lokalności ani translacyjnego współdzielenia parametrów znanego z~przetwarzania obrazów~\cite{borisov2022survey}.
-
-Kodowanie zero-jedynkowe, osadzenia kategorii i~transformacje cech numerycznych nie są neutralnymi operacjami wejściowymi. Pierwsze zachowuje rozróżnialność kategorii kosztem szerokości macierzy, drugie pozwala uczyć ich relacje, lecz wymaga oszacowania dodatkowych parametrów. Transformacja skali zmienia odległości wykorzystywane przez KNN i~warunki optymalizacji sieci. Z~tego powodu w~porównaniu głównym ocenie podlegają całe potoki, z~przetwarzaniem właściwym danej metodzie. Wymuszenie identycznego kodowania oznaczałoby ocenę innego pytania: jakości modeli przy narzuconej reprezentacji.
-
-W~badaniu każda metoda zachowuje właściwą jej procedurę przygotowania danych jako integralną część uczenia i~predykcji, przy zachowaniu wspólnych dla wszystkich metod zasad oceny jakości i~kontroli przepływu informacji.
+Kodowanie zero-jedynkowe, osadzenia kategorii i~transformacje cech numerycznych nie są neutralnymi operacjami wejściowymi. Pierwsze zachowuje rozróżnialność kategorii kosztem szerokości macierzy, drugie pozwala uczyć ich relacje, lecz wymaga oszacowania dodatkowych parametrów. Transformacja skali zmienia odległości wykorzystywane przez KNN i~warunki optymalizacji sieci. Porównując metody, trzeba więc uwzględnić przetwarzanie właściwe każdej z~nich. Wymuszenie identycznego kodowania pozwala odpowiedzieć na węższe pytanie: jak modele radzą sobie przy narzuconej reprezentacji.
 
 \subsubsection{Informacyjność cech i nieregularne zależności}
 
-Grinsztajn i~współautorzy~\cite{grinsztajn2022trees} powiązali przewagę drzew w~badanym reżimie z~trzema własnościami: odpornością na cechy nieinformatywne, zdolnością odtwarzania nieregularnych zależności oraz wykorzystaniem orientacji danych. W~eksperymencie dotyczącym cech nieinformatywnych porównano sieć ResNet jako przedstawiciela architektur typu MLP, FT-Transformer oraz dwie metody drzewiaste. Usuwanie mało informatywnych cech zmniejszało przewagę FT-Transformera i~metod drzewiastych nad badaną siecią typu MLP, natomiast dodawanie cech losowych ją zwiększało. Autorzy zastąpili również cechy numeryczne ich kombinacjami liniowymi, stosując losowy obrót przestrzeni cech. Choć przekształcenie było odwracalne i zachowywało informację, zmieniło ranking skuteczności modeli: w takich warunkach sieci neuronowe uzyskały przewagę nad metodami drzewiastymi. Wyniki dotyczą konkretnych architektur i~przekształceń, ale pokazują, dlaczego sama liczba parametrów nie wyjaśnia zdolności uczenia na tabelach.
+Grinsztajn i~współautorzy~\cite{grinsztajn2022trees} powiązali przewagę drzew w~badanym reżimie z~trzema własnościami: odpornością na cechy nieinformatywne, zdolnością odtwarzania nieregularnych zależności oraz wykorzystaniem orientacji danych. W~eksperymencie dotyczącym cech nieinformatywnych porównano sieć ResNet jako przedstawiciela architektur typu MLP, FT-Transformer oraz dwie metody drzewiaste. Usuwanie mało informatywnych cech zmniejszało przewagę FT-Transformera i~metod drzewiastych nad badaną siecią typu MLP, natomiast dodawanie cech losowych ją zwiększało.
 
-Z~perspektywy tej pracy prowadzi to do rozdzielenia dwóch problemów: elastyczności reprezentacji i~efektywnego wykorzystania dostępnej próby. Szeroki zbiór nie musi być trudny, jeżeli sygnał jest silny, a~użyteczna zależność prosta. Z~kolei zwiększanie pojemności sieci nie gwarantuje poprawy, gdy dodatkowe stopnie swobody służą dopasowaniu cech nieinformatywnych. Wykorzystany w~tej pracy zbiór Bioresponse opisuje cząsteczki za pomocą 1776 deskryptorów molekularnych, z~etykietami wskazującymi wystąpienie lub brak określonej odpowiedzi biologicznej\footnote{Rozmiary zbioru i~odnośnik do jego opisu źródłowego podano w~tabeli~\ref{tab:rejestr-zadan}.}. Stanowi on przypadek wysokiej wymiarowości względem liczności treningu, lecz bez kontrolowanych rotacji i~dodawania cech nie pozwala przypisać różnic jakości samemu układowi współrzędnych. Takie rozstrzygnięcie wymagałoby osobnej interwencji.
+W~osobnym eksperymencie autorzy zastosowali losowy obrót przestrzeni cech numerycznych, po ich transformacji kwantylowej do rozkładów normalnych. Obrót był odwracalny, ale zmienił ranking metod: w~agregowanych wynikach tego eksperymentu sieci uzyskały przewagę nad drzewami~\cite{grinsztajn2022trees}. Wyniki dotyczą konkretnych architektur i~przekształceń, ale pokazują, dlaczego sama liczba parametrów nie wyjaśnia zdolności uczenia na tabelach.
+
+Duża elastyczność modelu nie zapewnia jeszcze efektywnego wykorzystania dostępnej próby. Z~drugiej strony szeroki zbiór nie musi być trudny, jeżeli sygnał jest silny, a~użyteczna zależność prosta. Z~kolei zwiększanie pojemności sieci nie gwarantuje poprawy, gdy dodatkowe stopnie swobody służą dopasowaniu cech nieinformatywnych. Wykorzystany w~tej pracy zbiór Bioresponse opisuje cząsteczki za pomocą 1776 deskryptorów molekularnych, z~etykietami wskazującymi wystąpienie lub brak określonej odpowiedzi biologicznej\footnote{Rozmiary zbioru i~odnośnik do jego opisu źródłowego podano w~tabeli~\ref{tab:rejestr-zadan}.}. Stanowi on przypadek wysokiej wymiarowości względem liczności treningu, lecz bez kontrolowanych rotacji i~dodawania cech nie pozwala przypisać różnic jakości samemu układowi współrzędnych. Takie rozstrzygnięcie wymagałoby osobnej interwencji.
 
 \subsubsection{Braki i informacje niedostępne przy predykcji}
 
@@ -53,20 +51,97 @@ Brak wartości nie jest tożsamy z~wartością zerową ani z~nową kategorią wy
 
 Poprawna obsługa techniczna braków nie wystarcza do stwierdzenia poprawności zadania. Cecha zarejestrowana dopiero po wystąpieniu przewidywanego zdarzenia może zapewniać wysoką jakość bez użyteczności w~zadanym momencie predykcji. Dostępność informacji i~role cech określają dopuszczalną interpretację predykcji; nie wynikają z~samej jakości modelu.
 
+\subsection{Rozwój metod: od drzew do modeli pretrenowanych}
+\label{sec:rozwoj-podejsc}
+
+Rozwój sieci dla danych tabelarycznych odbywał się przy silnej konkurencji ze strony zespołów drzew. XGBoost łączy gradientowe wzmacnianie drzew z~rozwiązaniami umożliwiającymi wydajne uczenie~\cite{chen2016xgboost}. CatBoost poświęca szczególną uwagę cechom kategorycznym i~ograniczaniu obciążenia wynikającego z~wykorzystania etykiet podczas ich kodowania~\cite{prokhorenkova2018catboost}. Dla metod neuronowych stanowi to wymagający punkt odniesienia: większa swoboda reprezentacji musi przynieść korzyść wobec procedur dobrze dostosowanych do tabel.
+
+Jedną z~odpowiedzi była specjalizacja architektury. TabNet wybiera cechy za pomocą sekwencyjnego mechanizmu uwagi, dzięki czemu kolejne kroki przetwarzania mogą wykorzystywać różne fragmenty obserwacji~\cite{arik2021tabnet}. FT-Transformer reprezentuje poszczególne cechy jako tokeny i~łączy informacje za pomocą samouwagi~\cite{gorishniy2021revisiting}. W~obu przypadkach sposób przetwarzania uwzględnia odrębność kolumn, lecz realizuje to inaczej. TabNet steruje dostępem do cech, a~FT-Transformer uczy zależności między ich reprezentacjami. Nie są to zatem dwa warianty tej samej selekcji cech.
+
+Równolegle rozwijano prostsze sieci gęste. Kadra i~współautorzy pokazali znaczenie wspólnego doboru technik regularyzacji, kierując uwagę na procedurę uczenia MLP~\cite{kadra2021regularization}. Wynikiem badań był zaproponowany RealMLP, który rozwija ten ogólny kierunek przez połączenie przygotowania cech, ustawień sieci i~optymalizacji z~hiperparametrami opracowanymi na wielu zadaniach~\cite{holzmueller2024realmlp}. Użytkownik otrzymuje w~ten sposób ustawienia domyślne zawierające wynik wcześniejszego doboru. Brak strojenia na aktualnym zbiorze nie oznacza więc, że konfigurację wybrano bez danych i~kosztu obliczeniowego.
+
+ModernNCA wykorzystuje sieć inaczej. Model uczy reprezentacji, w~której przewidywanie etykiety opiera się na podobieństwie do przykładów treningowych~\cite{ye2025modernnca}. Łączy tym samym ideę sąsiedztwa z~uczeniem cech, zamiast zastępować regułę sąsiedztwa zwykłą warstwą wyjściową klasyfikatora. TabM pozostaje bliższy MLP, ale tworzy wiele predykcji przez podmodele współdzielące znaczną część parametrów~\cite{gorishniy2025tabm}. Zespołowanie jest tu składnikiem architektury, a~nie dopiero końcowym łączeniem niezależnie wytrenowanych sieci. Obie metody pokazują, że rozwój modeli tabelarycznych obejmuje więcej niż zwiększanie głębokości sieci lub zastępowanie warstw gęstych uwagą.
+
+Modele fundamentalne, reprezentowane w~tej pracy przez TabPFN-3.5, zmieniają również miejsce, w~którym odbywa się uczenie. Wcześniejsze pretrenowanie przygotowuje model do korzystania z~kontekstu nowego zadania~\cite{jaeger2026tabpfn35}. W~wybranym wariancie oznakowane przykłady wpływają na predykcję bez aktualizowania wag sieci. Porównanie z~metodami uczonymi od początku wymaga wobec tego rozróżnienia wiedzy nabytej wcześniej i~obliczeń wykonywanych dla konkretnego zbioru.
+
+Opisane kierunki nie tworzą szeregu, w~którym każda kolejna metoda zastępuje poprzednią. MLP pozostaje podstawą bardziej rozbudowanych procedur, a~reprezentacja cech, regularyzacja i~łączenie predykcji mogą występować w~jednym rozwiązaniu. Rysunek~\ref{fig:mapa-podejsc} pokazuje te powiązania dla przyjętej puli metod. Szczegółowe mechanizmy przedstawiono w~rozdziale~\ref{chap:metody}.
+
+\plannedfigure
+{figures/ch02/mapa-podejsc.pdf}
+{Powiązania między wybranymi podejściami. Strzałki oznaczają wykorzystanie wspólnej idei, nie przewagę jakości. Opracowanie własne na podstawie opisów metod cytowanych w~tekście.}
+{fig:mapa-podejsc}
+{\input{figures/source/mapa-podejsc.tex}}
+
+\subsection{Badania porównawcze}
+\label{sec:benchmarki}
+
+Przegląd ma charakter narracyjny i~obejmuje wybrane publikacje dostępne w~momencie przygotowywania pracy, istotne dla doboru metod i~projektu eksperymentów. Wykorzystane wersje preprintów wskazano w~bibliografii.
+
+\subsubsection{Od porównania architektur do analizy warunków}
+
+Gorishniy i~współautorzy~\cite{gorishniy2021revisiting} porównali architektury na jedenastu zadaniach klasyfikacji i~regresji we wspólnej procedurze uczenia i~strojenia. Istotnym wynikiem było wykazanie konkurencyjności prostego ResNet oraz silnej pozycji FT-Transformer wśród badanych sieci. Porównanie z~drzewami nie wskazało rozwiązania wygrywającego we wszystkich zadaniach.
+
+Grinsztajn i~współautorzy~\cite{grinsztajn2022trees} uzyskali przewagę drzew na benchmarku 45 zbiorów, utrzymującą się wraz ze zwiększaniem liczby prób strojenia. Badanie obejmowało jednak określony reżim: ograniczoną liczność treningu, usunięte braki, równoważenie klasyfikacji oraz ograniczenia wymiarowości i~kategorii. Wynik stanowi argument za zachowaniem silnych odniesień drzewiastych, lecz nie rozstrzyga o~naturalnie rzadkich klasach ani o~wszystkich późniejszych procedurach neuronowych.
+
+McElfresh i~współautorzy~\cite{mcelfresh2024tabzilla} rozszerzyli perspektywę do 19 algorytmów i~176 zbiorów klasyfikacji. Ich badanie TabZilla jako jedyne spośród zestawionych w~tabeli~\ref{tab:benchmarki} skupia się wyłącznie na klasyfikacji. W~ich analizie na około jednej trzeciej zadań przyrost jakości po lekkim strojeniu CatBoost był większy niż różnica między najlepszym domyślnym modelem drzewiastym i~neuronowym. Znaczenie ma tu konkretna konstrukcja porównania, a~nie ogólne pierwszeństwo strojenia przed doborem algorytmu. Wczesny TabPFN był przy tym oceniany w~odmiennych warunkach i~nie stanowi dowodu skuteczności wybranej tutaj wersji~3.5.
+
+\subsubsection{Procedury uczenia i rozwój benchmarków}
+
+Holzmüller i~współautorzy~\cite{holzmueller2024realmlp} opracowali ustawienia RealMLP na 118 zbiorach, a~następnie ocenili ich przenoszenie na odrębnej grupie 90 zbiorów testowych. Uzyskali konkurencyjność rozwiniętej procedury gęstej względem drzew, lecz obraz zależał od kolekcji i~metryki: na benchmarku Grinsztajna RealMLP wypadał słabiej od CatBoost w~klasyfikacji. Ważnym ustaleniem jest zatem skuteczność przenoszenia ustawień między zadaniami, a~nie bezwarunkowe rozstrzygnięcie na korzyść MLP. Konfiguracja domyślna może zawierać rezultat kosztownego wcześniejszego rozwoju, nawet jeżeli nie jest strojona na aktualnym zbiorze.
+
+Szerszą ocenę metod przedstawiono w~pracy Ye i~współautorów~\cite{ye2025talent}, obejmującej porównanie 40 metod na 300 zbiorach danych oraz dodatkowych kolekcjach testowych. W~zestawieniach wysokie pozycje zajmują modele pretrenowane, a~wśród metod uczonych zadaniowo wyróżniają się rozwinięte MLP i~ModernNCA. Starsze specjalizacje, w~tym TabNet, wypadają słabiej od czołowych zespołów. Autorzy odnotowują także korzyści zespołowania, między innymi dla TabM. Główny protokół stosuje podział 64/16/20 i~100 prób strojenia; agregaty obejmujące regresję pozostają odrębne od wniosków o~klasyfikacji.
+
+TabArena~\cite{erickson2025tabarena} przenosi punkt ciężkości z~jednorazowego rankingu na wersjonowany system oceny danych, modeli i~procedur wyszukiwania. Początkowa, zaproponowana przez autorów kolekcja obejmuje 51 zbiorów. Dla niniejszego projektu najistotniejsze jest rozdzielenie konfiguracji domyślnej, wyboru po strojeniu i~zespołu konfiguracji. Pozwala ono ocenić, czy poprawa wynika z~dodatkowego wyszukiwania, czy z~wykorzystania różnorodności znalezionych rozwiązań. Przyjęte w~tej pracy dwanaście zadań i~własne wyjątki walidacyjne tworzą adaptację tej organizacji eksperymentu, nie reprodukcję oficjalnego rankingu.
+
+Tabela~\ref{tab:benchmarki} zestawia liczby zbiorów i~charakterystyczne elementy omawianych badań.
+
+\begin{table}[tbp]
+\centering
+\caption{Zakres i~charakterystyka wybranych badań porównawczych. Liczby dotyczą kolekcji opisanych w~cytowanych publikacjach, a~nie jednego wspólnego zestawu danych. Opracowanie własne.}
+\label{tab:benchmarki}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}P{0.23\textwidth}P{0.25\textwidth}Y@{}}
+\toprule
+Badanie & Liczba zbiorów & Cecha porównania \\
+\midrule
+Gorishniy i~in.~\cite{gorishniy2021revisiting} & 11 & Architektury oceniane przy wspólnej procedurze uczenia i~strojenia. \\
+Grinsztajn i~in.~\cite{grinsztajn2022trees} & 45 & Kontrolowane przekształcenia cech służące analizie różnic między sieciami i~drzewami. \\
+TabZilla~\cite{mcelfresh2024tabzilla} & 176 & Analiza znaczenia właściwości zbioru i~strojenia dla wyboru algorytmu. \\
+RealMLP~\cite{holzmueller2024realmlp} & 208 & Opracowanie ustawień domyślnych i~ocena ich przenoszenia na odrębne zbiory. \\
+Ye i~in.~\cite{ye2025talent} & 300 & Szerokie porównanie metod, w~tym modeli pretrenowanych i~zespołów. \\
+TabArena~\cite{erickson2025tabarena} & 51 & Oddzielna ocena konfiguracji domyślnych, strojonych i~zespołów konfiguracji. \\
+TabReD~\cite{rubachev2025tabred} & 8 & Podziały czasowe i~rozbudowane cechy odzwierciedlające zastosowania przemysłowe. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Wnioski z porównań}
+\label{sec:synteza-literatury}
+
+Samo przeciwstawienie sieci i~drzew nie wystarcza do wyjaśnienia wyników omawianych badań. Gorishniy i~współautorzy oraz autorzy RealMLP pokazują, jak wiele zależy od jakości neuronowego odniesienia: nową architekturę należy porównywać z~dobrze przygotowaną siecią gęstą~\cite{gorishniy2021revisiting,holzmueller2024realmlp}. TabZilla dostarcza argumentu za osobną oceną konfiguracji domyślnych i~strojonych, a~praca Ye i~współautorów poszerza tę perspektywę o~modele pretrenowane i~zespoły~\cite{mcelfresh2024tabzilla,ye2025talent}. Dla własnego porównania oznacza to potrzebę oceny konkretnych procedur wraz z~ich reprezentacją i~kosztem wyboru konfiguracji.
+
+Przewaga drzew w~badaniu Grinsztajna i~współautorów nie przeczy dobrym wynikom nowszych sieci, ponieważ badania te prowadzono w~różnych warunkach. Różniły się metody uczenia, zbiory danych, budżety obliczeniowe i~sposoby podsumowania wyników. Pokazuje to przykład RealMLP: nawet w~obrębie jednej publikacji jego wyniki względem drzew zależą od wybranej kolekcji zbiorów~\cite{grinsztajn2022trees,holzmueller2024realmlp}. Wyników omawianych publikacji nie łączono w~jedną liczbową ocenę przewagi sieci lub drzew, ponieważ wymagałoby to metaanalizy uwzględniającej różnice między badaniami.
+
+Pozostaje również różnica między wyjaśnieniem wyniku a~wyborem skutecznej procedury. Benchmark ocenia efekt całego rozwiązania; interwencja usuwa lub zmienia wskazany składnik. Wyniki tych dwóch rodzajów badań odpowiadają na uzupełniające się pytania. Powiązanie rankingu z~metacechami może sugerować hipotezę, lecz dopiero dopasowana kontrola pozwala odnieść różnicę do zadanej zmiany. Szczególnie istotne jest to przy analizie regularyzacji --- przewaga całej procedury nie wskazuje jeszcze, który z~jej składników odpowiada za poprawę.
+
+Wiarygodność porównania zależy także od oddzielenia wyboru modelu od końcowej oceny jego jakości. Cawley i~Talbot~\cite{cawley2010selection} pokazali, że optymalizacja kryterium wyboru modelu na skończonej próbie walidacyjnej może prowadzić do nadmiernego dopasowania do tej próby i~obciążać ocenę wybranej procedury. Jest to nadmierne dopasowanie na etapie selekcji modelu (ang. \textit{overfitting in model selection}), odrębne od nadmiernego dopasowania parametrów modelu do danych uczących. Stosowanie wspólnych podziałów walidacyjnych zapewnia porównywalność konfiguracji, lecz nie zastępuje niezależnego testu. Wyniki testowe nie powinny wpływać na dalsze modyfikacje procedury, w~tym na wybór konfiguracji, progu, zespołu ani zakresu prezentowanych porównań.
+
+Porównanie między zbiorami wymaga również innej interpretacji niż analiza powtórzeń na jednym zbiorze~\cite{demsar2006comparisons}. Kolejne podzbiory walidacyjne i~konfiguracje dostarczają informacji o~tym samym zadaniu; nie zastępują nowych zbiorów danych.
+
 \subsection{Trudności w zadaniach klasyfikacji}
 \label{sec:trudne-rezimy}
 
 \subsubsection{Mała liczba przykładów i wysoka wymiarowość}
 
-Dla oceny generalizacji istotna jest liczba przykładów dostępnych w~konkretnym dopasowaniu, a~nie całkowity rozmiar pliku. Po wydzieleniu testu, walidacji i~podzbioru treningowego relacja wymiaru reprezentacji do liczby obserwacji może być znacznie mniej korzystna niż sugeruje opis zbioru. Dodatkowo rzadkie kategorie i~klasy mają własne, mniejsze liczności efektywne. Przy tej samej wartości $n$ dwa zadania mogą zatem dostarczać bardzo różnej ilości informacji o~parametrach decydujących o~predykcji.
+Dla oceny generalizacji istotna jest liczba przykładów dostępnych w~konkretnym dopasowaniu, a~nie całkowity rozmiar pliku. Po wydzieleniu testu, walidacji i~podzbioru treningowego relacja wymiaru reprezentacji do liczby obserwacji może być znacznie mniej korzystna niż sugeruje opis zbioru. Dodatkowo rzadkie kategorie i~klasy mają własne, mniejsze liczności efektywne. Nawet przy tej samej liczbie przykładów treningowych dwa zadania mogą dostarczać różnej ilości informacji potrzebnej do oszacowania parametrów modelu.
 
-Badanie Kadry i~współautorów~\cite{kadra2021regularization} na 40 zbiorach uzasadnia uwzględnienie wspólnie dobieranych technik regularyzacji jako istotnego składnika porównania sieci. Taki wynik nie rozstrzyga jednak, czy dany składnik pomaga przy ustalonych pozostałych ustawieniach. W~badaniu własnym przyjęto właśnie tę drugą perspektywę: usunięcie dropoutu bądź zaniku wag z~jednej procedury MLP, przy zmiennej liczności treningu. Badanie ocenia wpływ usunięcia danego składnika regularyzacji przy ustalonej architekturze, optymalizatorze i warunku zatrzymania uczenia. Nie określa natomiast najlepszej jakości, jaką każdy wariant mógłby osiągnąć po niezależnym dostrojeniu hiperparametrów.
+Kadra i~współautorzy~\cite{kadra2021regularization} ocenili na 40 zbiorach procedurę wspólnego doboru technik regularyzacji MLP. Wynik takiego badania dotyczy całej dostrojonej procedury. Aby określić wpływ pojedynczego składnika, potrzebne jest porównanie, w~którym zmienia się ten składnik, zachowując pozostałe ustawienia. Odpowiada ono na inne pytanie niż poszukiwanie najlepszego wyniku każdego wariantu po osobnym strojeniu.
 
-Zmiana udziału treningu przy stałej liczbie epok może zmieniać również liczbę aktualizacji parametrów. Jest to istotne dla interpretacji zarówno optymalizacji, jak i~skumulowanego zaniku wag. Dlatego krzywe jakości względem liczności są interpretowane łącznie z~przebiegiem uczenia i~wybraną epoką. Stałe, wyizolowane zbiory walidacyjny i~testowy odseparowują zmianę treningu od zmiany ocenianych populacji. Taka zależność stanowi krzywą wrażliwości na liczność treningu, przy zachowanym budżecie etykiet walidacyjnych.
+Ocena wpływu liczności treningu wymaga również uwzględnienia przebiegu uczenia. Przy stałej liczbie epok mniejszy zbiór może oznaczać mniej aktualizacji parametrów, a~więc także inny skumulowany zanik wag. Krzywą jakości względem liczby przykładów należy zatem odczytywać łącznie z~budżetem uczenia i~regułą zatrzymania. Pozwala to uniknąć przypisywania całej różnicy samemu ograniczeniu danych.
 
 \subsubsection{Niezrównoważenie i rozpoznawanie rzadkiej klasy}
 
-W~klasyfikacji niezrównoważonej trzeba rozdzielić trzy obszary oceny: uporządkowanie obserwacji, wartości prawdopodobieństw i~decyzje przy zadanym progu. Metryka ROC AUC\footnote{Pole pod krzywą ROC (ang. \textit{receiver operating characteristic}); AUC od ang. \textit{area under the curve}.} opisuje pierwszy z~nich, ale nie określa udziału prawdziwych zdarzeń wśród alarmów. Dla ustalonego progu decyzyjnego precyzja jest standardowo definiowana na podstawie macierzy pomyłek jako $TP/(TP+FP)$\footnote{TP (ang. \textit{true positives}) oznacza liczbę prawdziwie dodatnich predykcji, FP (ang. \textit{false positives}) --- fałszywie dodatnich, FN (ang. \textit{false negatives}) --- fałszywie ujemnych, a~TN (ang. \textit{true negatives}) --- prawdziwie ujemnych.}. Aby pokazać jej zależność od niezrównoważenia klas, można przekształcić tę definicję do równoważnej postaci.
+W~klasyfikacji niezrównoważonej trzeba rozdzielić trzy obszary oceny: uporządkowanie obserwacji, wartości prawdopodobieństw i~decyzje przy zadanym progu. Metryka ROC AUC\footnote{Pole pod krzywą ROC (ang. \textit{receiver operating characteristic}); AUC od ang. \textit{area under the curve}.} opisuje pierwszy z~nich, ale nie określa udziału prawdziwych zdarzeń wśród alarmów. Dla ustalonego progu decyzyjnego precyzja jest standardowo definiowana na podstawie macierzy pomyłek jako $TP/(TP+FP)$. Symbole TP i~FP oznaczają liczby prawdziwie i~fałszywie dodatnich predykcji (ang. \textit{true positives}, \textit{false positives}), a~FN i~TN --- fałszywie i~prawdziwie ujemnych (ang. \textit{false negatives}, \textit{true negatives}). Proste przekształcenie tej definicji pokazuje, dlaczego nawet wysoka czułość nie wystarcza do zapewnienia wysokiej precyzji przy rzadkim zdarzeniu.
 
 Przyjmijmy, że klasa rzadka jest klasą dodatnią, obie klasy występują w~ocenianej próbie, a~model wskazuje co najmniej jeden przypadek dodatni. Dla $N=TP+FP+FN+TN$ obserwacji częstość klasy dodatniej wynosi $\pi=(TP+FN)/N$. Czułość TPR\footnote{Ang. \textit{true positive rate}.} oraz odsetek fałszywie dodatnich predykcji w~klasie ujemnej FPR\footnote{Ang. \textit{false positive rate}.} mają postać
 \[
@@ -91,7 +166,7 @@ gdzie $P_k$ i~$R_k$ oznaczają precyzję i~czułość przy $k$-tym z~$m$ różny
 
 Podstawę teoretyczną rozróżnienia ważenia i~progowania stanowi literatura dotycząca uczenia uwzględniającego koszty błędów. Elkan~\cite{elkan2001cost} analizuje związek między kosztami błędnych decyzji, progami klasyfikacji i~zmianą proporcji klas w~uczeniu. Dmochowski i~współautorzy~\cite{dmochowski2010cost} opisują ważoną ujemną log-wiarygodność oraz wskazują znaczenie tego, czy przyjęta rodzina modeli może reprezentować rzeczywiste prawdopodobieństwa klas. Poniżej wyprowadzono minimum warunkowego ryzyka dla binarnej ważonej straty logarytmicznej, aby pokazać wpływ wag na skalę predykcji.
 
-Niech $\eta(x)=P(Y=1\mid X=x)$ oznacza prawdopodobieństwo rzadkiego zdarzenia (kod~1 przyjęto wyłącznie na potrzeby poniższego wyprowadzenia). Dla dodatnich, stałych wag klas $w_1,w_0$ warunkowe ryzyko ważonej straty logarytmicznej ma postać
+Na potrzeby wyprowadzenia rzadkiemu zdarzeniu przypisano etykietę~1. Niech $\eta(x)=P(Y=1\mid X=x)$ oznacza jego prawdopodobieństwo warunkowe. Dla dodatnich, stałych wag klas $w_1,w_0$ warunkowe ryzyko ważonej straty logarytmicznej ma postać
 \begin{equation}
 R_w(q\mid x)=-w_1\eta(x)\log q-w_0[1-\eta(x)]\log(1-q).
 \label{eq:ryzyko-wazone}
@@ -105,7 +180,7 @@ q_w^*(x)=\frac{w_1\eta(x)}{w_1\eta(x)+w_0[1-\eta(x)]},
 \end{equation}
 Wyprowadzenie zakłada, że dla każdego $x$ można dobrać niezależnie predykcję $q(x)$, minimalizując przy tym oczekiwaną stratę dla rzeczywistego prawdopodobieństwa klasy $\eta(x)$. Otrzymane $q_w^*(x)$ opisuje zatem rozwiązanie idealne, z pominięciem ograniczeń architektury, skończonej próby uczącej i~niedoskonałości optymalizacji. W~tych warunkach ważenie zmienia wartości przewidywanych prawdopodobieństw, przy jednoczesnym zachowaniu względnego uporządkowania wartości predykcji wśród przykładów, ponieważ $q_w^*(x)$ jest ściśle rosnącą funkcją $\eta(x)$. Decyzja $q_w^*(x)\geq 1/2$ odpowiada zatem progowi $\eta(x)\geq w_0/(w_0+w_1)$. Wzrost czułości może więc wynikać z~przesunięcia progu decyzji, bez poprawy zdolności modelu do odróżniania przypadków dodatnich od ujemnych.
 
-W~odróżnieniu od powyższego idealnego rozwiązania teoretycznego, rzeczywisty model jest uczony na skończonej próbie, a~jego predykcje zależą od wspólnych parametrów, ograniczeń architektury i~regularyzacji. Ważenie zmienia wówczas przebieg dopasowania i~może wpływać nie tylko na wartości przewidywanych prawdopodobieństw, lecz także na ich względne uporządkowanie. Dlatego badanie~A obejmuje równolegle AP, ROC AUC, nieważoną stratę logarytmiczną oraz decyzje przy progach wybranych na walidacji. Pozwala to odróżnić poprawę rankingu od przesunięcia punktu pracy i~zmiany jakości prawdopodobieństw. Zdarzenie rzadkie jest identyfikowane semantycznie, niezależnie od kodowania nadanego mu przez procedurę przygotowania danych.
+W~odróżnieniu od powyższego idealnego rozwiązania teoretycznego, rzeczywisty model jest uczony na skończonej próbie, a~jego predykcje zależą od wspólnych parametrów, ograniczeń architektury i~regularyzacji. Ważenie zmienia wówczas przebieg dopasowania i~może wpływać nie tylko na wartości przewidywanych prawdopodobieństw, lecz także na ich względne uporządkowanie. Do oceny skutków ważenia potrzebne są więc zarówno miary rankingu, jak i~jakości prawdopodobieństw oraz decyzji progowych. Sama zmiana czułości nie pozwala ustalić, który z~tych aspektów uległ poprawie.
 
 \subsubsection{Wieloklasowość i jakość prawdopodobieństw}
 
@@ -129,113 +204,9 @@ Powtarzające się obserwacje tej samej osoby mogą naruszać interpretację los
 
 W~tej pracy podział Diabetes zachowuje rozłączność pacjentów. Zakres badania nie obejmuje osobnego porównania czasowego, dlatego nie uzasadnia wniosków o~odporności na dryf. Dla pozostałych źródeł interpretacja wyniku również zależy od tego, czy podział odzwierciedla właściwą populację predykcji.
 
-\subsection{Rozwój podejść neuronowych}
-\label{sec:rozwoj-podejsc}
-
-Rozwiązania neuronowe można porządkować według tego, na którym poziomie ingerują w~procedurę predykcji. Zmiana reprezentacji przygotowuje wejście dla modelu, zmiana architektury określa sposób łączenia informacji, a~procedura uczenia wpływa na odnajdywane parametry. Podział ten jest użyteczny, lecz nie jest rozłączny: jedna metoda może łączyć kilka takich elementów~\cite{borisov2022survey}.
-
-Przyjęty dobór obejmuje także podejście oparte na sąsiedztwie i~model wykorzystujący wiedzę nabytą przed otrzymaniem badanego zadania --- reprezentanta rodziny modeli fundamentowych (ang. \textit{foundation models}). Ich obecność rozszerza porównanie poza klasyczny schemat trenowania niezależnej sieci od początku na każdym zbiorze. Podział na modele neuronowe i~konwencjonalne pozostaje przydatny organizacyjnie, ale nie wyczerpuje różnic między procedurami.
-
-Tabela~\ref{tab:mapa-podejsc} porządkuje wybrane metody według ich roli w~porównaniu. Wyjaśnienie mechanizmów znajduje się w~rozdziale~\ref{chap:metody}.
-
-\suppressfloats[t]
-\begin{table}[!htbp]
-\centering\small
-\caption{Role wybranych podejść w~badaniu. Opracowanie własne.}
-\label{tab:mapa-podejsc}
-\begin{tabularx}{\linewidth}{@{}P{0.48\linewidth}Y@{}}
-\toprule
-Rola w~porównaniu & Metody \\
-\midrule
-Odniesienie gęste & MLP \\
-Selekcja cech i~uwaga & TabNet, FT-Transformer \\
-Procedura uczenia & RealMLP \\
-Uczone sąsiedztwo & ModernNCA \\
-Współdzielenie parametrów zespołu & TabM \\
-Pretrenowanie i~kontekst & TabPFN-3.5 \\
-Odniesienia konwencjonalne & Regresja logistyczna, KNN, XGBoost, CatBoost \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\subsection{Badania porównawcze}
-\label{sec:benchmarki}
-
-Przegląd ma charakter narracyjny i~obejmuje publikacje dostępne w~momencie przygotowywania badania, uwzględnione przy doborze metod. W~przypadku publikacji wstępnych wskazano dokładnie wykorzystane wersje, ponieważ kolejne rewizje mogą różnić się zakresem badań. Przegląd koncentruje się na publikacjach przedstawiających wybrane metody oraz badaniach porównawczych istotnych dla ich doboru i~projektu eksperymentów.
-
-\subsubsection{Od porównania architektur do analizy warunków}
-
-Gorishniy i~współautorzy~\cite{gorishniy2021revisiting} porównali architektury na jedenastu zadaniach klasyfikacji i~regresji we wspólnej procedurze uczenia i~strojenia. Istotnym wynikiem było wykazanie konkurencyjności prostego ResNet oraz silnej pozycji FT-Transformer wśród badanych sieci. Porównanie z~drzewami nie wskazało rozwiązania wygrywającego we wszystkich zadaniach. Dla projektu tej pracy oznacza to konieczność uwzględnienia mocnego odniesienia gęstego: specjalizacja architektury wymaga wykazania korzyści względem właściwie przygotowanej sieci bazowej.
-
-Grinsztajn i~współautorzy~\cite{grinsztajn2022trees} uzyskali przewagę drzew na benchmarku 45 zbiorów, utrzymującą się wraz ze zwiększaniem liczby prób strojenia. Badanie obejmowało jednak określony reżim: ograniczoną liczność treningu, usunięte braki, równoważenie klasyfikacji oraz ograniczenia wymiarowości i~kategorii. Wynik stanowi argument za zachowaniem silnych odniesień drzewiastych, lecz nie rozstrzyga o~naturalnie rzadkich klasach ani o~wszystkich późniejszych procedurach neuronowych.
-
-McElfresh i~współautorzy~\cite{mcelfresh2024tabzilla} rozszerzyli perspektywę do 19 algorytmów i~176 zbiorów klasyfikacji. Ich badanie TabZilla jako jedyne spośród zestawionych w~tabeli~\ref{tab:benchmarki} skupia się wyłącznie na klasyfikacji. W~ich analizie na około jednej trzeciej zadań przyrost jakości po lekkim strojeniu CatBoost był większy niż różnica między najlepszym domyślnym modelem drzewiastym i~neuronowym. Znaczenie ma tu konkretna konstrukcja porównania, a~nie ogólne pierwszeństwo strojenia przed doborem algorytmu. Dla niniejszej pracy wynik uzasadnia oddzielną ocenę ustawień domyślnych i~strojonych. Wczesny TabPFN był przy tym oceniany w~odmiennych warunkach i~nie stanowi dowodu skuteczności wybranej tutaj wersji~3.5.
-
-\subsubsection{Procedury uczenia i rozwój benchmarków}
-
-Holzmüller i~współautorzy~\cite{holzmueller2024realmlp} opracowali ustawienia RealMLP na 118 zbiorach, a~następnie ocenili ich przenoszenie na odrębnej grupie 90 zbiorów testowych. Uzyskali konkurencyjność rozwiniętej procedury gęstej względem drzew, lecz obraz zależał od kolekcji i~metryki: na benchmarku Grinsztajna RealMLP wypadał słabiej od CatBoost w~klasyfikacji. Ważnym ustaleniem jest zatem skuteczność przenoszenia ustawień między zadaniami, a~nie bezwarunkowe rozstrzygnięcie na korzyść MLP. Konfiguracja domyślna może zawierać rezultat kosztownego wcześniejszego rozwoju, nawet jeżeli nie jest strojona na aktualnym zbiorze.
-
-Szerszą ocenę metod przedstawiono w~pracy Ye i~współautorów~\cite{ye2025talent}, obejmującej porównanie 40 metod na 300 zbiorach danych oraz dodatkowych kolekcjach testowych. W~zestawieniach wysokie pozycje zajmują modele pretrenowane, a~wśród metod uczonych zadaniowo wyróżniają się rozwinięte MLP i~ModernNCA. Starsze specjalizacje, w~tym TabNet, wypadają słabiej od czołowych zespołów. Autorzy odnotowują także korzyści zespołowania, między innymi dla TabM. To uzasadnia reprezentowanie kilku kierunków rozwoju sieci zamiast utożsamiania całej rodziny z~jednym MLP. Główny protokół stosuje podział 64/16/20 i~100 prób strojenia; agregaty obejmujące regresję pozostają odrębne od wniosków o~klasyfikacji.
-
-TabArena~\cite{erickson2025tabarena} przenosi punkt ciężkości z~jednorazowego rankingu na wersjonowany system oceny danych, modeli i~procedur wyszukiwania. Początkowa kolekcja obejmuje 51 zbiorów. Dla niniejszego projektu najistotniejsze jest rozdzielenie konfiguracji domyślnej, wyboru po strojeniu i~zespołu konfiguracji. Pozwala ono ocenić, czy poprawa wynika z~dodatkowego wyszukiwania, czy z~wykorzystania różnorodności znalezionych rozwiązań. Przyjęte w wersji odciążonej dwanaście zadań i~własne wyjątki walidacyjne tworzą adaptację tej organizacji eksperymentu, nie reprodukcję oficjalnego rankingu.
-
-Tabela~\ref{tab:benchmarki} zestawia liczby zbiorów i~charakterystyczne elementy omawianych badań.
-
-\begin{table}[tbp]
-\centering
-\caption{Zakres i~charakterystyka wybranych badań porównawczych. Liczby dotyczą kolekcji opisanych w~cytowanych publikacjach, a~nie jednego wspólnego zestawu danych. Opracowanie własne.}
-\label{tab:benchmarki}
-\footnotesize
-\begin{tabularx}{\textwidth}{@{}P{0.23\textwidth}P{0.25\textwidth}Y@{}}
-\toprule
-Badanie & Liczba zbiorów & Cecha porównania \\
-\midrule
-Gorishniy i~in.~\cite{gorishniy2021revisiting} & 11 & Architektury oceniane przy wspólnej procedurze uczenia i~strojenia. \\
-Grinsztajn i~in.~\cite{grinsztajn2022trees} & 45 & Kontrolowane przekształcenia cech służące analizie różnic między sieciami i~drzewami. \\
-TabZilla~\cite{mcelfresh2024tabzilla} & 176 & Analiza znaczenia właściwości zbioru i~strojenia dla wyboru algorytmu. \\
-RealMLP~\cite{holzmueller2024realmlp} & 208 & Opracowanie ustawień domyślnych i~ocena ich przenoszenia na odrębne zbiory. \\
-Ye i~in.~\cite{ye2025talent} & 300 & Szerokie porównanie metod, w~tym modeli pretrenowanych i~zespołów. \\
-TabArena~\cite{erickson2025tabarena} & 51 & Oddzielna ocena konfiguracji domyślnych, strojonych i~zespołów konfiguracji. \\
-TabReD~\cite{rubachev2025tabred} & 8 & Podziały czasowe i~rozbudowane cechy odzwierciedlające zastosowania przemysłowe. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\subsection{Zgodności, rozbieżności i ograniczenia syntezy}
-\label{sec:synteza-literatury}
-
-Z~zestawienia wynika przede wszystkim, że etykieta rodziny modelu jest zbyt zgrubna, aby wyjaśniać postęp. Badania Gorishniya i~współautorów~\cite{gorishniy2021revisiting} oraz autorów RealMLP~\cite{holzmueller2024realmlp} wskazują na potrzebę oceny nowych architektur względem dobrze skonfigurowanych sieci gęstych. Z~kolei praca Ye i~współautorów~\cite{ye2025talent} pokazuje znaczenie rozwiniętych procedur uczenia i~zespołów. Wspólnym wnioskiem przyjętym w~tej pracy jest konieczność porównania konkretnych konfiguracji wraz z~ich reprezentacją i~kosztem selekcji, a~nie abstrakcyjnych kategorii ,,sieci'' i~,,drzewa''~\cite{gorishniy2021revisiting,holzmueller2024realmlp,ye2025talent}.
-
-Przewaga drzew w~badaniu Grinsztajna i~współautorów nie przeczy dobrym wynikom nowszych sieci, ponieważ badania te prowadzono w~różnych warunkach. Różniły się metody uczenia, zbiory danych, budżety obliczeniowe i~sposoby podsumowania wyników. Pokazuje to przykład RealMLP: nawet w~obrębie jednej publikacji jego wyniki względem drzew zależą od wybranej kolekcji zbiorów~\cite{grinsztajn2022trees,holzmueller2024realmlp}. Dlatego w~tej pracy obok rankingu przedstawia się różnice jakości dla poszczególnych zadań. Wyników omawianych publikacji nie łączono w~jedną liczbową ocenę przewagi sieci lub drzew, ponieważ wymagałoby to metaanalizy uwzględniającej różnice między badaniami.
-
-Pozostaje również różnica między wyjaśnieniem wyniku a~wyborem skutecznej procedury. Benchmark ocenia efekt całego rozwiązania; interwencja usuwa lub zmienia wskazany składnik. Wyniki tych dwóch rodzajów badań odpowiadają na uzupełniające się pytania. Powiązanie rankingu z~metacechami może sugerować hipotezę, lecz dopiero dopasowana kontrola pozwala odnieść różnicę do zadanej zmiany. Właśnie na tej granicy oparto podział własnego badania na porównanie główne i~dwa eksperymenty uzupełniające.
-
-Ważną osią porównywalności jest oddzielenie selekcji modelu od oceny jego jakości predykcyjnej. Cawley i~Talbot~\cite{cawley2010selection} pokazali, że optymalizacja kryterium wyboru modelu na skończonej próbie walidacyjnej może prowadzić do nadmiernego dopasowania do tej próby i~obciążać ocenę wybranej procedury. Jest to nadmierne dopasowanie na etapie selekcji modelu (ang. \textit{overfitting in model selection}), odrębne od nadmiernego dopasowania parametrów modelu do danych uczących. Stosowanie wspólnych podziałów walidacyjnych zapewnia porównywalność konfiguracji, lecz nie zastępuje niezależnego testu. Wyniki testowe nie powinny wpływać na wybór ani dalsze modyfikacje ocenianej procedury. Etykiety testowe nie powinny służyć wyborowi konfiguracji, progu, zespołu ani zakresu prezentowanych porównań.
-
-Drugą osią jest jednostka wnioskowania. Porównanie między zbiorami różni się od analizy powtórzeń na jednym zbiorze~\cite{demsar2006comparisons}. W~niniejszym badaniu podzbiory walidacji krzyżowej i~konfiguracje nie są traktowane jako nowe niezależne zadania.
-
 \subsection{Uzasadnienie własnego projektu}
 \label{sec:uzasadnienie-projektu}
 
-Własne badanie łączy ocenę użyteczności kompletnych procedur z~analizą dwóch mechanizmów istotnych dla trudnych zadań klasyfikacji. Porównanie główne odpowie, jaką jakość i~koszt uzyskuje się przy określonym sposobie selekcji modelu. Nie wyjaśni ono jednak, czy ewentualny wzrost wykrywalności rzadkiej klasy wynika z~lepszego rankingu, ani czy zachowanie MLP przy małej próbie zależy od danego składnika regularyzacji --- temu służą dwa badania komplementarne, czyli ważenie klas oraz dopasowane ablacje przy zagnieżdżonych podzbiorach treningowych.
+Przegląd uzasadnia porównanie kilku kierunków rozwoju sieci z~silnymi odniesieniami konwencjonalnymi, przy wspólnych populacjach testowych i~jawnych kosztach selekcji. Własne badanie obejmuje w~tym celu jedenaście metod i~dwanaście zadań klasyfikacji. Osobna ocena ustawień domyślnych, konfiguracji wybranej na walidacji i~zespołu konfiguracji pozwala zbadać, co zmienia dodatkowe wyszukiwanie oraz łączenie predykcji. Wyniki poszczególnych zadań pozostają istotne obok zbiorczego rankingu, ponieważ wybrane zbiory różnią się licznością, typami cech i~rozkładami klas.
 
-Wartość tego układu polega na wspólnej interpretacji jakości, kosztu i~reakcji na kontrolowaną zmianę. Nie zakłada się, że każdy wybrany model jest skuteczny w~każdym reżimie. Możliwym wynikiem jest zarówno korzyść mechanizmu, jak i~jej brak lub odwrócenie po zmniejszeniu treningu. Tabela~\ref{tab:problem-dowod} określa, które pytania mają bezpośrednie pokrycie w~projekcie eksperymentu, a~które stanowią kontekst interpretacji.
-
-\begin{table}[tbp]
-\centering
-\caption{Powiązanie właściwości danych z~zakresem badania.}
-\label{tab:problem-dowod}
-\small
-\begin{tabularx}{\textwidth}{@{}P{0.26\textwidth}YY@{}}
-\toprule
-Problem & Zakres porównania & Granica interpretacji \\
-\midrule
-Jakość i koszt potoków & Wspólne testy, D/T/T+E & Bez izolacji pojedynczej architektury. \\
-Rzadkie klasy & Ważenie i kontrola progów & Efekt przy ustalonych pozostałych ustawieniach. \\
-Mało danych i regularyzacja & Zagnieżdżone podzbiory, ablacje MLP & Bez pełnej analizy interakcji mechanizmów. \\
-Wymiarowość i typy cech & Zróżnicowane naturalne zadania & Związek opisowy, nie kontrolowany efekt jednej cechy. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Badanie główne pozwala porównać jakość i~koszt wybranych metod w~jednym protokole. Badania uzupełniające zawężają analizę do wpływu ważenia klas oraz dwóch składników regularyzacji MLP. Mechanizmy tych metod i~uzasadnienie ich wyboru przedstawiono w~kolejnym rozdziale.
+Dwa eksperymenty uzupełniające dotyczą pytań, których taki ranking nie rozstrzyga. Ważenie klas jest oceniane z~uwzględnieniem zarówno uporządkowania przykładów, jak i~decyzji progowych. W~badaniu MLP usuwa się pojedyncze składniki regularyzacji i~zmniejsza liczbę przykładów treningowych, zachowując wspólne warunki porównania. Pozwala to zbadać wpływ tych interwencji w~ustalonej procedurze, bez przypisywania im wszystkich różnic między kompletnymi metodami. Naturalne zróżnicowanie zbiorów dostarcza szerszego kontekstu, lecz nie zastępuje kontrolowanych eksperymentów nad szumem, obrotami cech czy zmianą rozkładu. Mechanizmy wybranych metod opisano w~kolejnym rozdziale, a~szczegóły eksperymentów w~rozdziale~\ref{chap:metodyka}.

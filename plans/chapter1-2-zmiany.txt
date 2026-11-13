@@ -1,0 +1,70 @@
+Konkretny plan dla tych dwóch rozdziałów. Niczego jeszcze nie zmieniam w plikach; poniżej są propozycje struktury i przykładowe brzmienie, żeby było widać kierunek.
+
+Rozdział 1
+
+Dziś ma 761 słów i pięć podrozdziałów, z czego trzy są listami. Czytelnik po jego lekturze wie, co praca zawiera, ale nie wie, dlaczego ten problem jest ciekawy ani kto go podjął. Docelowo 1400 do 1600 słów, cztery podrozdziały.
+
+1.1 Wprowadzenie, pisane od świata do problemu. Obecny pierwszy akapit zaczyna się od abstrakcji („dopasowanie założeń modelu do heterogenicznych cech”). Zacząłbym od tego, że większość danych w bankach, szpitalach i handlu to tabele, a trzy z czterech przykładów można wziąć wprost z własnej puli zbiorów. Potem krótki rys: dominacja drzew, odrodzenie sieci, modele pretrenowane. Wszystkie potrzebne cytowania już są w bibliografii. Przykład otwarcia:
+
+Większość danych, z którymi na co dzień pracują analitycy w bankach, szpitalach
+czy firmach handlowych, nie ma postaci obrazów ani tekstu. Są to tabele: wiersz
+odpowiada klientowi, transakcji albo pobytowi w~szpitalu, a~kolumny mieszają
+liczby, kategorie i~brakujące wartości. Głębokie uczenie odmieniło przetwarzanie
+obrazu i~języka, ale na tabelach przez lata przegrywało z~gradientowym
+wzmacnianiem drzew, i~to przegrywało na tyle regularnie, że trudno było uznać
+to za przypadek~\cite{grinsztajn2022trees}. Dopiero ostatnie lata przyniosły
+sieci, które dorównują drzewom bez osobnego strojenia na każdym
+zbiorze~\cite{holzmueller2024realmlp,gorishniy2025tabm}, oraz modele
+pretrenowane, których w~ogóle nie uczy się na badanym
+zadaniu~\cite{jaeger2026tabpfn35}. Pytanie, czy sieci neuronowe nadają się do
+danych tabelarycznych, stało się więc na nowo otwarte.
+
+Trzeci akapit o trzech trudnościach zostaje, ale z liczbami z własnych zbiorów zamiast ogólników: udział oszustw w Credit Card Fraud, 351 wierszy Ionosphere, 1776 cech Bioresponse. To jest moment, w którym autor pokazuje, że zna swoje dane.
+
+1.2 Cel i zakres. Treść zostaje, zmienia się perspektywa. Zdania „Przyjęto siedem metod” i „Badanie obejmuje dwanaście zbiorów” to protokół. Powinno być widać wybór i jego powód, na przykład: „Do porównania wybrałem siedem metod neuronowych tak, aby każda reprezentowała inny pomysł na wykorzystanie struktury tabeli”, albo w formie bezosobowej z tym samym uzasadnieniem. Zdanie o aktywnym uczeniu jest pozostałością po karcie tematu i brzmi jak wyjaśnienie dla komisji. Zostawiłbym jedno zdanie w przypisie lub usunął.
+
+1.3 Pytania badawcze. Lista zostaje, ale każde pytanie traci dopisane drugie zdanie typu „Podstawą odpowiedzi są wyniki poszczególnych zadań”. To jest treść rozdziału 4. Same pytania przepisałbym tak, by zawierały hipotezę, bo wtedy brzmią jak pytania badacza, a nie pozycje specyfikacji:
+
+\item \textbf{PB3:} Czy ważenie klas w~funkcji straty rzeczywiście poprawia
+      wykrywanie rzadkiej klasy, czy tylko przesuwa próg decyzyjny?
+\item \textbf{PB4:} Czy dropout i~zanik wag pomagają MLP tym bardziej,
+      im mniej jest danych treningowych?
+
+Analogicznie PB1 („jak wybrane sieci wypadają na tle regresji logistycznej, KNN i wzmacnianych drzew”), PB2 („ile daje strojenie, a ile zespół konfiguracji, i jakim kosztem”) i PB5. Dwa zdania po liście („Ocenie podlegają zarówno poprawa, jak i pogorszenie”, „Brak statystycznego potwierdzenia nie jest interpretowany jako równoważność”) to zastrzeżenia metodyczne i wędrują do rozdziału 4.
+
+1.4 Wkład własny i układ pracy. Scalić obecne 1.4 i 1.5. Z wkładu własnego zostają trzy zdania o syntezie, projekcie porównania i platformie. Akapit o granicach wnioskowania (jeden podział zewnętrzny, foldy nie są niezależnymi zbiorami) jest poprawny, ale w rozdziale 1 zabija zainteresowanie, zanim cokolwiek pokazano. Przenieść do rozdziału 4. Opis układu pracy wymaga uzupełnienia o rozdziały 6 do 8, gdy powstaną.
+
+Rozdział 2
+
+Merytorycznie najlepszy rozdział, więc zmiany dotyczą kolejności, powtórzeń i tonu, nie treści. Wyprowadzenia zostają bez zmian.
+
+Zmiana kolejności. Dziś rozdział idzie: definicja formalna, reprezentacja, trudności z równaniami, krótka mapa podejść z tabelą, benchmarki, synteza, uzasadnienie projektu. Przegląd literatury, który zaczyna się od wzoru na zbiór danych, a historię metod załatwia tabelą, nie wygląda jak pisany przez człowieka. Proponowany układ:
+
+1. Specyfika danych tabelarycznych: obecne 2.1 i 2.2 scalone, z tabelą ról kolumn, bo jest konkretna i przydatna.
+2. Rozwój metod: od drzew do modeli pretrenowanych. Nowa, narracyjna sekcja na około 400 do 500 słów, chronologicznie od XGBoost i CatBoost przez TabNet, FT-Transformer i Kadrę, do RealMLP, TabM, ModernNCA i TabPFN. Zastępuje obecne 2.4 i jego tabelę; w to miejsce wchodzi rysunek mapy podejść z rejestru ilustracji.
+3. Badania porównawcze: obecne 2.5 i 2.6 scalone. Tabela benchmarków zostaje.
+4. Trzy trudności: obecne 2.3 z wyprowadzeniami. Lepiej czyta się po poznaniu metod, bo wtedy zdanie o KNN i osadzeniach ma odniesienie.
+5. Co z tego wynika dla tej pracy: obecne 2.7 skrócone do dwóch akapitów, bez tabeli.
+
+Do usunięcia. Tabela ról podejść powiela tabelę ról metod z rozdziału 3. Tabela „problem, zakres, granica” powiela listę pytań badawczych. Akapit otwierający 2.5 („Przegląd ma charakter narracyjny… wskazano dokładnie wykorzystane wersje”) to notatka z audytu; zostaje najwyżej jako przypis przy pierwszym preprincie. Zdanie o rzadkim zdarzeniu identyfikowanym „semantycznie, niezależnie od kodowania” i trzy zdania o tym, co robi badanie B po akapicie o Kadrze, to treść rozdziału 4.
+
+Zdania-wnioski po każdej publikacji. Po Gorishniym, Grinsztajnie, TabZilli, RealMLP, TALENT i TabArenie stoi zdanie „Dla niniejszej pracy oznacza to…” albo „nie rozstrzyga jednak…”. Sześć razy ten sam gest. Zostawiłbym go przy dwóch publikacjach, które najmocniej wpłynęły na projekt, czyli Grinsztajnie i TabArenie, a resztę zebrał w syntezie. Synteza sama powinna zacząć się od sądu, nie od „z zestawienia wynika przede wszystkim”:
+
+Najważniejszy wniosek z~tych badań jest moim zdaniem taki, że spór
+,,sieci czy drzewa'' został źle postawiony. Wyniki zależały od tego,
+jak przygotowano dane, jak długo strojono modele i~na jakiej kolekcji
+zbiorów liczono średnią, w~stopniu porównywalnym z~samym wyborem
+architektury~\cite{gorishniy2021revisiting,holzmueller2024realmlp}.
+
+Wariant bezosobowy jest równie dobry, ważne jest otwarcie od oceny.
+
+Maniera porządkowania. W sąsiednich akapitach pojawia się „rozdzielenie dwóch problemów”, „trzeba rozdzielić trzy obszary oceny”, „ważną osią jest”, „drugą osią jest”. To rytm listy przebrany za prozę. W 2.3.2 trzy obszary oceny są uzasadnione, bo potem każdy dostaje równanie. Pozostałe przepisać na zwykłe zdania złożone.
+
+Wprowadzenia do wyprowadzeń. Wyprowadzenie precyzji od częstości klasy i optimum ważonej straty są dobre, ale wchodzą bez zapowiedzi i kończą zastrzeżeniem w nawiasie („kod 1 przyjęto wyłącznie na potrzeby poniższego wyprowadzenia”). Wystarczy jedno zdanie przed równaniem w tonie „warto zobaczyć na prostym rachunku, dlaczego sama czułość nie wystarcza”, a nawias usunąć. Rachunek broni się sam.
+
+Drobiazgi. Przypis z definicjami TP, FP, FN, TN w środku zdania o precyzji rozbija jego czytanie; lepiej jedno zdanie w tekście przed równaniem. Sformułowanie „Grinsztajn i współautorzy powiązali przewagę drzew” jest dobre, ale dalej akapit ma 150 słów bez oddechu; podzielić na dwa. Cytowanie Borisova przy obrotach cech zawęzić zgodnie z uwagą U3 z audytu cytowań i dodać tam Grinsztajna.
+
+Czego nie ruszać. Tabeli ról kolumn, tabeli benchmarków z liczbami zbiorów, trzech wyprowadzeń, akapitu o TabReD i podziałach czasowych oraz całego omówienia TabArena. To są fragmenty, które brzmią jak pisane przez kogoś, kto rozumie temat, i w dodatku są poprawne.
+
+Po tych zmianach rozdział 1 urośnie mniej więcej dwukrotnie, a rozdział 2 zachowa obecną długość, bo nowa sekcja narracyjna wypełni miejsce po dwóch tabelach i powtórzeniach.
+

@@ -60,7 +60,7 @@ Niezależne raportowanie D, T i~T+E z~zapisanych predykcji}
 \subsection{Izolacja informacji i identyfikowalność danych}
 \label{sec:izolacja-platformy}
 
-Przygotowane dane są przechowywane jako plik Parquet z~manifestem i~sumami kontrolnymi. Źródła OpenML mają określone identyfikatory i~wersje; tożsamość pobieranych archiwów UCI określa suma kontrolna zawartości. Santander jest odczytywany z~oficjalnego lokalnego pliku treningowego. Zgodność schematu i~hashu chroni przed niezamierzoną podmianą danych, lecz nie rozstrzyga problemów populacji, przecieku lub duplikatów wskazanych w~sekcji~\ref{sec:dane-audyt}.
+Przygotowane dane są przechowywane jako plik Parquet z~manifestem i~sumami kontrolnymi. Źródła OpenML mają określone identyfikatory i~wersje; tożsamość pobieranych archiwów UCI określa suma kontrolna zawartości. Santander jest pobierany automatycznie z~OpenML (identyfikator 46859, wersja~2) w~ramach wspólnej procedury przygotowania danych. Zgodność schematu i~hashu chroni przed niezamierzoną podmianą danych, lecz nie rozstrzyga problemów populacji, przecieku lub duplikatów wskazanych w~sekcji~\ref{sec:dane-audyt}.
 
 Zewnętrzne podziały zachowują identyfikatory wierszy, etykiety i~grupy pacjentów. Kolumny grupujące nie wchodzą do predyktorów. Backend zapisuje rzeczywiste indeksy walidacji wewnętrznej, co umożliwia późniejszą kontrolę pokrycia OOF i~rozłączności pacjentów. Zdefiniowane są także zastrzeżone nazwy pomocniczych kolumn; konflikt z~danymi wejściowymi jest odrzucany zamiast prowadzić do cichego nadpisania cechy.
 

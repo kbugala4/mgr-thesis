@@ -1,5 +1,15 @@
 # Rozprawa: głębokie sieci neuronowe w klasyfikacji danych tabelarycznych
 
+## Źródło danych Santander
+
+Santander Customer Satisfaction jest pobierany przez wspólny etap `prepare` z OpenML 46859, wersja 2, zamiast z lokalnego pliku konkursowego Kaggle. Automatyczne pobieranie obejmuje wszystkie dwanaście zbiorów: osiem źródeł OpenML i cztery archiwa UCI. Aktualną konfigurację i zasady przygotowania danych określają [rejestr danych](../mgr-repo/docs/dataset-selection.md) oraz [instrukcja przygotowania](../mgr-repo/docs/setup.md#prepare-datasets); zmiana dostawcy nie zmienia przyjętej puli zadań.
+
+Zaktualizowano opis automatycznego pobierania w [rozdziale 5](chapters/05-srodowisko.tex) oraz odnośnik do źródła w [tabeli rejestru zadań rozdziału 4](chapters/04-metodyka.tex). W rozdziale 4 doprecyzowano również, że wykorzystywana wersja Santander z OpenML nie zawiera kolumny identyfikatora `ID`.
+
+Brak kolumny `ID` potwierdzono bezpośrednio w publicznym API OpenML dla zbioru 46859, wersji 2: [opis zbioru](https://www.openml.org/api/v1/json/data/46859) zawiera zdanie „Also, the ID column is dropped.”, a [pełna lista kolumn](https://www.openml.org/api/v1/json/data/features/46859) obejmuje 370 pozycji, w tym etykietę `TARGET` i 369 predyktorów, bez kolumny `ID`. Jest to weryfikacja opisu i schematu źródła, nie porównanie wszystkich wartości danych z pierwotnym plikiem Kaggle.
+
+Opis Santander jako oznakowanych danych treningowych konkursu pozostaje zgodny z pochodzeniem danych. Kopie w `appendices/provenance/` dokumentują dawny stan i nie podlegają aktualizacji. Zmiana źródła ma osobną tożsamość w pamięci podręcznej; stan sprawdzenia zgodności danych i hashy opisuje [dokumentacja eksperymentów](../mgr-repo/docs/implementation-status.md).
+
 ## Bieżący skład: 2026-11-11
 
 [PDF części teoretycznej i metodologicznej](build/wut/main.pdf) składa rozdziały 1–5 oraz streszczenia zakresu i metodyki. Opis procedur używa czasu teraźniejszego; informacje o stanie realizacji i instrukcje redakcyjne pozostają poza PDF. Rozdziały 6–7 zachowano bez zmian w źródłach jako szkielety wynikowe i wyłączono z `main.tex`. Nie dodano wyników ani deklaracji przeprowadzenia kampanii.

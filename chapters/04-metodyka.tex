@@ -9,7 +9,7 @@ Metodyka obejmuje porównanie kompletnych procedur predykcyjnych oraz dwa badani
 
 Badanie główne obejmuje siedem procedur neuronowych oraz cztery odniesienia konwencjonalne opisane w~rozdziale~\ref{chap:metody}. Każda para zbiór--metoda podlega ocenie na wspólnym zewnętrznym zbiorze testowym danego zadania. Porównaniu podlegają kompletne procedury, obejmujące przygotowanie cech, uczenie, wybór hiperparametrów i~łączenie predykcji. Różnica między dwiema takimi procedurami nie identyfikuje wpływu pojedynczego składnika architektury.
 
-Jednostką porównania między zadaniami jest zbiór danych. Foldy wewnętrzne, konfiguracje hiperparametrów i~warunki raportowania są zależnymi elementami procedury ocenianej na tym samym zadaniu; nie zwiększają liczby niezależnych jednostek~\cite{demsar2006comparisons}. W~badaniach mechanizmów jednostką dopasowania porównań jest natomiast para warunków o~wspólnym podziale, podzbiorze i~ziarnie. Rozdzielenie tych poziomów określa zakres agregacji i~interpretację niepewności w~sekcji~\ref{sec:analiza-plan}.
+Jednostką porównania między zadaniami jest zbiór danych. Foldy wewnętrzne\footnote{Termin \textit{fold} oznacza podzbiór wydzielony w~walidacji krzyżowej.}, konfiguracje hiperparametrów i~warunki raportowania są zależnymi elementami procedury ocenianej na tym samym zadaniu; nie zwiększają liczby niezależnych jednostek~\cite{demsar2006comparisons}. W~badaniach mechanizmów jednostką dopasowania porównań jest natomiast para warunków o~wspólnym podziale, podzbiorze i~ziarnie. Rozdzielenie tych poziomów określa zakres agregacji i~interpretację niepewności w~sekcji~\ref{sec:analiza-plan}.
 
 Dwa badania uzupełniające wprowadzają kontrolowane zmiany przy zachowaniu pozostałych ustawień. Badanie~A dotyczy ważenia klas, a~badanie~B --- regularyzacji MLP i~liczby przykładów treningowych. Interpretacja tych porównań pozostaje odrębna od rankingu badania głównego. Ich wyniki testowe nie stanowią podstawy zmiany porównywanych procedur.
 
@@ -31,7 +31,7 @@ Zbiór & Próbki & Cechy & Klasy & Rola w~projekcie \\
 \href{https://www.openml.org/d/1597}{Credit Card Fraud} & 284\,807 & 30 & 2 & Rzadkie zdarzenie \\
 \href{https://www.openml.org/d/23512}{HIGGS, podzbiór} & 98\,050 & 28 & 2 & Cechy numeryczne \\
 \href{https://www.openml.org/d/4135}{Amazon Employee Access} & 32\,769 & 9 & 2 & Kategorie, rzadka decyzja \\
-\href{https://www.kaggle.com/competitions/santander-customer-satisfaction/data}{Santander Customer Satisfaction} & 76\,020 & 369 & 2 & Niezrównoważenie klas \\
+\href{https://www.openml.org/d/46859}{Santander Customer Satisfaction} & 76\,020 & 369 & 2 & Niezrównoważenie klas \\
 \href{https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset}{Online Shoppers} & 12\,330 & 17 & 2 & Cechy mieszane \\
 \href{https://archive.ics.uci.edu/dataset/296/diabetes+130-us+hospitals+for+years+1999-2008}{Diabetes 130-US} & 101\,766 & 47 & 3 & Powtarzające się pobyty pacjentów \\
 \href{https://www.openml.org/d/41169}{Helena} & 65\,196 & 27 & 100 & Wiele klas, ograniczona semantyka cech \\
@@ -44,7 +44,7 @@ Zbiór & Próbki & Cechy & Klasy & Rola w~projekcie \\
 
 Definicja zadania obejmuje znaczenie etykiety, populację predykcji, mapowanie klas, typy kolumn i~sposób oznaczania braków. Ocena poprawności danych uwzględnia stałe cechy, duplikaty, identyfikatory oraz dostępność predyktorów w~momencie podejmowania decyzji. Reguły wyłączeń są niezależne od wyników porównywanych modeli; zmiana populacji na podstawie jakości testowej wprowadzałaby dodatkowy poziom selekcji.
 
-W~Diabetes identyfikator pacjenta służy grupowaniu, a~identyfikatory pacjenta i~pobytu nie są predyktorami. W~Santander identyfikator wiersza jest odrębny od cech. Dla Credit Card Fraud istotne są interpretacja kolumny \texttt{Time} i~ograniczenia losowego podziału, dla Amazon --- powtarzające się encje, a~dla Covertype --- możliwe zależności przestrzenne. Anonimowość cech Heleny ogranicza ocenę ich znaczenia i~dostępności. Sama zgodność schematu pliku nie rozstrzyga tych kwestii.
+W~Diabetes identyfikator pacjenta służy grupowaniu, a~identyfikatory pacjenta i~pobytu nie są predyktorami. Wykorzystywana wersja Santander z~OpenML nie zawiera kolumny identyfikatora \texttt{ID}. Dla Credit Card Fraud istotne są interpretacja kolumny \texttt{Time} i~ograniczenia losowego podziału, dla Amazon --- powtarzające się encje, a~dla Covertype --- możliwe zależności przestrzenne. Anonimowość cech Heleny ogranicza ocenę ich znaczenia i~dostępności. Sama zgodność schematu pliku nie rozstrzyga tych kwestii.
 
 \subsection{Podziały i przepływ informacji}
 \label{sec:podzialy}
