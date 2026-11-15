@@ -28,7 +28,7 @@ Cztery odniesienia konwencjonalne dobrano tak, aby obejmowały różne reguły p
 
 Do badania wybrano dwanaście zbiorów: Adult, Covertype, Credit Card Fraud, HIGGS w~wybranej wersji podzbioru, Amazon Employee Access, Santander Customer Satisfaction, Online Shoppers Purchasing Intention, Diabetes 130-US Hospitals, Helena, Statlog German Credit, Ionosphere i~Bioresponse. Zachowano klasyfikację binarną i~wieloklasową oraz zróżnicowane liczności i~typy cech. Zbiory dobrano celowo do analizy wskazanych trudności.
 
-Porównanie główne uzupełniono projektem dwóch badań kontrolowanych. W~pierwszym zmienia się ważenie klas przy niezmienionych pozostałych hiperparametrach, a~w~drugim usuwa losowe wyłączanie aktywacji (ang. \textit{dropout}) lub zanik wag z~ustalonej procedury MLP przy różnych liczbach przykładów treningowych. Wybrane mechanizmy bada się w~ten sposób dokładniej niż przez samo zestawienie wyników jedenastu metod. Aktywne uczenie pozostaje możliwym rozszerzeniem poza zakresem tych eksperymentów.
+Porównanie główne uzupełniono projektem dwóch badań kontrolowanych. W~pierwszym porównuje się ważenie straty podczas uczenia i~przesunięcie predykcji po uczeniu, sprawdzając odstępstwa od przewidywania teoretycznego, według którego ważenie zmienia głównie punkt pracy. W~drugim z~ustalonej konfiguracji MLP usuwa się losowe wyłączanie aktywacji (ang. \textit{dropout}), zanik wag lub oba składniki przy różnych liczbach przykładów treningowych i~wyrównanym budżecie aktualizacji. Wybrane mechanizmy bada się w~ten sposób dokładniej niż przez samo zestawienie wyników jedenastu metod. Aktywne uczenie pozostaje możliwym rozszerzeniem poza zakresem tych eksperymentów.
 
 \subsection{Pytania badawcze}
 \label{sec:pytania-badawcze}

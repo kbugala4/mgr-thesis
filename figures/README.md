@@ -93,14 +93,14 @@ Wszystkie ścieżki mają już wywołania w odpowiednich plikach rozdziałów. �
 | Rozdział i rodzaj | Plik wynikowy | Etykieta | Wymagana treść i dane |
 | --- | --- | --- | --- |
 | 4, schemat | `figures/ch04/podzial-i-selekcja.pdf` | `fig:podzial-selekcja` | Jedyny zewnętrzny podział, około 2/3 deweloperskie i 1/3 testowe; osiem foldów; OOF do wyboru T i wag T+E; prawdopodobieństwa testowe do końcowej oceny. |
-| 4, schemat | `figures/ch04/zagniezdzone-podzbiory.pdf` | `fig:podzbiory` | Jeden wewnętrzny fold: zagnieżdżone 25/50/100% tylko w treningu. Stała walidacja i test, te same indeksy dla receptur i sparowanych ziaren. |
+| 4, schemat | `figures/ch04/zagniezdzone-podzbiory.pdf` | `fig:podzbiory` | Jeden wewnętrzny fold: zagnieżdżone 25/50/100% tylko w treningu. Stała walidacja i test, te same indeksy dla wariantów w obrębie ziarna, realizacja zależna od ziarna, wspólny docelowy budżet aktualizacji. |
 | 5, schemat | `figures/ch05/architektura.pdf` | `fig:architektura` | CLI i typowany YAML, dane i podziały, katalog i przestrzenie, lokalny backend i trzy rodzaje integracji, manifesty/predykcje, niezależne raportowanie. |
 | 6, wyniki | `figures/ch06/kontrasty.pdf` | `fig:wyniki-kontrasty` | Trzy kontrasty na wspólnym teście; różnice i ewentualne zamrożone przedziały. Osobne skale AUC i straty logarytmicznej. |
 | 6, wyniki | `figures/ch06/strojenie-i-zespoly.pdf` | `fig:wyniki-strojenie` | Sparowane D–T oraz T–T+E, skuteczne konfiguracje, kompletność i wyjątki. |
 | 6, wyniki | `figures/ch06/jakosc-koszt.pdf` | `fig:wyniki-koszt` | Kompromis jakości i jawnie zdefiniowanego kosztu w obrębie zadania; sprzęt, warunek i jednostki. |
 | 7, wyniki | `figures/ch07/precision-recall.pdf` | `fig:mechanizmy-pr` | Badanie A: krzywe z prawdopodobieństw właściwej klasy rzadkiej dla obu warunków i trzech ziaren, częstość tej klasy. |
-| 7, wyniki | `figures/ch07/jakosc-a-licznosc.pdf` | `fig:mechanizmy-licznosc` | Badanie B: trzy receptury, trzy udziały i trzy ziarna, osobne panele dla trzech zadań; rzeczywiste liczności w źródłowej tabeli. |
-| 7, wyniki | `figures/ch07/krzywe-i-luki.pdf` | `fig:mechanizmy-luki` | Zapisane historie treningu i walidacji tej samej sieci, nieważona strata w trybie ewaluacji, epoka i wybrany checkpoint. |
+| 7, wyniki | `figures/ch07/jakosc-a-licznosc.pdf` | `fig:mechanizmy-licznosc` | Badanie B: cztery warianty, trzy udziały i trzy ziarna, osobne panele dla trzech zadań; rzeczywiste liczności w źródłowej tabeli. |
+| 7, wyniki | `figures/ch07/krzywe-i-luki.pdf` | `fig:mechanizmy-luki` | Zapisane historie treningu i walidacji tej samej sieci, nieważona strata w trybie ewaluacji, oś liczby kroków wspólna dla udziałów, luka po pełnym budżecie jako główna i w wybranej epoce jako pomocnicza, panel norm parametrów. |
 
 Dla każdego materiału zachować edytowalne źródło o tej samej nazwie bazowej w `figures/source/`, np. `figures/source/architektura.svg`. Dla wykresów źródłem jest skrypt i tabela danych, nie ręcznie edytowany kształt krzywej. Nie trzeba zakładać pustych katalogów ani tworzyć sztucznych plików PDF, aby makro pokazało ramkę.
 
@@ -116,7 +116,7 @@ Dla każdego materiału zachować edytowalne źródło o tej samej nazwie bazowe
 
 - Zagnieżdżenie 25% wewnątrz 50% wewnątrz 100% dotyczy treningu jednego wewnętrznego foldu.
 - Przygotowanie cech jest dopasowywane ponownie tylko na właściwym podzbiorze.
-- Pokazać pełną recepturę, brak dropoutu i brak zaniku wag, z zachowaniem pozostałych parametrów.
+- Pokazać pełną konfigurację, brak dropoutu, brak zaniku wag i brak obu, z zachowaniem pozostałych parametrów.
 - Nie wpisywać liczebności osób lub klas, zanim indeksy podzbiorów nie zostaną zapisane. To schemat projektu, nie wynik losowania.
 
 ### Schemat architektury

@@ -142,8 +142,8 @@ Wykorzystana integracja RealMLP-TD pochodzi z~TabArena i~opiera się na bibliote
 
 Przy zadanej metryce KNN jakość sąsiedztwa zależy od reprezentacji przygotowanej przed uczeniem. ModernNCA dopasowuje ją do zadania: uczy przekształcenie $\phi_\theta(x)$, a~etykietę nadal przewiduje na podstawie oznakowanych przykładów odniesienia. Dla zbioru kandydatów $\mathcal{B}(x)$ miękkie sąsiedztwo wyznacza
 \begin{equation}
-a_j(x)=\frac{\exp[-\|\phi_\theta(x)-\phi_\theta(x_j)\|_2^2]}
-{\sum_{\ell\in\mathcal{B}(x)}\exp[-\|\phi_\theta(x)-\phi_\theta(x_\ell)\|_2^2]},
+a_j(x)=\frac{\exp[-\|\phi_\theta(x)-\phi_\theta(x_j)\|_2]}
+{\sum_{\ell\in\mathcal{B}(x)}\exp[-\|\phi_\theta(x)-\phi_\theta(x_\ell)\|_2]},
 \qquad
 p_c(x)=\sum_{j\in\mathcal{B}(x)}a_j(x)\mathbf{1}[y_j=c].
 \label{eq:modernnca}

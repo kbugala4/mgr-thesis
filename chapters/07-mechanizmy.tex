@@ -3,17 +3,17 @@
 \label{chap:mechanizmy}
 \sectionmark{Badania ważenia klas i regularyzacji}
 
-\textbf{Status rozdziału: szkielet do uzupełnienia po implementacji i~wykonaniu badań A oraz B.} Nie zawiera wyników interwencji ani dowodu ich skuteczności. Projekt opisano w~sekcjach~\ref{sec:projekt-wazenie} i~\ref{sec:projekt-regularyzacja}. Poniższe instrukcje określają wymagany materiał wynikowy; nie zastępują jeszcze niezamrożonych ustawień.
+\textbf{Status rozdziału: szkielet do uzupełnienia po implementacji i~wykonaniu badań A oraz B.} Nie zawiera wyników interwencji ani dowodu ich skuteczności. Projekt opisano w~sekcjach~\ref{sec:projekt-wazenie} i~\ref{sec:projekt-regularyzacja}. Poniższe instrukcje określają wymagany materiał wynikowy zgodnie z~przyjętym projektem.
 
 \subsection{Wykonane warunki i zgodność kontroli}
 \label{sec:mechanizmy-kontrole}
 
-\textbf{Do uzupełnienia:} identyfikatory badań, kompletność warunków, trzy ziarna uczenia, rzeczywiste indeksy foldów i~podzbiorów, etykiety rzadkie oraz wybrane konfiguracje. Dla A potwierdzić wyliczenie wag wyłącznie z~treningu i~brak innych zmian hiperparametrów. Dla B podać pochodzenie niezależnej receptury, wartości dropoutu i~zaniku wag, liczbę przykładów każdej klasy, reguły zatrzymania i~wyboru epoki. Każde odstępstwo trzeba opisać przed interpretacją efektu. Jeżeli warunki różniły się również innymi ustawieniami, nie można przypisać całej różnicy wyników badanemu mechanizmowi.
+\textbf{Do uzupełnienia:} identyfikatory badań, kompletność warunków, ziarna uczenia 0, 10 i~20, rzeczywiste indeksy foldów i~podzbiorów, etykiety rzadkie oraz wybrane konfiguracje. Dla A podać konfiguracje T, w~tym brakujące wartości CatBoost dla Credit Card Fraud i~Santandera, potwierdzić obliczenie wag wyłącznie z~treningu i~opisać kryterium wyboru stanu w~każdym warunku. Zestawić wybrane epoki i~iteracje, wynik reguły uruchomienia wariantu kontrolnego oraz ocenę niestabilności dla każdej pary metoda--zbiór. Dla B udokumentować wybór konfiguracji~21, jej 11.~miejsce w~rankingu OOF, wartości regularyzatorów, liczności klas oraz epoki i~rzeczywiste kroki wynikające z~budżetu. Potwierdzić brak foldów obciętych czasowo. Każde odstępstwo opisać przed interpretacją efektu.
 
 \subsection{Ważenie klas a jakość uporządkowania}
 \label{sec:mechanizmy-ap}
 
-\textbf{Do uzupełnienia:} AP rzadkiej klasy dla obu warunków, osobno dla zbioru, metody i~ziarna. Tabelę~\ref{tab:mechanizmy-ap} należy uzupełnić wynikami sparowanymi, a~następnie średnią różnicą i~zakresem trzech różnic. Podać surową etykietę rzadką, częstość i~liczbę jej przykładów testowych. ROC AUC oraz strata logarytmiczna pozostają ocenami uzupełniającymi; poprawa jednej miary nie przesądza o~pozostałych.
+\textbf{Do uzupełnienia:} AP rzadkiej klasy dla obu warunków, osobno dla zbioru, metody i~ziarna. Tabelę~\ref{tab:mechanizmy-ap} należy uzupełnić wynikami sparowanymi, a~następnie średnią różnicą i~zakresem trzech różnic. Podać surową etykietę rzadką, częstość i~liczbę jej przykładów testowych. ROC AUC oraz strata logarytmiczna pozostają ocenami uzupełniającymi. Dodać korelacje rangowe predykcji ważonych i~nieważonych, udział niezgodnie uporządkowanych par rzadki--częsty oraz odniesienie w~postaci korelacji między ziarnami warunku nieważonego. AP komparatora z~przesunięciem logitu jest z~definicji równa AP warunku nieważonego.
 
 \begin{table}[tbp]
 \centering\small
@@ -30,24 +30,24 @@ Zbiór i~metoda & Ziarno & AP bez wag & AP z~wagami & Sparowana różnica \\
 
 \plannedfigure
 {figures/ch07/precision-recall.pdf}
-{Miejsce na testowe krzywe precision--recall badania ważenia; brak wyników.}
+{Miejsce na testowe krzywe precyzja--czułość badania ważenia; brak wyników.}
 {fig:mechanizmy-pr}
 {Pokazać obie interwencje i~wszystkie trzy ziarna. Zdefiniować klasę rzadką; zaznaczyć jej częstość. AP liczyć z~predykcji, bez utożsamiania z~trapezowym polem.}
 
 \subsection{Ważenie, próg i punkt pracy}
 \label{sec:mechanizmy-progi}
 
-\textbf{Do uzupełnienia:} zamrożona reguła progowania, progi wybrane na OOF oraz testowe precyzja, czułość, FP, FN i~udział alarmów. Należy potwierdzić, że etykiety testowe nie uczestniczyły w~wyborze. W~tabeli~\ref{tab:mechanizmy-progi} każda komórka musi identyfikować warunek i~ziarno. Jeżeli punkt pracy poprawił czułość kosztem liczby alarmów, należy przedstawić obie zmiany. Zmiana progu i~zmiana jakości uporządkowania są odrębnymi wynikami.
+\textbf{Do uzupełnienia:} progi F1 wybrane na OOF, diagnostyczny próg~0,5 i~uzupełniający próg FPR~1\% z~OOF. Zestawić testowe precyzję, czułość, F1, FP, FN i~udział alarmów, a~dla progu FPR także rzeczywiste testowe FPR. Potwierdzić, że etykiety testowe nie uczestniczyły w~wyborze. W~tabeli~\ref{tab:mechanizmy-progi} uwzględnić oba warunki uczenia, komparator przy progu~0,5 oraz wariant kontrolny, jeżeli został wykonany. Dla progu głównego zestawić udziały alarmów na OOF i~teście, histogramy logitów oraz różnicę logitów progów względem $\log(n_{\mathrm{cz}}/n_{\mathrm{rz}})$. Każdy wiersz musi identyfikować zbiór, metodę, warunek i~ziarno.
 
 \begin{table}[tbp]
 \centering\small
-\caption{Formularz oceny progów wybranych na OOF; brak wyników. Miary decyzyjne dotyczą wyłącznie zewnętrznego testu.}
+\caption{Formularz oceny progów F1 i~FPR z~OOF oraz stałego progu~0,5. Brak wyników. Miary decyzyjne dotyczą wyłącznie zewnętrznego testu.}
 \label{tab:mechanizmy-progi}
-\begin{tabularx}{\linewidth}{P{0.20\linewidth}YYYYY}
+\begin{tabularx}{\linewidth}{P{0.20\linewidth}YYYYYY}
 \toprule
-Zadanie, metoda, warunek i~ziarno & Próg OOF & Precyzja & Czułość & FP i~FN & Udział alarmów \\
+Zadanie, metoda, warunek i~ziarno & Próg: reguła i~wartość & Precyzja & Czułość & F1 & FP i~FN & Udział alarmów \\
 \midrule
-\multicolumn{6}{c}{Do uzupełnienia po zapisaniu wyboru progów i~ocenie testowej.} \\
+\multicolumn{7}{c}{Do uzupełnienia po zapisaniu wyboru progów i~ocenie testowej.} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -57,7 +57,7 @@ W~interpretacji trzeba uwzględnić liczebność rzadkich zdarzeń, ewentualną 
 \subsection{Liczność treningu i ablacje regularyzacji MLP}
 \label{sec:mechanizmy-licznosc}
 
-\textbf{Do uzupełnienia:} wyniki pełnej receptury, wariantu bez dropoutu i~wariantu bez zaniku wag przy 25\%, 50\% i~100\% treningu. W~tabeli~\ref{tab:mechanizmy-ablacje} należy pokazać każde ziarno, rzeczywiste liczności treningowe i~różnice względem pełnej receptury dla tych samych indeksów. Potwierdzić zagnieżdżenie podzbiorów oraz niezmienność walidacji i~testu. Liczności poszczególnych foldów można rozwinąć w~załączniku; nie wolno zastąpić ich jedną pozornie wspólną liczbą.
+\textbf{Do uzupełnienia:} wyniki pełnej konfiguracji i~trzech wariantów: bez dropoutu, bez zaniku wag i~bez obu przy 25\%, 50\% i~100\% treningu. W~tabeli~\ref{tab:mechanizmy-ablacje} należy pokazać każde ziarno, rzeczywiste liczności treningowe i~różnice względem pełnej konfiguracji dla tych samych indeksów. Porównać oba kontrasty zaniku z~przewidywaniem z~tabeli~\ref{tab:zanik-przewidywany} i~podać stosunki norm parametrów. Potwierdzić zagnieżdżenie podzbiorów oraz niezmienność walidacji i~testu. Liczności poszczególnych foldów można rozwinąć w~załączniku; nie wolno zastąpić ich jedną pozornie wspólną liczbą.
 
 \begin{table}[tbp]
 \centering\small
@@ -65,7 +65,7 @@ W~interpretacji trzeba uwzględnić liczebność rzadkich zdarzeń, ewentualną 
 \label{tab:mechanizmy-ablacje}
 \begin{tabularx}{\linewidth}{YYYYY}
 \toprule
-Zbiór, udział i~ziarno & Rzeczywiste liczności & Wariant receptury & Testowe AUC & Różnica względem pełnej receptury \\
+Zbiór, udział i~ziarno & Rzeczywiste liczności & Wariant & Testowe AUC & Różnica względem pełnej konfiguracji \\
 \midrule
 \multicolumn{5}{c}{Do uzupełnienia z~manifestów podzbiorów i~predykcji badania B.} \\
 \bottomrule
@@ -76,12 +76,12 @@ Zbiór, udział i~ziarno & Rzeczywiste liczności & Wariant receptury & Testowe 
 {figures/ch07/jakosc-a-licznosc.pdf}
 {Miejsce na zależność jakości od liczby przykładów i~wariantu regularyzacji; brak wyników.}
 {fig:mechanizmy-licznosc}
-{Osobne panele German Credit, Ionosphere i~Bioresponse; trzy receptury i~trzy ziarna. Nie przedstawiać zakresu trzech ziaren jako przedziału ufności.}
+{Osobne panele German Credit, Ionosphere i~Bioresponse; cztery warianty i~trzy ziarna. Nie przedstawiać zakresu trzech ziaren jako przedziału ufności.}
 
 \subsection{Dynamika uczenia i luka generalizacji}
 \label{sec:mechanizmy-luki}
 
-\textbf{Do uzupełnienia:} historie nieważonej straty treningowej i~walidacyjnej tej samej sieci, obliczone w~trybie ewaluacji. Podać definicję luki, wybrane epoki i~regułę agregowania. Krzywe należy oprzeć na zapisanych epokach, a~nie na interpolowanych wynikach końcowych. Nie wybierać do prezentacji wyłącznie ziarna z~największą różnicą; selekcja paneli musi zostać uzasadniona i~zapewniać dostęp do pozostałych przebiegów.
+\textbf{Do uzupełnienia:} historie nieważonej straty treningowej i~walidacyjnej tej samej sieci, obliczone w~trybie ewaluacji. Podać lukę po pełnym budżecie jako miarę główną, a~w~wybranej epoce jako pomocniczą. Pokazać wybrane epoki, rzeczywistą liczbę kroków i~regułę agregowania. Krzywe oprzeć na zapisanych historiach względem liczby aktualizacji, ze wspólną osią dla udziałów. Ocenić końcową stratę treningową i~kryterium plateau z~rozdziału~\ref{chap:metodyka}. Nie wybierać do prezentacji wyłącznie ziarna z~największą różnicą; selekcja paneli musi zostać uzasadniona i~zapewniać dostęp do pozostałych przebiegów.
 
 \plannedfigure
 {figures/ch07/krzywe-i-luki.pdf}
@@ -94,4 +94,4 @@ Zmniejszenie luki należy ocenić razem z~poziomem straty i~jakością na teści
 \subsection{Odpowiedzi na pytania PB3 i PB4}
 \label{sec:mechanizmy-odpowiedzi}
 
-\textbf{Do uzupełnienia po analizie:} osobne odpowiedzi określające kierunek, wielkość i~warunki obserwowanego efektu. PB3 wymaga rozdzielenia AP, punktu pracy i~jakości prawdopodobieństw. PB4 wymaga powiązania ablacji z~licznością treningu, zmianą jakości i~luką. Należy uwzględnić przypadki braku poprawy i~przeciwne kierunki między zadaniami. Zakres odpowiedzi obejmuje po trzy celowo wybrane zbiory, ustalone receptury i~trzy ziarna; nie jest ogólnym twierdzeniem o~ważeniu lub regularyzacji dla wszystkich tabel.
+\textbf{Do uzupełnienia po analizie:} osobne odpowiedzi określające kierunek, wielkość i~warunki obserwowanego efektu. PB3 wymaga porównania ważenia i~przesunięcia po uczeniu, z~rozróżnieniem AP, punktu pracy i~jakości prawdopodobieństw oraz oceną kontrastu MLP--CatBoost. PB4 wymaga powiązania ablacji z~licznością treningu, zmianą jakości, luką i~przewidywaniem zaniku wag. Wniosek o~zaniku ograniczyć do konfiguracji~21 lokalnego MLP i~badanych budżetów, odnosząc go warunkowo do interpretacji strojenia w~PB2. Należy uwzględnić przypadki braku poprawy i~przeciwne kierunki między zadaniami. Zakres odpowiedzi obejmuje po trzy celowo wybrane zbiory, ustalone konfiguracje i~trzy ziarna; nie jest ogólnym twierdzeniem o~ważeniu lub regularyzacji dla wszystkich tabel.

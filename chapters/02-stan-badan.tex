@@ -95,6 +95,7 @@ Tabela~\ref{tab:benchmarki} zestawia liczby zbiorów i~charakterystyczne element
 \caption{Zakres i~charakterystyka wybranych badań porównawczych. Opracowanie własne.}
 \label{tab:benchmarki}
 \footnotesize
+\begin{minipage}{\textwidth}
 \begin{tabularx}{\textwidth}{@{}P{0.23\textwidth}P{0.25\textwidth}Y@{}}
 \toprule
 Badanie & Liczba zbiorów & Cecha porównania \\
@@ -102,12 +103,13 @@ Badanie & Liczba zbiorów & Cecha porównania \\
 Gorishniy i~in.~\cite{gorishniy2021revisiting} & 11 & Architektury oceniane przy wspólnej procedurze uczenia i~strojenia. \\
 Grinsztajn i~in.~\cite{grinsztajn2022trees} & 45 & Kontrolowane przekształcenia cech służące analizie różnic między sieciami i~drzewami. \\
 TabZilla~\cite{mcelfresh2024tabzilla} & 176 & Analiza znaczenia właściwości zbioru i~strojenia dla wyboru algorytmu. \\
-RealMLP~\cite{holzmueller2024realmlp} & 208 & Opracowanie ustawień domyślnych i~ocena ich przenoszenia na odrębne zbiory. \\
+RealMLP~\cite{holzmueller2024realmlp} & 208\footnote{118 zbiorów wykorzystano do opracowania ustawień domyślnych, a~90 odrębnych zbiorów do oceny ich generalizacji na nowych danych.} & Opracowanie ustawień domyślnych i~ocena ich przenoszenia na odrębne zbiory. \\
 Ye i~in.~\cite{ye2025talent} & 300 & Szerokie porównanie metod, w~tym modeli pretrenowanych i~zespołów. \\
 TabArena~\cite{erickson2025tabarena} & 51 & Oddzielna ocena konfiguracji domyślnych, strojonych i~zespołów konfiguracji. \\
 TabReD~\cite{rubachev2025tabred} & 8 & Podziały czasowe i~rozbudowane cechy odzwierciedlające zastosowania przemysłowe. \\
 \bottomrule
 \end{tabularx}
+\end{minipage}
 \end{table}
 
 \subsubsection{Wnioski z porównań}
@@ -204,4 +206,4 @@ W~tej pracy podział Diabetes zachowuje rozłączność pacjentów. Dla pozosta�
 
 Na podstawie przeglądu wybrano kilka kierunków rozwoju sieci i~silne odniesienia konwencjonalne, porównywane przy wspólnych populacjach testowych i~jawnych kosztach selekcji. W~badaniu uwzględniono w~tym celu jedenaście metod i~dwanaście zadań klasyfikacji. Osobna ocena ustawień domyślnych, konfiguracji wybranej na walidacji i~zespołu konfiguracji pozwala zbadać, co zmienia dodatkowe wyszukiwanie oraz łączenie predykcji. Wyniki poszczególnych zadań są istotne obok zbiorczego rankingu, ponieważ wybrane zbiory różnią się licznością, typami cech i~rozkładami klas.
 
-W~dwóch eksperymentach uzupełniających bada się wybrane mechanizmy uczenia. Ważenie klas jest oceniane z~uwzględnieniem zarówno uporządkowania przykładów, jak i~decyzji progowych. W~badaniu MLP usuwa się pojedyncze składniki regularyzacji i~zmniejsza liczbę przykładów treningowych, zachowując wspólne warunki porównania. Ocenia się w~ten sposób wpływ interwencji w~ustalonej procedurze, na tle naturalnego zróżnicowania zbiorów. Mechanizmy wybranych metod opisano w~kolejnym rozdziale, a~szczegóły eksperymentów w~rozdziale~\ref{chap:metodyka}.
+W~dwóch eksperymentach uzupełniających bada się wybrane mechanizmy uczenia. Ważenie klas jest oceniane z~uwzględnieniem zarówno uporządkowania przykładów, jak i~decyzji progowych. W~badaniu MLP usuwa się wybrane składniki regularyzacji (dropout, zanik wag lub oba mechanizmy jednocześnie) i~zmniejsza liczbę przykładów treningowych, zachowując wspólne warunki porównania. Ocenia się w~ten sposób wpływ interwencji w~ustalonej procedurze, na tle naturalnego zróżnicowania zbiorów. Mechanizmy wybranych metod opisano w~kolejnym rozdziale, a~szczegóły eksperymentów w~rozdziale~\ref{chap:metodyka}.
