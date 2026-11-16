@@ -93,7 +93,7 @@ Metadane i~predykcje trafiają najpierw do plików tymczasowych, które po opró
 
 Awaria konfiguracji nie przerywa niezależnych zadań. Warunki pełnego raportu podano w~sekcji~\ref{sec:warunki-raportowania}. Wyniki D, T i~T+E danej pary zbiór--metoda pochodzą z~jednego kompletnego uruchomienia.
 
-Raport można odtworzyć z~zapisanych predykcji i~metadanych zestawionych w~tabeli~\ref{tab:artefakty}. Nowe predykcje wymagają ponownego dopasowania, ponieważ modele są usuwane po zakończeniu próby. Ponowny trening na GPU, ze względu na jego naturalną charakterystykę sprzętową, nie ma gwarancji bitowej powtarzalności.
+Raport można odtworzyć z~zapisanych predykcji i~metadanych zestawionych w~tabeli~\ref{tab:artefakty}. Nowe predykcje wymagają ponownego dopasowania, ponieważ modele są usuwane po zakończeniu próby. Ponowny trening na GPU, ze względu na jego niedeterministyczne operacje CUDA, nie gwarantuje bitowej powtarzalności.
 
 \subsection{Dobór partii i ograniczenia pamięci}
 \label{sec:partie-platformy}
@@ -163,7 +163,7 @@ Ze względu na czasowy budżet uczenia charakterystykę stanowiska powiązano z~
 
 Przestrzenie sześciu metod zdefiniowano w~repozytorium badania, a~przestrzenie KNN, RealMLP, ModernNCA i~TabM pochodzą z~TabArena~0.1.0.\footnote{Rewizja definicji przestrzeni: \path{79299f573975b45052803d8f26c350f10446e332}. Katalog źródłowy: \href{https://github.com/kbugala4/mgr-repo/tree/79299f573975b45052803d8f26c350f10446e332/configs/model}{konfiguracje modeli}.} Losowane wartości zastępują ustawienia bazowe metod lokalnych, natomiast w~integracjach natywnych jawne parametry nakłada się po losowaniu. O~wykonanym wariancie rozstrzyga zapisany efektywny zestaw parametrów.
 
-Środowisko odtwarza się przy użyciu AutoGluon~1.6.3b20260918 z~gałęzi~1.6 wymaganej przez TabArena~0.1.0, a~pełny opis wersji zależności zestawiono w~tabeli~\ref{tab:wersje}
+Środowisko odtwarza z~pliku blokady zależności. Użyto AutoGluon~1.6.3b20260918 z~gałęzi~1.6 wymaganej przez TabArena~0.1.0, a~wersje pozostałych zależności zestawiono w~tabeli~\ref{tab:wersje}.
 
 \begin{table}[!htbp]
 \centering\small
