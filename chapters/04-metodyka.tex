@@ -65,7 +65,7 @@ Wartości, typy cech i~mapowanie klas pozostają wspólne, natomiast przekształ
 
 Wyjątkiem jest KNN w~zadaniach IID, wykorzystujący walidację \textit{leave-one-out} (LOO) z~jednego dopasowania na całej części rozwojowej. Sąsiedztwo wyklucza etykietę ocenianej obserwacji, lecz przygotowanie cech obejmuje całą rozwojową populację wejściową, z~kodowaniem zero-jedynkowym kategorii. Większy zbiór odniesienia i~wspólne przygotowanie cech mogą dawać korzystniejszą ocenę walidacyjną niż osiem foldów w~ModernNCA. Dotyczy to wyboru konfiguracji i~wag zespołu, a~nie niezależności testu. Efektywną liczbę sąsiadów i~ograniczenia zbioru odniesienia przez budżet zapisuje się dla każdej konfiguracji, zgodnie z~zasadami identyfikowalności z~sekcji~\ref{sec:artefakty-wznowienie}. W~danych szpitalnych KNN korzysta z~ośmiu foldów grupowych.
 
-Stały TabPFN-3.5 otrzymuje pełną część rozwojową jako oznakowany kontekst. Jego procedura pomija tworzenie OOF, strojenie i~uśrednianie foldów. Model o~ustalonej wersji wag łączy osiem predykcji podczas inferencji, wykorzystując wiedzę nabytą w~pretrenowaniu.
+TabPFN-3.5 wykorzystuje pełną część rozwojową jako oznakowany kontekst, bez tworzenia OOF, strojenia i~uśredniania foldów. Procedurę inferencji opisano w~sekcji~\ref{sec:tabpfn}.
 
 \subsection{Strojenie, losowość i budżety}
 \label{sec:strojenie}
@@ -94,7 +94,7 @@ Warunek & Wybór & Predykcja testowa \\
 D & Konfiguracja domyślna & Średnia foldów, dla KNN w~zadaniach IID predykcja natywnego modelu \\
 T & Najlepsza jakość OOF spośród udanych kandydatów, włącznie z~domyślnym & Zapisana predykcja wybranej konfiguracji \\
 T+E & Zachłanny dobór wag na OOF, budżet do~100 kroków, ziarno~42 & Ważona suma zapisanych prawdopodobieństw konfiguracji \\
-Stały TabPFN & Brak wyboru konfiguracji i~wag & Predykcja z~pełnym kontekstem rozwojowym, wyłącznie D \\
+TabPFN & Brak wyboru konfiguracji i~wag & Predykcja z~pełnym kontekstem rozwojowym, wyłącznie D \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -105,7 +105,7 @@ p_{\mathrm{T+E}}(x)=\sum_{c\in\mathcal{C}}\omega_c\bar p_c(x),
 \qquad \omega_c\geq0,\quad \sum_{c\in\mathcal{C}}\omega_c=1,
 \label{eq:zespol-konfiguracji}
 \end{equation}
-gdzie $\mathcal{C}$ obejmuje udane konfiguracje danej metody na danym zbiorze. Wagi $\omega_c$ są wybierane na OOF przez zachłanne dołączanie konfiguracji do zespołu, zgodnie z~ideą selekcji z~biblioteki modeli Caruany i~współautorów~\cite{caruana2004ensemble}. Łączenie konfiguracji dodaje poziom agregacji do już istniejącego uśredniania foldów, a~zespół wewnętrzny TabM pozostaje częścią $p_{c,k}$. Dla KNN w~zadaniach IID w~miejsce $\bar p_c$ używana jest predykcja pojedynczego dopasowania, a~stały TabPFN występuje tylko w~D.
+gdzie $\mathcal{C}$ obejmuje udane konfiguracje danej metody na danym zbiorze. Wagi $\omega_c$ są wybierane na OOF przez zachłanne dołączanie konfiguracji do zespołu, zgodnie z~ideą selekcji z~biblioteki modeli Caruany i~współautorów~\cite{caruana2004ensemble}. Łączenie konfiguracji dodaje poziom agregacji do już istniejącego uśredniania foldów, a~zespół wewnętrzny TabM pozostaje częścią $p_{c,k}$. Dla KNN w~zadaniach IID w~miejsce $\bar p_c$ używana jest predykcja pojedynczego dopasowania, a~TabPFN występuje tylko w~warunku~D.
 
 W~użytej wersji biblioteki zachowywany jest najkrótszy prefiks trajektorii zachłannego wyboru osiągający najlepszą ocenę OOF. Ziarno~42 ustala wyłącznie losowe rozstrzyganie remisów, z~pierwszeństwem konfiguracji już obecnych w~zespole. Ponowny wybór kandydata zwiększa jego udział, dlatego liczba różnych konfiguracji może być mniejsza od liczby kroków. Różnica T+E względem T mierzy korzyść z~tej dodatkowej procedury selekcji i~agregacji, przy wspólnym koszcie znalezienia kandydatów.
 
@@ -199,7 +199,7 @@ Luka generalizacji jest różnicą nieważonej straty walidacyjnej i~treningowej
 \subsection{Analiza porównawcza i niepewność}
 \label{sec:analiza-plan}
 
-Pytaniom badawczym przyporządkowano porównania z~tabeli~\ref{tab:pytania-analiza}. Główne zestawienie obejmuje T dziesięciu metod strojonych z~odrębnie oznaczonym D stałego TabPFN.
+Pytaniom badawczym przyporządkowano porównania z~tabeli~\ref{tab:pytania-analiza}. W~głównym zestawieniu porównuje się dziesięć metod strojonych w~warunku~T oraz TabPFN w~odrębnie oznaczonym warunku~D.
 
 \begin{table}[tbp]
 \centering\small
@@ -226,16 +226,16 @@ Niepewność kontrastów i~zmian D--T oraz T--T+E opisuje sparowany bootstrap za
 
 Przedziały są warunkowe względem modeli i~podziału, a~przy warstwowaniu również liczności klas. Nie obejmują zmienności ponownego strojenia ani podziału zewnętrznego. W~zbiorach Amazon Employee Access i~Covertype dodatkowym ograniczeniem jest przybliżenie niezależności wierszy, nieuwzględniające zależności encji i~przestrzeni. Wybór konfiguracji i~wag zespołu korzysta wyłącznie z~wyników walidacyjnych, a~etykiety testowe służą jedynie ocenie. Reguły analizy badań A i~B ustalono przed rozpoczęciem treningu modeli w~tych badaniach.
 
-W~A i~B punktem wyjścia są trzy sparowane różnice, których średnia opisuje efekt interwencji, a~zakres pokazuje jego zmienność między ziarnami. Przedział dla średniej wyznacza się z~2000 wspólnych replik testu, losowanych w~obrębie klas z~ziarnem~42, tak aby wszystkie warunki i~ziarna oceniano na tych samych obserwacjach. Raportuje się przedział percentylowy 95\%, zachowując progi wybrane na OOF.
+W~badaniach A i~B punktem wyjścia są trzy sparowane różnice, których średnia opisuje efekt interwencji, a~zakres pokazuje jego zmienność między ziarnami. Przedział dla średniej wyznacza się z~2000 wspólnych replik testu, losowanych w~obrębie klas z~ziarnem~42, tak aby wszystkie warunki i~ziarna oceniano na tych samych obserwacjach. Raportuje się przedział percentylowy 95\%, zachowując progi wybrane na OOF.
 
-W~A główny kontrast zestawia ważenie z~brakiem wag, a~warunkowo także ważenie z~kontrolą oraz kontrolę z~brakiem wag. W~B porównuje się wariant pełny z~wariantami bez dropoutu i~bez zaniku, a~wariant bez dropoutu z~wariantem bez obu składników, bez odrębnego testu interakcji.
+W~badaniu~A główny kontrast zestawia ważenie z~brakiem wag, a~warunkowo także ważenie z~kontrolą oraz kontrolę z~brakiem wag. W~badaniu~B porównuje się wariant pełny z~wariantami bez dropoutu i~bez zaniku, a~wariant bez dropoutu z~wariantem bez obu składników, bez odrębnego testu interakcji.
 
 Każda analiza uwzględnia braki i~awarie, ponieważ kompletne pary mogą pomijać najtrudniejsze zadania. Nieudanym uruchomieniom nie przypisuje się metryk. Znaczenie praktyczne różnic ocenia się na właściwej skali, wraz z~niepewnością i~kosztem. Bez kosztów aplikacyjnych nie ustalono wspólnej granicy użyteczności dla AUC, AP i~straty.
 
 \subsection{Koszt obliczeń i skala badania}
 \label{sec:koszt-metodyka}
 
-Jedno zadanie konfiguracji oznacza ocenę pojedynczego zestawu hiperparametrów na ośmiu foldach, z~wyjątkami KNN i~stałego TabPFN opisanymi wcześniej. Dziesięć metod strojonych i~TabPFN dają łącznie $12\cdot10\cdot26+12=3132$ takich zadań. Nominalną skalę zestawiono w~tabeli~\ref{tab:skala-badania}, bez powtórzeń po awariach.
+Jedno zadanie konfiguracji oznacza ocenę pojedynczego zestawu hiperparametrów na ośmiu foldach, z~wyjątkami KNN i~TabPFN opisanymi wcześniej. Dziesięć metod strojonych i~TabPFN dają łącznie $12\cdot10\cdot26+12=3132$ takich zadań. Nominalną skalę zestawiono w~tabeli~\ref{tab:skala-badania}, bez powtórzeń po awariach.
 
 \begin{table}[tbp]
 \centering\small
@@ -257,7 +257,7 @@ Badanie B & Dopasowania GPU & 864 \\
 \end{tabularx}
 \end{table}
 
-Stałą inferencję TabPFN wlicza się do zadań konfiguracji, lecz nie do dopasowań sieci w~foldach. Badania mechanizmów dodają 1008 dopasowań neuronowych i~144 dopasowania CatBoost na CPU. Warunkowa kontrola A zwiększa zakres najwyżej o~18 ocen, czyli po~72 dopasowania GPU i~CPU. Komparator przesunięcia działa na gotowych predykcjach.
+Inferencję TabPFN wlicza się do zadań konfiguracji, lecz nie do dopasowań sieci w~foldach. Badania mechanizmów dodają 1008 dopasowań neuronowych i~144 dopasowania CatBoost na CPU. Warunkowa kontrola A zwiększa zakres najwyżej o~18 ocen, czyli po~72 dopasowania GPU i~CPU. Komparator przesunięcia działa na gotowych predykcjach.
 
 Warunki D, T i~T+E współdzielą koszt wyszukiwania, dlatego rozlicza się go tylko raz. Oddzielnie podaje się czas dopasowania, rzeczywisty czas prób i~koszt predykcji. Sześć uczonych metod neuronowych korzysta z~GPU, a~odniesienia konwencjonalne z~CPU. Odtworzenie oceny wymaga identyfikacji danych, zależności i~sprzętu. Granice pomiarów czasu i~pamięci, w~tym brak pomiaru pamięci podczas predykcji, opisano w~sekcji~\ref{sec:pomiary-platformy}.
 

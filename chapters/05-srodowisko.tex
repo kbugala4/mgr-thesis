@@ -33,7 +33,7 @@ Raportowanie & Wybór na OOF, łączenie predykcji i~obliczanie metryk \\
 
 Ustawienia badania są walidowane i~scalane w~jednym miejscu, a~każdy model udostępnia wspólny interfejs zwracający prawdopodobieństwa klas. Pojedynczy proces sterujący uruchamia konfiguracje i~foldy sekwencyjnie: zadanie konfiguracji otrzymuje cztery wątki CPU, a~metody neuronowe i~TabPFN także jedno GPU. Integracja ModernNCA zakłada przy tym sekwencyjne dopasowania. Ograniczenie dotyczy pojedynczego procesu, nie liczby procesów pracujących na tej samej maszynie.
 
-Lokalnie zaimplementowano sześć integracji: MLP, TabNet, FT-Transformer, regresję logistyczną, XGBoost i~CatBoost. KNN, RealMLP, ModernNCA oraz TabM korzystają z~natywnych procedur bibliotek, a~osobna integracja obsługuje stały TabPFN. Wspólny interfejs pozwala oceniać je w~tych samych warunkach raportowania z~sekcji~\ref{sec:warunki-raportowania}.
+Lokalnie zaimplementowano sześć integracji: MLP, TabNet, FT-Transformer, regresję logistyczną, XGBoost i~CatBoost. KNN, RealMLP, ModernNCA oraz TabM korzystają z~natywnych procedur bibliotek, a~osobna integracja obsługuje TabPFN. Wspólny interfejs pozwala oceniać je w~tych samych warunkach raportowania z~sekcji~\ref{sec:warunki-raportowania}.
 
 Cechy zachowują oryginalne typy numeryczne i~kategoryczne. Wspólne automatyczne przygotowanie cech AutoGluon wyłączono, powierzając przekształcenia integracjom modeli. Dopasowanie przekształceń respektuje granice treningu opisane w~sekcji~\ref{sec:podzialy}, wraz z~wyjątkiem KNN w~zadaniach IID. Rysunek~\ref{fig:architektura} przedstawia oddzielenie uczenia od odczytu zapisanych predykcji.
 
