@@ -206,13 +206,13 @@ Wariant podstawowy i~rozszerzony wybiera się z~prawdopodobieństwem $1/2$. Waru
 
 Liczba przedziałów osadzeń jest ograniczona do liczności treningu pomniejszonej o~jeden. Domyślna liczba bloków zależy od obecności osadzeń numerycznych. Automatyczny rozmiar partii wynika z~liczności i~szerokości treningu.
 
-\subsection*{Audyt danych przed uczeniem}
+\subsection*{Audyt zbiorów danych}
 \label{app:audyt}
 
-Profil dwunastu przygotowanych zbiorów identyfikuje każdą wersję danych sumą kontrolną SHA-256.\footnote{Suma kontrolna SHA-256 profilu: \path{3952741f3d61e17de62a068b3131b061e97769615af2d190790cbd367bc3034c}.} Tabela~\ref{tab:audyt-danych} przedstawia zapisane w~nim pomiary przed uczeniem. Liczności obserwacji i~predyktorów odpowiadają tabeli~\ref{tab:rejestr-zadan}. Zgodność tych wersji z~danymi wykorzystanymi w~eksperymentach wymaga porównania sum kontrolnych. Sam zgodny rozmiar tabeli ani wersja kodu nie rozstrzygają tożsamości danych.
+Tabela~\ref{tab:audyt-danych} przedstawia profil dwunastu przygotowanych zbiorów. Liczności obserwacji i~predyktorów odpowiadają tabeli~\ref{tab:rejestr-zadan}, a~każdą wersję danych identyfikuje suma kontrolna SHA-256 pliku Parquet, opisana w~sekcji~\ref{sec:izolacja-platformy}.
 
 \par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\scriptsize
-\captionof{table}{Profil przygotowanych danych. Braki oznaczają procent komórek predyktorów. Duplikaty podano oddzielnie dla cech (X) i~cech z~etykietą (X,y). Liczności są licznikami zapisanymi w~profilu. Kody klas zachowują zapis źródłowy, w~tym kropkę w~etykiecie \texttt{1.0}.}
+\captionof{table}{Profil przygotowanych danych. Braki oznaczają procent komórek predyktorów. Duplikaty podano oddzielnie dla cech (X) i~cech z~etykietą (X,y). Kody klas zachowują zapis źródłowy, w~tym kropkę w~etykiecie \texttt{1.0}.}
 \label{tab:audyt-danych}
 \begin{tabularx}{\linewidth}{@{}Yrrrrr@{}}
 \toprule
@@ -232,13 +232,13 @@ Ionosphere & 0,0000 & 1 / 1 & 1 & \texttt{b} & 126 \\
 Bioresponse & 0,0000 & 0 / 0 & 0 & \texttt{0} & 1\,717 \\
 \bottomrule\end{tabularx}\end{minipage}\par\medskip
 
-Braki występują w~trzech zbiorach: Adult (trzy kolumny), HIGGS (dziewięć) i~Diabetes 130-US (dziewięć). W~danych szpitalnych stałe są \texttt{examide} i~\texttt{citoglipton}, a~w~Ionosphere --- \texttt{feature\_1}. Profil Santander Customer Satisfaction wskazuje 34 stałe kolumny. Grupy identycznych cech o~sprzecznych etykietach występują w~Adult (5) i~Santander Customer Satisfaction (133). Zgodność etykiet pozostałych duplikatów nie eliminuje ryzyka powtarzania podobnych obserwacji między częściami podziału.
+Braki występują w~trzech zbiorach: Adult (trzy kolumny), HIGGS (dziewięć) i~Diabetes 130-US (dziewięć). W~danych szpitalnych stałe są \texttt{examide} i~\texttt{citoglipton}, a~w~Ionosphere --- \texttt{feature\_1}. W~danych Santander Customer Satisfaction stałych kolumn jest 34. Grupy identycznych cech o~sprzecznych etykietach występują w~Adult (5) i~Santander Customer Satisfaction (133). Zgodność etykiet pozostałych duplikatów nie eliminuje ryzyka powtarzania podobnych obserwacji między częściami podziału.
 
-Amazon Employee Access nie zawiera według profilu braków ani duplikatów wierszy. Wszystkie dziewięć cech jest kategorycznych, a~największa liczba kategorii jednej cechy wynosi 7\,518. Diabetes 130-US obejmuje 71\,518 pacjentów. Ta liczba nie potwierdza rozłączności pacjentów po podziale, którą należy sprawdzić niezależnie.
+Amazon Employee Access nie zawiera braków ani duplikatów wierszy. Wszystkie dziewięć cech jest kategorycznych, a~największa liczba kategorii jednej cechy wynosi 7\,518. Diabetes 130-US obejmuje 71\,518 pacjentów, co uzasadnia podział grupowy opisany w~sekcji~\ref{sec:podzialy}.
 
-Przyjęto zachowanie duplikatów i~stałych kolumn we wszystkich zbiorach, bez dodatkowej deduplikacji ani ręcznego usuwania cech na podstawie profilu. Decyzja obejmuje również 9\,144 duplikaty cech w~Credit Card Fraud i~34 stałe kolumny w~Santander Customer Satisfaction. Dane traktuje się jako pełne źródło obserwacji, bez rozstrzygania na podstawie samej powtarzalności, czy dany przypadek jest błędem rejestracji. Przetwarzanie wykonywane przez poszczególne metody pozostaje częścią porównywanych procedur. Ocena odnosi się zatem do źródłowych populacji wierszy, z~zachowaniem występujących w~nich powtórzeń.
+Przyjęto zachowanie duplikatów i~stałych kolumn we wszystkich zbiorach, bez dodatkowej deduplikacji ani ręcznego usuwania cech. Decyzja obejmuje również 9\,144 duplikaty cech w~Credit Card Fraud i~34 stałe kolumny w~Santander Customer Satisfaction. Dane traktuje się jako pełne źródło obserwacji, bez rozstrzygania na podstawie samej powtarzalności, czy dany przypadek jest błędem rejestracji. Przetwarzanie wykonywane przez poszczególne metody pozostaje częścią porównywanych procedur. Ocena odnosi się zatem do źródłowych populacji wierszy, z~zachowaniem występujących w~nich powtórzeń.
 
-\textbf{Do uzupełnienia:} porównanie sum kontrolnych profilu z~danymi wykorzystanymi w~eksperymentach oraz odtworzenie definicji liczników duplikatów na podstawie skryptu profilującego. Kontrola wykonania powinna obejmować przypadki wspólne między częściami podziału, rozłączność pacjentów i~jednokrotny udział obserwacji w~walidacji, a~dla Amazon Employee Access także powtarzalność encji. Profil opisuje właściwości danych, lecz nie zawiera wyników tych kontroli.
+Kontrola zgodności podziałów obejmuje przypadki wspólne między częściami podziału, rozłączność pacjentów w~danych szpitalnych, jednokrotny udział każdej obserwacji w~walidacji, a~dla Amazon Employee Access także powtarzalność encji między częściami.
 
 \subsection*{Progi decyzji i miary uporządkowania}
 \label{app:progi}
