@@ -112,3 +112,52 @@ Słowne odwołanie do rozdziałów wynikowych w 4 jest zamierzone. Po włączeni
 - Szkielet 6 nadal zawiera warunkową instrukcję o testach istotności, a dalsza część 7 bezwarunkowo mówi o identycznym AP komparatora. Przy ich późniejszej redakcji należy uzgodnić pierwsze zdanie z analizą opisową oraz ograniczyć drugie do dokładnej arytmetyki. W tym zadaniu zmiany 6–7 ograniczono do wskazanych miejsc przeniesienia.
 
 Nie uruchamiano treningów, nie oceniano testowych predykcji, nie kwalifikowano GPU ani nie instalowano zależności.
+
+## Korekta po uwagach recenzenta
+
+Wprowadzono kolejną redakcję 2026-11-16. Powyższe pomiary i liczba stron opisują wcześniejszą wersję, przed tą korektą.
+
+- Badanie A otwiera teraz odwołanie do `eq:optimum-wazenia` i przesunięcia logitu o log(w1/w0). Jawnie wskazano pytanie o odstępstwa rzeczywistych modeli od rozwiązania idealnego.
+- Motywację B oparto na wspólnym doborze regularyzatorów opisanym przez Kadrę i współautorów oraz na łącznym strojeniu regularyzacji z innymi parametrami w badaniu głównym. Sprawdzono oryginalny artykuł „Well-tuned Simple Nets Excel on Tabular Datasets”, NeurIPS 2021, wprowadzenie i sekcję 4: https://proceedings.neurips.cc/paper_files/paper/2021/file/c902b497eb972281fb5b4e206db38ee6-Paper.pdf. Nie przypisano mu dowodu skuteczności konkretnej ablacji B.
+- **Decyzja o źródłach B:** pominięcie Covertype nazwano w 7 odstępstwem od ogólnej reguły rozłączności z 4. Powód pozostaje opisem wymagającym źródłowego potwierdzenia. Brak dowodu wcześniejszego ustalenia kryterium kompletności wyklucza dopisanie go jako uprzednio przyjętej reguły.
+- **Audyt:** ponowne sprawdzenie `appendices/`, obu repozytoriów i wyszukiwanie nazw `dataset-profile*` pod `/home/smtech` nie ujawniło wskazanego profilu ani skryptu. Nie są też śledzone pod tymi nazwami w obu repozytoriach. Ich zgodności z aktualnymi danymi nadal nie można potwierdzić. Poproszono autora o pełną ścieżkę. Tabela audytu pozostaje jawnie nieuzupełniona.
+- Chronologia zatwierdzenia analizy pozostaje do uzupełnienia w 6, zgodnie z wcześniejszą odpowiedzią autora.
+- Doprecyzowano różne cele pomiaru luki dla stanu końcowego i testowej oceny stanu wybranego.
+- Poprawiono wskazane konstrukcje językowe, przywrócono wybrany mnożnik partii i jawne wyłączenie powtarzanej walidacji dla małych zbiorów. Dodano odsyłacz do zasad identyfikowalności wykonania KNN.
+- Usunięto wymuszone nowe strony między tabelami załącznika. Tabele pozostają niepodzielne, ale mogą zajmować wspólną stronę. Ujednolicono zapis małych wartości jako potęg dziesięciu, usunięto podwójne dwukropki i nadmiarowe puste linie.
+- Parametry w 7 zaokrąglono do trzech cyfr znaczących, pozostawiając dokładne wartości w źródłach wykonania. Parametry CatBoost opisano po polsku, nazwy zbiorów rozwinięto. Całkowite liczby iteracji i indeksy pozostają dokładne.
+- Kompilacja główna: 57 stron zamiast 63 po zagęszczeniu załącznika. Kontrola obejmuje także osobną kompilację z 6–7. Nie wykonano treningów ani analizy testowych predykcji.
+
+
+## Uzupełnienie po otrzymaniu profilu danych
+
+Autor wskazał `plans/dataset-profile-2026-11-13.jsonl`. Plik jest teraz dostępny. Powyższe stwierdzenia o braku profilu opisują wcześniejszy stan dostępu i nie są już aktualne. Nadal brakuje skryptu `dataset-profile.py` i lokalnych plików danych kampanii.
+
+Profil zawiera 12 rekordów, pełne sumy SHA-256 i deklarację wykonania na maszynie `/home/k.bugala/ws/ablation-experiments`, w czystej rewizji `79299f5`. SHA-256 samego otrzymanego pliku: `3952741f3d61e17de62a068b3131b061e97769615af2d190790cbd367bc3034c`. Sumy wejściowych danych zachowano w pliku źródłowym, bez jego edycji.
+
+Sprawdzono zgodność wszystkich 12 liczności i liczb predyktorów z rejestrem rozdziału 4. Profil potwierdza swoje historyczne wersje danych; brak przygotowanych plików Parquet uniemożliwia porównanie ich sum z aktualną kampanią. Nie uznano identycznej rewizji kodu za dowód identyczności danych.
+
+Tabelę znaków zapytania zastąpiono wartościami profilu: procent braków, dwa liczniki duplikatów, liczba stałych kolumn i klasa najmniej liczna z licznością. Dodano informacje o sprzecznych etykietach, cechach Amazon i liczbie pacjentów. Rozdział 4 zawiera krótką syntezę: braki w 3, duplikaty cech w 7, stałe kolumny w 3 zbiorach. Są to pomiary danych przed uczeniem.
+
+**Pozostałe ograniczenia:** profil nie dokumentuje decyzji o duplikatach, ich rozkładu między częściami podziału ani rozłączności pacjentów. Brak skryptu nie pozwala rozstrzygnąć dokładnej semantyki licznika duplikatów (np. nadmiarowe wiersze czy wszyscy członkowie powtarzającej się grupy). W tabeli określono je jako liczniki profilu, bez dopisywania niepotwierdzonej definicji. Pola decyzji i kontroli zgodności pozostają do uzupełnienia. Nie pobierano danych i nie uruchamiano treningów.
+
+Weryfikacja po uzupełnieniu: `bash regen-pdf.sh` zakończyło się powodzeniem, dokument liczy 58 stron. Brak niezdefiniowanych odwołań, błędów LaTeX i przepełnień Overfull. `git diff --check` bez błędów.
+
+## Kolejna korekta argumentacji i stylu
+
+Uwzględniono uwagi autora do argumentacji A/B, kryterium norm oraz trzech gęstych akapitów. W otwarciu A użyto semantycznej klasy rzadkiej, zamiast kodu 1, i przeniesiono cytowanie Elkana do zdania o korekcie predykcji. Motywacja B wskazuje ograniczenie wnioskowania o składnikach z oceny całej dostrojonej procedury. Kryterium norm opisano jako ustalane po wyborze konfiguracji, przed uczeniem B. Skrócono wyjaśnienie stanu końcowego i wybranego oraz wygładzono opis walidacji i bootstrapu.
+
+Nie przyjęto twierdzenia, że 164 zdarzenia muszą dawać najszersze przedziały: szerokość zależy też od predykcji, miary i sparowania błędów. Zamiast tego wskazano wrażliwość oszacowania na pojedyncze rzadkie przypadki. Nie dopisano wyników pomiaru niepewności.
+
+Profil identyfikuje teraz suma SHA-256 w przypisie, zamiast daty w prozie. W tabeli audytu procent braków ma cztery miejsca po przecinku (także zera), liczności mają separatory tysięcy, a etykiety klas są zapisane krojem maszynowym. Etykieta `1.0` zachowuje kropkę jako oryginalny identyfikator, z jawnym objaśnieniem w podpisie. Pozostałe liczby używają polskiego zapisu.
+
+Za otwartą decyzję priorytetową uznano postępowanie z 9144 duplikatami cech Credit Card Fraud i 34 stałymi kolumnami Santander Customer Satisfaction. Nie usunięto ich ani nie zmieniono procedury treningów bez dowodów dotyczących rzeczywistego przygotowania danych. Wynik profilu nie dokumentuje decyzji ani pokrycia duplikatów między treningiem i testem.
+
+Druga tabela konfiguracji w 7 ma kolumny zawijające tekst i pełne nazwy wszystkich zbiorów. Kompilacja główna (58 stron) i kontrolna z 6–7 (64 strony) zakończyły się powodzeniem. Brak błędów LaTeX, niezdefiniowanych odwołań i przepełnień Overfull. Sprawdzono także układ tabeli konfiguracji w PDF. Zachowano istniejące ostrzeżenia szablonu o kotwicach przypisów. Nie uruchamiano eksperymentów.
+
+
+## Decyzja autora: zachowanie danych źródłowych
+
+Autor rozstrzygnął otwarty punkt: duplikaty i stałe kolumny pozostają w danych. Nie wykonuje się dodatkowej deduplikacji ani ręcznej selekcji stałych cech na podstawie profilu. Nie interpretuje się samego powtórzenia jako błędu danych. Decyzję wpisano do rozdziału 4 i załącznika, w tym dla 9144 duplikatów Credit Card Fraud i 34 stałych kolumn Santander. Wcześniejsze punkty raportu wskazujące brak tej decyzji są już nieaktualne.
+
+Zachowano przyjęte wyłączenia identyfikatorów i Time, podziały grupowe oraz przetwarzanie właściwe metodom. Decyzja dotyczy braku dodatkowego oczyszczania, nie cofnięcia tych elementów protokołu. Nie stwierdzono, że zachowanie duplikatów dowodzi niezależności obserwacji. Kontrole zgodności danych i podziałów pozostają do udokumentowania. Nie zmieniono repozytorium eksperymentów ani trwających treningów.

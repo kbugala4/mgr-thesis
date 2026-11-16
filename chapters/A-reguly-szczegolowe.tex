@@ -209,34 +209,36 @@ Liczba przedziałów osadzeń jest ograniczona do liczności treningu pomniejszo
 \subsection*{Audyt danych przed uczeniem}
 \label{app:audyt}
 
-Profil dwunastu przygotowanych zbiorów z~13 listopada 2026~r. identyfikuje każdą wersję danych sumą kontrolną SHA-256. Tabela~\ref{tab:audyt-danych} przedstawia zapisane w~nim pomiary przed uczeniem. Liczności obserwacji i~predyktorów odpowiadają tabeli~\ref{tab:rejestr-zadan}. Zgodność tych wersji z~wejściami ostatecznej kampanii wymaga porównania sum kontrolnych. Sam zgodny rozmiar tabeli ani wersja kodu nie rozstrzygają tożsamości danych.
+Profil dwunastu przygotowanych zbiorów identyfikuje każdą wersję danych sumą kontrolną SHA-256.\footnote{Suma kontrolna SHA-256 profilu: \path{3952741f3d61e17de62a068b3131b061e97769615af2d190790cbd367bc3034c}.} Tabela~\ref{tab:audyt-danych} przedstawia zapisane w~nim pomiary przed uczeniem. Liczności obserwacji i~predyktorów odpowiadają tabeli~\ref{tab:rejestr-zadan}. Zgodność tych wersji z~danymi wykorzystanymi w~eksperymentach wymaga porównania sum kontrolnych. Sam zgodny rozmiar tabeli ani wersja kodu nie rozstrzygają tożsamości danych.
 
 \par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\scriptsize
-\captionof{table}{Profil przygotowanych danych. Braki oznaczają procent komórek predyktorów. Duplikaty podano oddzielnie dla cech (X) i~cech z~etykietą (X,y). Liczności są licznikami zapisanymi w~profilu.}
+\captionof{table}{Profil przygotowanych danych. Braki oznaczają procent komórek predyktorów. Duplikaty podano oddzielnie dla cech (X) i~cech z~etykietą (X,y). Liczności są licznikami zapisanymi w~profilu. Kody klas zachowują zapis źródłowy, w~tym kropkę w~etykiecie \texttt{1.0}.}
 \label{tab:audyt-danych}
 \begin{tabularx}{\linewidth}{@{}Yrrrrr@{}}
 \toprule
 Zbiór & Braki [\%] & \shortstack{Duplikaty\\X / (X,y)} & Stałe & \shortstack{Klasa najmniej\\liczna} & \shortstack{Liczność\\klasy} \\
 \midrule
-Adult & 0,9455 & 57 / 52 & 0 & $>$50K & 11687 \\
-Covertype & 0,0 & 0 / 0 & 0 & 4 & 2747 \\
-Credit Card Fraud & 0,0 & 9144 / 9144 & 0 & 1 & 492 \\
-HIGGS, podzbiór & 0,0003 & 25 / 25 & 0 & 0 & 46223 \\
-Amazon Employee Access & 0,0 & 0 / 0 & 0 & 0 & 1897 \\
-Santander Customer Satisfaction & 0,0 & 4940 / 4807 & 34 & 1.0 & 3008 \\
-Online Shoppers & 0,0 & 125 / 125 & 0 & True & 1908 \\
-Diabetes 130-US & 7,8197 & 0 / 0 & 2 & $<$30 & 11357 \\
-Helena & 0,0 & 4 / 4 & 0 & 10 & 111 \\
-German Credit & 0,0 & 0 / 0 & 0 & 2 & 300 \\
-Ionosphere & 0,0 & 1 / 1 & 1 & b & 126 \\
-Bioresponse & 0,0 & 0 / 0 & 0 & 0 & 1717 \\
+Adult & 0,9455 & 57 / 52 & 0 & \texttt{>50K} & 11\,687 \\
+Covertype & 0,0000 & 0 / 0 & 0 & \texttt{4} & 2\,747 \\
+Credit Card Fraud & 0,0000 & 9\,144 / 9\,144 & 0 & \texttt{1} & 492 \\
+HIGGS, podzbiór & 0,0003 & 25 / 25 & 0 & \texttt{0} & 46\,223 \\
+Amazon Employee Access & 0,0000 & 0 / 0 & 0 & \texttt{0} & 1\,897 \\
+Santander Customer Satisfaction & 0,0000 & 4\,940 / 4\,807 & 34 & \texttt{1.0} & 3\,008 \\
+Online Shoppers & 0,0000 & 125 / 125 & 0 & \texttt{True} & 1\,908 \\
+Diabetes 130-US & 7,8197 & 0 / 0 & 2 & \texttt{<30} & 11\,357 \\
+Helena & 0,0000 & 4 / 4 & 0 & \texttt{10} & 111 \\
+German Credit & 0,0000 & 0 / 0 & 0 & \texttt{2} & 300 \\
+Ionosphere & 0,0000 & 1 / 1 & 1 & \texttt{b} & 126 \\
+Bioresponse & 0,0000 & 0 / 0 & 0 & \texttt{0} & 1\,717 \\
 \bottomrule\end{tabularx}\end{minipage}\par\medskip
 
 Braki występują w~trzech zbiorach: Adult (trzy kolumny), HIGGS (dziewięć) i~Diabetes 130-US (dziewięć). W~danych szpitalnych stałe są \texttt{examide} i~\texttt{citoglipton}, a~w~Ionosphere --- \texttt{feature\_1}. Profil Santander Customer Satisfaction wskazuje 34 stałe kolumny. Grupy identycznych cech o~sprzecznych etykietach występują w~Adult (5) i~Santander Customer Satisfaction (133). Zgodność etykiet pozostałych duplikatów nie eliminuje ryzyka powtarzania podobnych obserwacji między częściami podziału.
 
-Amazon Employee Access nie zawiera według profilu braków ani duplikatów wierszy. Wszystkie dziewięć cech jest kategorycznych, a~największa liczba kategorii jednej cechy wynosi 7518. Diabetes 130-US obejmuje 71\,518 pacjentów. Ta liczba nie potwierdza rozłączności pacjentów po podziale, którą należy sprawdzić niezależnie.
+Amazon Employee Access nie zawiera według profilu braków ani duplikatów wierszy. Wszystkie dziewięć cech jest kategorycznych, a~największa liczba kategorii jednej cechy wynosi 7\,518. Diabetes 130-US obejmuje 71\,518 pacjentów. Ta liczba nie potwierdza rozłączności pacjentów po podziale, którą należy sprawdzić niezależnie.
 
-\textbf{Do uzupełnienia:} porównanie sum kontrolnych profilu z~danymi kampanii oraz odtworzenie definicji liczników duplikatów na podstawie skryptu profilującego. Należy udokumentować decyzje o~zachowaniu lub usunięciu duplikatów i~stałych kolumn, kontrolę przypadków wspólnych między częściami podziału, rozłączność pacjentów oraz jednokrotny udział obserwacji w~walidacji. Dla Amazon Employee Access potrzebna jest także ocena powtarzalności encji. Profil opisuje właściwości danych, lecz nie zawiera wyników tych kontroli ani uzasadnień decyzji o~duplikatach.
+Przyjęto zachowanie duplikatów i~stałych kolumn we wszystkich zbiorach, bez dodatkowej deduplikacji ani ręcznego usuwania cech na podstawie profilu. Decyzja obejmuje również 9\,144 duplikaty cech w~Credit Card Fraud i~34 stałe kolumny w~Santander Customer Satisfaction. Dane traktuje się jako pełne źródło obserwacji, bez rozstrzygania na podstawie samej powtarzalności, czy dany przypadek jest błędem rejestracji. Przetwarzanie wykonywane przez poszczególne metody pozostaje częścią porównywanych procedur. Ocena odnosi się zatem do źródłowych populacji wierszy, z~zachowaniem występujących w~nich powtórzeń.
+
+\textbf{Do uzupełnienia:} porównanie sum kontrolnych profilu z~danymi wykorzystanymi w~eksperymentach oraz odtworzenie definicji liczników duplikatów na podstawie skryptu profilującego. Kontrola wykonania powinna obejmować przypadki wspólne między częściami podziału, rozłączność pacjentów i~jednokrotny udział obserwacji w~walidacji, a~dla Amazon Employee Access także powtarzalność encji. Profil opisuje właściwości danych, lecz nie zawiera wyników tych kontroli.
 
 \subsection*{Progi decyzji i miary uporządkowania}
 \label{app:progi}
