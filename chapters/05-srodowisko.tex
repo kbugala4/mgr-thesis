@@ -3,7 +3,7 @@
 \label{chap:srodowisko}
 \label{sec:wymagania-platformy}
 
-W~badaniu głównym zaplanowano nominalnie 3132 zadania konfiguracji i~14\,976 dopasowań sieci uczonych w~foldach. Nawet pojedyncze niepowodzenie może przy budżecie godziny na konfigurację oznaczać istotny koszt powtórzenia obliczeń. Środowisko przygotowano więc tak, aby ukończone wyniki można było zachować przy wznowieniu kampanii, czyli kompletu obliczeń badania głównego, a~raporty odtworzyć z~zapisanych predykcji. Każdy wynik jest powiązany z~danymi, ustawieniami i~warunkami wykonania.
+W~badaniu głównym zaplanowano nominalnie 3132 zadania konfiguracji i~14\,976 dopasowań sieci uczonych w~foldach. Nawet pojedyncze niepowodzenie może przy budżecie godziny na konfigurację oznaczać istotny koszt powtórzenia obliczeń. Kampanią nazywa się dalej komplet obliczeń badania głównego. Środowisko przygotowano więc tak, aby ukończone wyniki można było zachować przy wznowieniu kampanii, a~raporty odtworzyć z~zapisanych predykcji. Każdy wynik jest powiązany z~danymi, ustawieniami i~warunkami wykonania.
 
 Z~metodyki opisanej w~rozdziale~\ref{chap:metodyka} wynikają trzy wymagania: identyfikowalność każdej predykcji, kontrola przepływu informacji oraz wznowienie bez utraty ukończonych wyników. Przyjęto wspólne mapowanie klas i~kontrolę podziałów, a~predykcje zapisuje się trwale wraz z~ustawieniami wykonania. Dla nieudanych prób zachowuje się czas i~diagnostykę, co pozwala odróżnić awarię od zadania konfiguracji przerwanego lub niepodjętego oraz rozliczyć poniesiony koszt.
 
@@ -31,7 +31,7 @@ Raportowanie & Wybór na OOF, łączenie predykcji i~obliczanie metryk \\
 \end{tabularx}
 \end{table}
 
-Ustawienia badania są walidowane i~scalane w~jednym miejscu, a~każdy model udostępnia wspólny interfejs zwracający prawdopodobieństwa klas. Pojedynczy proces sterujący uruchamia konfiguracje i~foldy sekwencyjnie: na zadanie konfiguracji przypada jedno GPU i~cztery wątki CPU, a~integracja ModernNCA zakłada sekwencyjne dopasowania. Ograniczenie dotyczy pojedynczego procesu, nie liczby procesów pracujących na tej samej maszynie.
+Ustawienia badania są walidowane i~scalane w~jednym miejscu, a~każdy model udostępnia wspólny interfejs zwracający prawdopodobieństwa klas. Pojedynczy proces sterujący uruchamia konfiguracje i~foldy sekwencyjnie: zadanie konfiguracji otrzymuje cztery wątki CPU, a~metody neuronowe i~TabPFN także jedno GPU. Integracja ModernNCA zakłada przy tym sekwencyjne dopasowania. Ograniczenie dotyczy pojedynczego procesu, nie liczby procesów pracujących na tej samej maszynie.
 
 Lokalnie zaimplementowano sześć integracji: MLP, TabNet, FT-Transformer, regresję logistyczną, XGBoost i~CatBoost. KNN, RealMLP, ModernNCA oraz TabM korzystają z~natywnych procedur bibliotek, a~osobna integracja obsługuje stały TabPFN. Wspólny interfejs pozwala oceniać je w~tych samych warunkach raportowania z~sekcji~\ref{sec:warunki-raportowania}.
 
@@ -53,6 +53,8 @@ Zapis podziału zewnętrznego obejmuje identyfikatory wierszy, etykiety i~grupy 
 Aby połączyć predykcje, trzeba zachować zgodność obserwacji i~znaczenia kolumn, ponieważ macierze o~tych samych wymiarach mogą opisywać inne wiersze lub mieć odwróconą kolejność klas. Mapowanie klas pochodzi z~definicji przygotowanego zbioru i~towarzyszy wynikowi. Kontrola przy zapisie obejmuje etykiety, identyfikatory wierszy, wymiary macierzy oraz skończoność prawdopodobieństw i~ich zakres $[0,1]$. Suma wiersza musi zgadzać się z~jednością z~tolerancją bezwzględną $10^{-5}$, po czym prawdopodobieństwa podlegają renormalizacji. Przed zbudowaniem zespołu porównuje się etykiety i~identyfikatory wierszy OOF oraz testu. Moduł raportowania korzysta ze wspólnego mapowania klas bez osobnego porównania list klas między rekordami, toteż kontrola numeryczna nie wykrywa zamiany znaczenia kolumn.
 
 Metryki w~tabelach pracy przypisuje się według populacji, na której powstała predykcja. W~badaniu~A średnią precyzję odczytuje się dla kolumny klasy rzadkiej wskazanej przez mapowanie etykiet, także gdy klasa ma kod~0.
+
+Raport badania głównego zapisuje nieokreślone AUC jako brak wartości, a~precyzję, czułość i~F1 przy zerowym mianowniku jako zero. Analiza A i~B pozostawia precyzję bez alarmów nieokreśloną i~stosuje odrębne reguły z~załącznika~\ref{app:progi}. Przypadki te rozróżnia się na podstawie liczności klas i~macierzy pomyłek.
 
 \subsection{Zapis wyników, awarie i wznowienie}
 \label{sec:artefakty-wznowienie}
@@ -81,7 +83,7 @@ Raport D/T/T+E & Wybory, wagi i~metryki & Odtworzenie porównania \\
 
 Dla każdego foldu lokalnych MLP, FT-Transformera i~TabNet zapisuje się efektywny rozmiar partii, a~dla TabNet także partii wirtualnej. Zapis obejmuje ponadto znacznik zatrzymania z~powodu budżetu, liczbę ukończonych epok, przydzielony czas i~czas dopasowania. Pozwala to odróżnić ustawienie konfiguracji od rzeczywistego przebiegu po zastosowaniu ograniczeń wykonania.
 
-Budżet 3600~s obejmuje całe zadanie konfiguracji, zgodnie z~sekcją~\ref{sec:strojenie}. AutoGluon przydziela foldom czas dynamicznie według pozostałego budżetu, a~gdy prognoza czasu pozostałych dopasowań go przekracza, przerywa konfigurację jako nieudaną. Lokalne sieci zatrzymane przez budżet po co najmniej jednej ukończonej epoce wracają do najlepszego stanu i~pozostają dopuszczone w~badaniu głównym. MLP i~FT-Transformer mogą porzucić niepełną kolejną epokę, natomiast TabNet kończy bieżącą epokę. Brak ukończonej pierwszej epoki oznacza niepowodzenie.
+Budżet 3600~s obejmuje całe zadanie konfiguracji, zgodnie z~sekcją~\ref{sec:strojenie}. AutoGluon przydziela foldom czas dynamicznie według pozostałego budżetu, a~gdy prognoza czasu pozostałych dopasowań go przekracza, przerywa konfigurację jako nieudaną. Limit ma charakter orientacyjny, dlatego pojedyncze natywne dopasowanie może przekroczyć przydział. Lokalne sieci zatrzymane przez budżet po co najmniej jednej ukończonej epoce wracają do najlepszego stanu i~pozostają dopuszczone w~badaniu głównym. MLP i~FT-Transformer mogą porzucić niepełną kolejną epokę, natomiast TabNet kończy bieżącą epokę. Brak ukończonej pierwszej epoki oznacza niepowodzenie.
 
 Znacznik zatrzymania przez budżet zapisują tylko te trzy lokalne sieci. TabM i~ModernNCA kończą pętlę epok według prognozy czasu i~przywracają najlepszy stan bez znacznika, a~RealMLP przekazuje budżet do własnej implementacji. Brak znacznika nie świadczy o~wykorzystaniu pełnego budżetu uczenia. Badania A i~B wymagają przebiegów bez obcięcia czasowego.
 
@@ -89,7 +91,7 @@ Dla KNN zachowuje się liczbę dostępnych i~faktycznie użytych wierszy zbioru 
 
 Metadane i~predykcje trafiają najpierw do plików tymczasowych, które po opróżnieniu buforów i~synchronizacji z~dyskiem atomowo zastępują pliki docelowe. Przerwanie zapisu nie pozostawia wówczas częściowego wyniku pod nazwą ukończonego pliku. Blokada wyłączna chroni katalog przed jednoczesnym zapisem przez dwa uruchomienia. Wznowienie sprawdza zgodność stanu, rekordów, predykcji i~sum kontrolnych przed pominięciem ukończonego zadania konfiguracji.
 
-Awaria konfiguracji nie przerywa niezależnych zadań. Pełny raport wymaga udanej konfiguracji domyślnej i~zakończenia prób wszystkich kandydatów, z~możliwością pominięcia jawnie nieudanych konfiguracji losowych według sekcji~\ref{sec:warunki-raportowania}. Wyniki D, T i~T+E danej pary zbiór--metoda pochodzą z~jednego kompletnego uruchomienia.
+Awaria konfiguracji nie przerywa niezależnych zadań. Warunki pełnego raportu podano w~sekcji~\ref{sec:warunki-raportowania}. Wyniki D, T i~T+E danej pary zbiór--metoda pochodzą z~jednego kompletnego uruchomienia.
 
 Raport można odtworzyć z~zapisanych predykcji i~metadanych zestawionych w~tabeli~\ref{tab:artefakty}. Nowe predykcje wymagają ponownego dopasowania, ponieważ modele są usuwane po zakończeniu próby. Ponowne uczenie na GPU nie ma gwarancji bitowej powtarzalności.
 
@@ -117,7 +119,7 @@ $[128\,000;\ \infty)$ & 1024 & 4096 & 512 \\
 
 Po zastosowaniu mnożnika rozmiar partii zaokrągla się w~dół do potęgi dwójki, z~minimum ośmiu przykładów. Następnie obowiązuje ograniczenie pamięci FT-Transformera lub korekta TabNet zapobiegająca jednoelementowej ostatniej partii. Ta korekta może dać rozmiar inny niż potęga dwójki. Partia wirtualna TabNet określa rozmiar fragmentów wykorzystywanych przy normalizacji. Jej wartość bazowa pochodzi z~tej samej tabeli, bez skalowania mnożnikiem. Ogranicza się ją do partii uczenia, po czym w~razie potrzeby zwiększa, aby uniknąć jednoelementowych fragmentów także w~ostatniej partii. Jawne ustawienie całkowitego rozmiaru partii wyłącza automatyczny dobór i~mnożnik, zachowując ograniczenia wykonania. Taki tryb stosuje się w~badaniu~B, w~którym partia jest stała dla zbioru.
 
-W~FT-Transformerze limit zależy od liczby predyktorów~$d$ i~głów uwagi~$H$. Przyjęto $4H(d+1)^2$ bajtów na przykład dla pojedynczego tensora wyników uwagi w~32-bitowym formacie zmiennoprzecinkowym, z~uwzględnieniem tokenu klasyfikacyjnego. Przydział 4~GiB wyznacza maksymalną liczbę przykładów, zaokrąglaną w~dół do potęgi dwójki, z~dolnym ograniczeniem do ośmiu. Limit nakłada się na partię wyznaczoną automatycznie lub ustawioną jawnie. Dla 1776 predyktorów wynosi on 32 przykłady przy ośmiu głowach i~64 przy czterech. Obowiązuje także podczas walidacji i~predykcji. Heurystyka dotyczy jednego tensora i~nie gwarantuje zmieszczenia całego przebiegu w~pamięci GPU. Efektywny rozmiar zapisuje się dla każdego foldu, ponieważ jego zmniejszenie zmienia również liczbę aktualizacji na epokę.
+W~FT-Transformerze limit zależy od liczby predyktorów~$d$ i~głów uwagi~$H$. Przyjęto $4H(d+1)^2$ bajtów na jedną obserwację dla pojedynczego tensora wyników uwagi w~32-bitowym formacie zmiennoprzecinkowym, z~uwzględnieniem tokenu klasyfikacyjnego. Przydział 4~GiB wyznacza maksymalną liczbę przykładów, zaokrąglaną w~dół do potęgi dwójki, z~dolnym ograniczeniem do ośmiu. Limit nakłada się na partię wyznaczoną automatycznie lub ustawioną jawnie. Dla 1776 predyktorów wynosi on 32 przykłady przy ośmiu głowach i~64 przy czterech. Obowiązuje także podczas walidacji i~predykcji. Heurystyka dotyczy jednego tensora i~nie gwarantuje zmieszczenia całego przebiegu w~pamięci GPU. Efektywny rozmiar zapisuje się dla każdego foldu, ponieważ jego zmniejszenie zmienia również liczbę aktualizacji na epokę.
 
 \subsection{Pomiar kosztu}
 \label{sec:pomiary-platformy}
@@ -143,14 +145,12 @@ Pamięć PyTorch & Przydzielona i~zarezerwowana na urządzeniu~0 & Tylko dopasow
 
 Czas predykcji testowej zmierzono dla wszystkich metod, w~tym KNN i~TabPFN. Pamięć mierzono wyłącznie podczas dopasowania, jak przedstawiono w~tabeli~\ref{tab:zakres-pomiarow}. Jej pomiary pozostają w~rekordach konfiguracji, poza raportem zbiorczym, wraz z~informacją o~dostępności śledzenia. Brak pomiaru nie jest zerowym zużyciem. Pamięci podczas predykcji nie mierzono, dlatego ocenę kosztu inferencji KNN i~TabPFN, przechowujących zbiór odniesienia lub kontekst, ograniczono do czasu. Zewnętrzne pretrenowanie TabPFN pozostaje poza kosztem lokalnego wykonania.
 
-Kampanię wykonano na GPU współdzielonym z~innymi procesami, w~tym z~równoległymi uruchomieniami badania. Obciążenia urządzenia nie rejestrowano. Czasy dopasowania i~inferencji opisują koszt w~tych warunkach, a~niepowodzenie z~braku pamięci może wynikać z~zajętości GPU przez inne procesy.
-
-Raport badania głównego zapisuje nieokreślone AUC jako brak wartości, a~precyzję, czułość i~F1 przy zerowym mianowniku jako zero. Analiza A i~B pozostawia precyzję bez alarmów nieokreśloną i~stosuje odrębne reguły z~załącznika~\ref{app:progi}. Przypadki te rozróżnia się na podstawie liczności klas i~macierzy pomyłek.
+Platforma nie rejestruje obciążenia urządzenia przez inne procesy. Czasy dopasowania i~inferencji opisują więc koszt w~warunkach wykonania, a~niepowodzenie z~braku pamięci może wynikać także z~zajętości GPU przez inne procesy.
 
 \subsection{Weryfikacja poprawności platformy}
 \label{sec:kwalifikacja}
 
-Testy automatyczne sprawdzają przygotowanie danych, dobór partii, budżet, integracje sieci, metryki, wykonanie i~wznowienie, a~rozszerzony zestaw również mechanizmy A i~B. Dla wersji użytej w~kampanii zaliczono 161 testów. Kontrole macierzy wykrywają błędy interfejsów, a~identyfikatory wierszy i~pacjentów pozwalają sprawdzić podziały.
+Testy automatyczne sprawdzają przygotowanie danych, dobór partii, budżet, integracje sieci, metryki, wykonanie i~wznowienie, a~rozszerzony zestaw również mechanizmy A i~B. Kontrole macierzy wykrywają błędy interfejsów, a~identyfikatory wierszy i~pacjentów pozwalają sprawdzić podziały.
 
 Przebieg syntetyczny obejmował 180 obserwacji, regresję logistyczną i~dwuepokowe MLP, każde z~konfiguracją domyślną i~jedną losową. Osiem foldów dało cztery zadania konfiguracji, 32 dopasowania i~sześć wierszy raportu D/T/T+E. Taki przebieg wykonano również na docelowym GPU przed kampanią. Sprawdzano zapis, wznowienie i~odtworzenie raportu, z~zachowaniem ukończonych rekordów oraz ponowieniem wyłącznie konfiguracji bez kompletnego, zgodnego wyniku.
 
@@ -159,7 +159,7 @@ Kontrola podziału grupowego obejmuje rozłączność pacjentów, obecność kla
 \subsection{Środowisko wykonania}
 \label{sec:wykonanie-kampanii}
 
-Ze względu na czasowy budżet uczenia charakterystykę stanowiska powiązano z~identyfikatorem badania. Stacja miała cztery karty NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, po 95~GiB pamięci, 128 logicznych wątków CPU i~około 755~GiB RAM. Każdemu zadaniu konfiguracji przydzielano cztery wątki CPU i~jedno GPU, widoczne jako urządzenie~0. Limit wątków obejmował biblioteki numeryczne, PyTorch, CatBoost i~XGBoost. Obliczenia prowadzono bezpośrednio w~systemie Linux~7.0 x86-64 z~glibc~2.39, sterownikiem NVIDIA~615.71.10, CUDA~13.0 i~Pythonem~3.11.15, bez kontenera.
+Ze względu na czasowy budżet uczenia charakterystykę stanowiska powiązano z~identyfikatorem badania. Stacja miała cztery karty NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, po 95~GiB pamięci, 128 logicznych wątków CPU i~około 755~GiB RAM. Każde zadanie konfiguracji otrzymywało cztery wątki CPU, a~zadania metod neuronowych i~TabPFN również jedno GPU, widoczne jako urządzenie~0. Limit wątków obejmował biblioteki numeryczne, PyTorch, CatBoost i~XGBoost. Obliczenia prowadzono bezpośrednio w~systemie Linux~7.0 x86-64 z~glibc~2.39, sterownikiem NVIDIA~615.71.10, CUDA~13.0 i~Pythonem~3.11.15, bez kontenera.
 
 Przestrzenie sześciu metod zdefiniowano w~repozytorium badania, a~przestrzenie KNN, RealMLP, ModernNCA i~TabM pochodzą z~TabArena~0.1.0.\footnote{Rewizja definicji przestrzeni: \path{79299f573975b45052803d8f26c350f10446e332}. Katalog źródłowy: \href{https://github.com/kbugala4/mgr-repo/tree/79299f573975b45052803d8f26c350f10446e332/configs/model}{konfiguracje modeli}.} Losowane wartości zastępują ustawienia bazowe metod lokalnych, natomiast w~integracjach natywnych jawne parametry nakłada się po losowaniu. O~wykonanym wariancie rozstrzyga zapisany efektywny zestaw parametrów.
 
