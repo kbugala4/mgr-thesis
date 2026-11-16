@@ -50,7 +50,7 @@ Rysunek~\ref{fig:architektura} przedstawia zależności komponentów i~oddzielen
 \subsection{Izolacja informacji i identyfikowalność danych}
 \label{sec:izolacja-platformy}
 
-Przygotowane dane są przechowywane jako plik Parquet z~manifestem i~sumami kontrolnymi. Źródła OpenML mają określone identyfikatory i~wersje, natomiast tożsamość pobieranych archiwów UCI ustala się przez sumę kontrolną zawartości. Santander jest pobierany automatycznie z~OpenML (identyfikator 46859, wersja~2) w~ramach wspólnej procedury przygotowania danych. Kontrola zgodności schematu i~wyniku funkcji haszującej (ang. \textit{hash}) chroni przed niezamierzoną podmianą danych. Ich audyt opisano w~sekcji~\ref{sec:dane-audyt}.
+Przygotowane dane są przechowywane jako plik Parquet z~manifestem i~sumami kontrolnymi. Źródła OpenML mają określone identyfikatory i~wersje, natomiast przygotowane dane, także pochodzące z~archiwów UCI, identyfikuje suma kontrolna pliku Parquet. Santander jest pobierany automatycznie z~OpenML (identyfikator 46859, wersja~2) w~ramach wspólnej procedury przygotowania danych. Kontrola zgodności schematu i~wyniku funkcji haszującej (ang. \textit{hash}) chroni przed niezamierzoną podmianą danych. Ich audyt opisano w~sekcji~\ref{sec:dane-audyt}.
 
 Zewnętrzne podziały zachowują identyfikatory wierszy, etykiety i~grupy pacjentów. Kolumny grupujące nie wchodzą do predyktorów. Moduł wykonawczy zapisuje rzeczywiste indeksy walidacji wewnętrznej, co umożliwia późniejszą kontrolę pokrycia OOF i~rozłączności pacjentów. Zdefiniowano także zastrzeżone nazwy pomocniczych kolumn, a~konflikt z~danymi wejściowymi powoduje odrzucenie danych, aby uniknąć nadpisania cechy.
 
@@ -161,6 +161,9 @@ Zmiana rewizji programu, danych lub środowiska ogranicza możliwość przenosze
 \subsection{Środowisko wykonania i procedura kampanii}
 \label{sec:wykonanie-kampanii}
 
+Przestrzenie sześciu lokalnych metod określają pliki YAML w~\path{configs/model/} oraz \path{src/tabular_thesis/experiments/catalog.py}. Dla KNN, RealMLP, ModernNCA i~TabM użyto generatorów \texttt{gen\_knn}, \texttt{gen\_realmlp}, \texttt{gen\_modernnca} i~\texttt{gen\_tabm} z~modułów \texttt{hpo} biblioteki TabArena~0.1.0, z~zależnościami ustalonymi w~\path{uv.lock}.\footnote{Rewizja definicji przestrzeni: \path{79299f573975b45052803d8f26c350f10446e332}. Katalog źródłowy: \href{https://github.com/kbugala4/mgr-repo/tree/79299f573975b45052803d8f26c350f10446e332/configs/model}{konfiguracje modeli}.} W~metodach lokalnych losowane wartości zastępują ustawienia bazowe, a~w~natywnych jawne parametry nakłada się po losowaniu. Odtworzenie puli wymaga obu definicji, natomiast o~wykonanym wariancie rozstrzyga efektywny zestaw parametrów zapisany dla konfiguracji.
+
+
 Środowisko odtwarza się na Pythonie~3.11 i~Linux x86-64 z~pliku \path{uv.lock}. Istotne deklarowane wersje zestawiono w~tabeli~\ref{tab:wersje}. Dla pakietu \texttt{tabpfn} zapisuje się również tożsamość checkpointu modelu.
 
 \begin{table}[tbp]
@@ -186,6 +189,6 @@ PyTorch & 2.13.0 \\
 \end{tabularx}
 \end{table}
 
-Kampanię odtwarza się kolejno przez przygotowanie środowiska z~zamrożonych zależności, audyt i~przygotowanie danych, udostępnienie checkpointu oraz sprawdzenie GPU. Rewizję, nazwę pliku i~suma kontrolna wag wskazuje konfiguracja. Powiązanie tych identyfikatorów z~manifestem wykonania rozróżnia modele korzystające z~tej samej wersji pakietu, lecz innych wag.
+Kampanię odtwarza się kolejno przez przygotowanie środowiska z~zamrożonych zależności, audyt i~przygotowanie danych, udostępnienie checkpointu oraz sprawdzenie GPU. Konfiguracja wskazuje rewizję, nazwę pliku i~sumę kontrolną wag. Powiązanie tych identyfikatorów z~manifestem wykonania rozróżnia modele korzystające z~tej samej wersji pakietu, lecz innych wag.
 
 Raporty odtwarza się z~manifestów, indeksów, historii prób i~predykcji. Na ich podstawie można następnie interpretować różnice, uwzględniając populację porównania i~zakres niepewności.

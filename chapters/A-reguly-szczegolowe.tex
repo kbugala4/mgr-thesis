@@ -1,0 +1,299 @@
+\appendix{Przestrzenie strojenia, audyt danych i szczegółowe reguły analizy}
+\label{app:reguly-szczegolowe}
+
+\subsection*{Przestrzenie strojenia}
+\label{app:przestrzenie}
+
+Tabele podają ustawienia domyślne oraz rozkłady losowania kandydatów. $U[a,b]$ oznacza rozkład jednostajny, $U_{\mathbb Z}[a,b]$ jego odpowiednik całkowitoliczbowy, a~$\mathrm{LogU}[a,b]$ rozkład jednostajny logarytmu wartości. Wybór ze zbioru skończonego jest równomierny, o~ile nie zaznaczono inaczej. Ustawienia stałe nie podlegają losowaniu. Podane identyfikatory parametrów odpowiadają implementacjom, a~wartości dziesiętne zapisano z~kropką dla zgodności z~ich reprezentacją. Definicje lokalne i~ustawienia nadrzędne pochodzą z~rewizji wskazanej w~sekcji~\ref{sec:wykonanie-kampanii}, natomiast cztery natywne przestrzenie z~TabArena~0.1.0. Tabele opisują przestrzenie wejściowe, przed zależnymi od foldu ograniczeniami wykonania.
+
+\clearpage
+\subsubsection*{MLP}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: MLP.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{hidden\_dims} & [256, 128] & wybór: [[128, 64], [256, 128], [512, 256, 128], [256, 256]] \\
+\texttt{dropout} & 0.1 & $U[0.0, 0.5]$ \\
+\texttt{learning\_rate} & 0.001 & $\mathrm{LogU}[0.0001, 0.01]$ \\
+\texttt{batch\_size} & auto & stała \\
+\texttt{batch\_size\_multiplier} & 1 & wybór: [0.5, 1, 2] \\
+\texttt{epochs} & 100 & stała \\
+\texttt{weight\_decay} & 0.0001 & $\mathrm{LogU}[1e-06, 0.01]$ \\
+\bottomrule\end{tabularx}\end{table}
+
+Automatyczne partie i~ich korekty opisano w~sekcji~\ref{sec:partie-platformy}.
+
+\clearpage
+\subsubsection*{FT-Transformer}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: FT-Transformer.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{n\_blocks} & 3 & $U_{\mathbb Z}[1, 4]$ \\
+\texttt{d\_token} & 192 & wybór: [64, 128, 192, 256] \\
+\texttt{attention\_n\_heads} & 8 & wybór: [4, 8] \\
+\texttt{attention\_dropout} & 0.2 & $U[0.0, 0.3]$ \\
+\texttt{ffn\_d\_hidden} & 256 & wybór: [128, 256, 512] \\
+\texttt{ffn\_dropout} & 0.1 & $U[0.0, 0.3]$ \\
+\texttt{residual\_dropout} & 0.0 & stała \\
+\texttt{learning\_rate} & 0.0001 & $\mathrm{LogU}[1e-05, 0.001]$ \\
+\texttt{batch\_size} & auto & stała \\
+\texttt{batch\_size\_multiplier} & 1 & wybór: [0.5, 1, 2] \\
+\texttt{epochs} & 100 & stała \\
+\texttt{weight\_decay} & 1e-05 & $\mathrm{LogU}[1e-06, 0.001]$ \\
+\bottomrule\end{tabularx}\end{table}
+
+Automatyczne partie i~ich korekty opisano w~sekcji~\ref{sec:partie-platformy}.
+
+\clearpage
+\subsubsection*{TabNet}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: TabNet.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{n\_d} & 64 & wybór: [8, 16, 32, 64] \\
+\texttt{n\_a} & 64 & wybór: [8, 16, 32, 64] \\
+\texttt{n\_steps} & 5 & $U_{\mathbb Z}[3, 8]$ \\
+\texttt{gamma} & 1.5 & $U[1.0, 2.0]$ \\
+\texttt{n\_independent} & 2 & stała \\
+\texttt{n\_shared} & 2 & stała \\
+\texttt{momentum} & 0.3 & $U[0.01, 0.4]$ \\
+\texttt{mask\_type} & sparsemax & stała \\
+\texttt{learning\_rate} & 0.02 & stała \\
+\texttt{batch\_size} & auto & stała \\
+\texttt{batch\_size\_multiplier} & 1 & wybór: [0.5, 1, 2] \\
+\texttt{virtual\_batch\_size} & auto & stała \\
+\texttt{epochs} & 100 & stała \\
+\bottomrule\end{tabularx}\end{table}
+
+Automatyczne partie i~ich korekty opisano w~sekcji~\ref{sec:partie-platformy}.
+
+\clearpage
+\subsubsection*{Regresja logistyczna}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: Regresja logistyczna.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{C} & 1.0 & $\mathrm{LogU}[0.0001, 100.0]$ \\
+\texttt{max\_iter} & 1000 & stała \\
+\texttt{solver} & lbfgs & wybór: [lbfgs, saga] \\
+\bottomrule\end{tabularx}\end{table}
+
+
+
+\clearpage
+\subsubsection*{XGBoost}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: XGBoost.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{n\_estimators} & 300 & $U_{\mathbb Z}[100, 1000]$ \\
+\texttt{max\_depth} & 6 & $U_{\mathbb Z}[3, 10]$ \\
+\texttt{learning\_rate} & 0.1 & $\mathrm{LogU}[0.01, 0.3]$ \\
+\texttt{subsample} & 0.8 & $U[0.6, 1.0]$ \\
+\texttt{colsample\_bytree} & 0.8 & $U[0.6, 1.0]$ \\
+\texttt{reg\_alpha} & biblioteczna (0) & $\mathrm{LogU}[1e-08, 10.0]$ \\
+\texttt{reg\_lambda} & biblioteczna (1) & $\mathrm{LogU}[1e-08, 10.0]$ \\
+\bottomrule\end{tabularx}\end{table}
+
+
+
+\clearpage
+\subsubsection*{CatBoost}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: CatBoost.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{iterations} & 500 & $U_{\mathbb Z}[100, 1000]$ \\
+\texttt{depth} & 6 & $U_{\mathbb Z}[4, 10]$ \\
+\texttt{learning\_rate} & 0.1 & $\mathrm{LogU}[0.01, 0.3]$ \\
+\texttt{l2\_leaf\_reg} & 3.0 & $\mathrm{LogU}[0.01, 10.0]$ \\
+\texttt{random\_strength} & biblioteczna (1) & $U[0.0, 10.0]$ \\
+\texttt{bagging\_temperature} & automatyczna & $U[0.0, 10.0]$ \\
+\bottomrule\end{tabularx}\end{table}
+
+Automatyczne ustawienie temperatury próbkowania zależy od domyślnego rodzaju bootstrapu. Nie narzucono go w~konfiguracji D.
+
+\clearpage
+\subsubsection*{KNN}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: KNN.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{n\_neighbors} & 20 & wybór: 1--11, 13, 15, 20, 30, 40, 50, 100, 200, 300, 400, 500 \\
+\texttt{weights} & distance & wybór: distance, uniform \\
+\texttt{p} & 2 & wybór: 1, 1.5, 2 \\
+\texttt{scaler} & standard & wybór: standard, quantile \\
+\texttt{cat\_threshold} & $10^6$ & stała \\
+\bottomrule\end{tabularx}\end{table}
+
+Próg kodowania kategorii jest nadpisany wspólną wartością $10^6$, dlatego nie losuje się go z~oryginalnej przestrzeni TabArena. Ustawienie zapewnia kodowanie zero-jedynkowe kategorii w~przyjętych zadaniach. Efektywna liczba sąsiadów może być ograniczona licznością zbioru odniesienia.
+
+\clearpage
+\subsubsection*{RealMLP: architektura i optymalizacja}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: RealMLP: architektura i optymalizacja.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{n\_hidden\_layers} & 3 & $U_{\mathbb Z}[2,4]$ \\
+\texttt{hidden\_width} & 256 & wybór: 256, 384, 512 \\
+\texttt{hidden\_sizes} & [256, 256, 256] & prostokątna architektura według dwóch powyższych parametrów \\
+\texttt{p\_drop} & 0.15 & $U[0,0.5]$ \\
+\texttt{act} & selu & stała dla kandydatów: mish \\
+\texttt{lr} & 0.04 & $\mathrm{LogU}[0.02,0.3]$ \\
+\texttt{wd} & 0.02 & $\mathrm{LogU}[0.001,0.05]$ \\
+\texttt{sq\_mom} & 0.95 & $1-X$, $X\sim\mathrm{LogU}[0.005,0.05]$ \\
+\texttt{scale\_lr\_factor} & 6 & $\mathrm{LogU}[2,10]$ \\
+\texttt{first\_layer\_lr\_factor} & 1 & $\mathrm{LogU}[0.3,1.5]$ \\
+\texttt{use\_ls} & nie & wybór: nie, tak \\
+\texttt{ls\_eps} & 0.1 & $\mathrm{LogU}[0.005,0.1]$ \\
+\texttt{ls\_eps\_sched} & stały & stała dla kandydatów: coslog4 \\
+\texttt{p\_drop\_sched} & flat\_cos & stała: flat\_cos \\
+\bottomrule\end{tabularx}\end{table}
+
+Domyślne wygładzanie etykiet zostaje wyłączone dla obu metryk wyboru użytych w~badaniu. Parametry architektury domyślnej wynikają z~trzech warstw o~szerokości 256. Stały harmonogram wygładzania w~D nie ma wpływu przy wyłączonym wygładzaniu.
+
+\clearpage
+\subsubsection*{RealMLP: osadzenia i budżet}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: RealMLP: osadzenia i budżet.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{plr\_sigma} & 0.1 & $\mathrm{LogU}[0.01,50]$ \\
+\texttt{plr\_lr\_factor} & 0.1 & $\mathrm{LogU}[0.05,0.3]$ \\
+\texttt{max\_one\_hot\_cat\_size} & 9 & $\lfloor X\rfloor$, $X\sim\mathrm{LogU}[4,33]$ \\
+\texttt{embedding\_size} & 8 & wybór: 4, 8, 16 \\
+\texttt{plr\_hidden\_1} & 16 & wariant podstawowy: 16, rozszerzony: wybór 8, 16, 32, 64 \\
+\texttt{plr\_hidden\_2} & 4 & wariant podstawowy: 4, rozszerzony: wybór 8, 16, 32, 64 \\
+\texttt{n\_epochs} & 256 & wariant podstawowy: 256, rozszerzony: wybór 256, 512 \\
+\texttt{use\_early\_stopping} & nie & wariant podstawowy: nie, rozszerzony: tak \\
+\texttt{n\_ens} & 1 & stała dla kandydatów: 8 \\
+\texttt{ens\_av\_before\_softmax} & nie & stała: nie \\
+\bottomrule\end{tabularx}\end{table}
+
+Wariant podstawowy i~rozszerzony wybiera się z~prawdopodobieństwem $1/2$. Warunkowe ustawienia w~tabeli należą do tego samego wariantu i~nie są losowane niezależnie. Dla ponad 8192 cech implementacja ogranicza drugi wymiar osadzenia do~16. Pozostałe ustawienia pochodzą z~domyślnej procedury RealMLP-TD. Wewnętrzny zespół ośmiu sieci w~losowych kandydatach RealMLP jest dodatkowym składnikiem tej procedury, odrębnym od uśredniania foldów.
+
+\clearpage
+\subsubsection*{ModernNCA}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: ModernNCA.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{dropout} & 0.1 & $U[0,0.5]$ \\
+\texttt{d\_block} & 512 & $U_{\mathbb Z}[64,1024]$ \\
+\texttt{n\_blocks} & 0 & $P(0)=2/3$, $P(1)=P(2)=1/6$ \\
+\texttt{dim} & 128 & $U_{\mathbb Z}[64,1024]$ \\
+\texttt{num\_emb\_n\_frequencies} & 77 & $U_{\mathbb Z}[16,96]$ \\
+\texttt{num\_emb\_frequency\_scale} & 0.0443136058 & $\mathrm{LogU}[0.005,10]$ \\
+\texttt{num\_emb\_d\_embedding} & 34 & $U_{\mathbb Z}[16,64]$ \\
+\texttt{sample\_rate} & 0.5 & $U[0.05,0.6]$ \\
+\texttt{lr} & 0.002 & $\mathrm{LogU}[10^{-5},10^{-1}]$ \\
+\texttt{weight\_decay} & 0.0002 & 0 z~prawdopodobieństwem $1/2$, inaczej $\mathrm{LogU}[10^{-6},10^{-3}]$ \\
+\texttt{temperature} & 1 & stała \\
+\texttt{num\_emb\_type} & plr & stała \\
+\texttt{num\_emb\_lite} & tak & stała \\
+\texttt{batch\_size} & auto & stała reguła automatyczna \\
+\texttt{n\_epochs} & 200 & stała \\
+\bottomrule\end{tabularx}\end{table}
+
+
+
+\clearpage
+\subsubsection*{TabM}
+\begin{table}[!htbp]\centering\footnotesize
+\caption{Ustawienia i przestrzeń strojenia: TabM.}
+\begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
+\toprule Parametr & Domyślnie & Zakres i rozkład \\
+\midrule
+\texttt{lr} & 0.002 & $\mathrm{LogU}[10^{-4},0.003]$ \\
+\texttt{weight\_decay} & 0.0003 & 0 z~prawdopodobieństwem $1/2$, inaczej $\mathrm{LogU}[10^{-4},10^{-1}]$ \\
+\texttt{n\_blocks} & auto & wybór: 2, 3, 4, 5 \\
+\texttt{d\_block} & 512 & wybór: 128, 144, \ldots, 1024 \\
+\texttt{dropout} & 0.1 & 0 z~prawdopodobieństwem $1/2$, inaczej $U[0,0.5]$ \\
+\texttt{d\_embedding} & 16 & wybór: 8, 12, \ldots, 32 \\
+\texttt{num\_emb\_n\_bins} & 48 & $U_{\mathbb Z}[2,128]$ \\
+\texttt{batch\_size} & auto & stała reguła automatyczna \\
+\texttt{patience} & 16 & stała \\
+\texttt{amp} & nie & stała \\
+\texttt{arch\_type} & tabm-mini & stała \\
+\texttt{tabm\_k} & 32 & stała \\
+\texttt{gradient\_clipping\_norm} & 1 & stała \\
+\texttt{share\_training\_batches} & nie & stała \\
+\texttt{num\_emb\_type} & pwl & stała \\
+\bottomrule\end{tabularx}\end{table}
+
+Liczba przedziałów osadzeń jest ograniczona do liczności treningu pomniejszonej o~jeden. Domyślna liczba bloków zależy od obecności osadzeń numerycznych. Automatyczny rozmiar partii wynika z~liczności i~szerokości treningu.
+
+\clearpage
+\subsection*{Audyt danych przed uczeniem}
+\label{app:audyt}
+
+\textbf{Do uzupełnienia:} ilościowy audyt aktualnych przygotowanych danych. Brak wpisu nie oznacza braku wad danych. Nie potwierdzono lokalnie kompletnego profilu powiązanego z~aktualnymi sumami kontrolnymi. Tabela rozdziela pomiary braków, duplikatów cech i~całych wierszy z~etykietą, stałych kolumn oraz klasy najmniej licznej. Dla każdego zbioru należy dołączyć decyzję o~zachowaniu lub usunięciu duplikatów, z~uzasadnieniem dotyczącym populacji predykcji.
+
+\begin{table}[!htbp]\centering\scriptsize
+\caption{Zakres audytu dwunastu zbiorów. Znak zapytania oznacza pomiar do uzupełnienia, a~nie wartość zerową.}
+\begin{tabularx}{\linewidth}{@{}P{0.28\linewidth}ccccY@{}}
+\toprule
+Zbiór & Braki & Duplikaty & Stałe & Klasa rzadka & Decyzje \\
+\midrule
+Adult & ? & ? & ? & ? & Do uzupełnienia \\
+Covertype & ? & ? & ? & ? & Podział po wierszach \\
+Credit Card Fraud & ? & ? & ? & 1 & Bez \texttt{Time} \\
+HIGGS, podzbiór & ? & ? & ? & ? & Do uzupełnienia \\
+Amazon Employee Access & ? & ? & ? & 0 & Podział po wierszach \\
+Santander Customer Satisfaction & ? & ? & ? & 1 & Źródło bez \texttt{ID} \\
+Online Shoppers & ? & ? & ? & ? & Do uzupełnienia \\
+Diabetes 130-US & ? & ? & ? & ? & Grupowanie pacjentów \\
+Helena & ? & ? & ? & ? & Do uzupełnienia \\
+German Credit & ? & ? & ? & ? & Do uzupełnienia \\
+Ionosphere & ? & ? & ? & ? & Do uzupełnienia \\
+Bioresponse & ? & ? & ? & ? & Do uzupełnienia \\
+\bottomrule\end{tabularx}\end{table}
+
+Rejestr audytu powinien wskazywać wersję źródła, sumę kontrolną przygotowanych danych, liczności przed i~po wyłączeniach, pełny rozkład klas i~braki w~kolumnach. Kontrola duplikatów obejmuje także przypadki wspólne między częściami podziału i~grupy o~sprzecznych etykietach. Dla Diabetes 130-US wymaga się potwierdzenia rozłączności pacjentów oraz jednokrotnego udziału każdej obserwacji w~walidacji. Dla Amazon Employee Access należy określić powtarzalność encji między częściami. Same reguły podziału nie stanowią dowodu ich spełnienia w~przygotowanych danych.
+
+\subsection*{Progi decyzji i miary uporządkowania}
+\label{app:progi}
+
+Alarm dla klasy rzadkiej oznacza $p\geq t$. Kandydatami na próg są środki między sąsiednimi unikalnymi prawdopodobieństwami OOF, najmniejsza wartość zaobserwowana i~najmniejsza reprezentowalna wartość większa od maksimum. Dwa ostatnie przypadki dają alarm dla wszystkich obserwacji albo brak alarmów, również przy stałej predykcji. Jeżeli środek zaokrągli się do dolnego końca przedziału, zastępuje się go następną reprezentowalną wartością w~kierunku górnego końca. Remis F1 rozstrzyga najwyższy próg. Wybrana wartość przechodzi bez zmiany na test.
+
+Dla pomocniczego punktu FPR~1\% wybiera się najmniejszy próg z~tej samej rodziny, dla którego $\mathrm{FP}\leq\lfloor n_{\mathrm{cz,OOF}}/100\rfloor$. Równe wyniki otrzymują jednakową decyzję. Testowe FPR może przekroczyć 1\%, ponieważ próg pochodzi z~OOF, a~predykcja testowa ze średniej foldów. Punkt ten nie określa optymalnej decyzji wdrożeniowej bez kosztów błędów.
+
+Przy braku alarmów i~obecności rzadkich przykładów precyzja jest nieokreślona, a~czułość i~F1 wynoszą~0. F1 ma brak wartości dopiero przy zerowym mianowniku swojej definicji. W~korelacji Spearmana remisy otrzymują rangi średnie, a~stała predykcja pozostawia korelację nieokreśloną. Dla pary rzadki--częsty przeciwnym ścisłym porządkom przypisuje się~1, zmianie remisu na ścisły porządek lub odwrotnie --- $1/2$, a~zgodnym porządkom i~obustronnym remisom ---~0. Sumę dzieli się przez $n_{\mathrm{rz}}n_{\mathrm{cz}}$.
+
+Komparator oblicza się numerycznie jako $q=rp/(1-p+rp)$, gdzie $r=n_{\mathrm{cz}}/n_{\mathrm{rz}}$, zachowując końce 0 i~1. Zmiany remisów wskutek zaokrągleń wymagają odnotowania, gdyż niezmienność AP i~AUC dotyczy dokładnej arytmetyki. Transformacja progu tą samą funkcją zachowuje decyzje, ale ponowny wybór środka między przekształconymi wynikami może zmienić decyzje dla nowych obserwacji. Dla progów poza otwartym przedziałem $(0,1)$ logity i~ich różnice pozostają nieokreślone.
+
+\subsection*{Kontrola wyboru stanu i niestabilność w badaniu A}
+\label{app:kontrola-a}
+
+Wariant kontrolny dla pary metoda--zbiór uruchamia się, gdy co najmniej 12 z~24 dopasowań spełnia warunek $|k_w-k_u|>\max(2,0{,}2k_w)$ lub minimum nieważonej krzywej przypada na ostatni zapisany stan. $k_w$ oznacza stan wybrany przez ważone kryterium, a~$k_u$ pierwsze minimum nieważonej straty. Epoki i~iteracje numeruje się od~1. Ostatnie minimum liczy się jako rozbieżność także po osiągnięciu maksymalnej liczby iteracji. Potrzebny jest komplet 24 skończonych historii, a~braki pozostawiają decyzję nierozstrzygniętą. Kontrola obejmuje wszystkie trzy ziarna. Jej porównanie z~ważeniem ocenia zmianę kryterium wyboru, a~z~warunkiem nieważonym --- zmianę straty przy wspólnym kryterium.
+
+Sygnałem niestabilności jest co najmniej jeden z~następujących przypadków:
+\begin{enumerate}
+\item błędy numeryczne lub nieskończone straty,
+\item mediana wybranego stanu po ważeniu mniejsza niż połowa mediany nieważonej oraz wzrost nieważonej straty walidacyjnej od pierwszego do wybranego stanu w~więcej niż 12 z~24 dopasowań,
+\item rozstęp AP na OOF między ważonymi ziarnami większy niż trzykrotność rozstępu nieważonego.
+\end{enumerate}
+Dla zerowego rozstępu nieważonego każdy dodatni ważony spełnia trzecie kryterium, a~dwa zera go nie spełniają. Braki ziaren lub historii oznaczają niekompletną diagnostykę. Próg co najmniej 12 dla kontroli i~próg więcej niż 12 dla niestabilności dotyczą odrębnych reguł. Sygnały ograniczają interpretację wyniku, ale same nie dowodzą przyczyny optymalizacyjnej. Decyzję o~kontroli i~diagnostykę opiera się na historiach oraz OOF przed odczytem testu.
+
+\subsection*{Podzbiory, budżet i plateau w badaniu B}
+\label{app:budzet-b}
+
+Dla każdej klasy losuje się permutację z~ziarnem foldu, następnie wybiera pierwsze $\lfloor f n_c+\tfrac12\rfloor$ obserwacji, zachowując w~podzbiorze pierwotną kolejność wierszy. Rejestruje się ich identyfikatory i~rzeczywiste liczności klas. Liczba epok wynosi $\lceil T/s_f\rceil$, gdzie $T$ jest budżetem aktualizacji, a~$s_f$ liczbą partii na epokę. Dla udziałów 25/50/100\% daje to 334/200/100 epok w~German Credit, 400/200/100 w~Ionosphere i~360/200/100 w~Bioresponse. Budżety rzeczywistych kroków sprawdza się dla każdego foldu. W~A i~B techniczny limit wynosi $10^6$~s na konfigurację, lecz zgodność wymaga braku obcięcia czasowego. Historie obejmują pełny przebieg i~normę wszystkich parametrów po każdej epoce.
+
+W~diagnostyce plateau porównuje się końcową stratę treningową z~ostatnim zapisem przypadającym nie później niż przy 90\% wykonanych aktualizacji. Gdy takiego zapisu nie ma, początkiem odcinka jest pierwsza epoka. Bezwzględną różnicę dzieli się przez wartość bezwzględną straty na początku odcinka. Zmiana mniejsza niż 1\% oznacza plateau. Dwie zerowe straty dają zmianę zerową, natomiast wzrost od zera nie spełnia kryterium i~nie ma określonej zmiany względnej. Mniej niż dwa zapisy, braki lub wartości nieskończone nie pozwalają na rozstrzygnięcie. Plateau opisuje stabilizację straty, a~nie osiągnięcie optimum.
+
+\subsection*{Braki i nieokreślone repliki bootstrapu}
+\label{app:bootstrap}
+
+W~badaniu głównym nieokreślona metryka choć jednej repliki powoduje pominięcie przedziału. Liczbę takich replik podaje się jawnie. W~A i~B brak któregokolwiek z~trzech ziaren pozostawia kontrast niekompletny. Gdy metryka jest nieokreślona w~dowolnym ziarnie repliki, cała replika otrzymuje taki status. Przedział podaje się wyłącznie przy komplecie określonych replik. Progi pozostają wybrane na OOF, bez ponownego dopasowania do losowanych testów. Przedziały mają charakter opisowy i~warunkowy względem modeli, podziału oraz obserwowanych liczności klas.

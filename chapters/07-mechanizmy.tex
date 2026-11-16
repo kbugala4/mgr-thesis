@@ -8,7 +8,62 @@
 \subsection{Wykonane warunki i zgodność kontroli}
 \label{sec:mechanizmy-kontrole}
 
-\textbf{Do uzupełnienia:} identyfikatory badań, kompletność warunków, ziarna uczenia 0, 10 i~20, rzeczywiste indeksy foldów i~podzbiorów, etykiety rzadkie oraz wybrane konfiguracje. Dla A podać konfiguracje T, w~tym brakujące wartości CatBoost dla Credit Card Fraud i~Santandera, potwierdzić obliczenie wag wyłącznie z~treningu i~opisać kryterium wyboru stanu w~każdym warunku. Zestawić wybrane epoki i~iteracje, wynik reguły uruchomienia wariantu kontrolnego oraz ocenę niestabilności dla każdej pary metoda--zbiór. Dla B udokumentować wybór konfiguracji~21, jej 11.~miejsce w~rankingu OOF, wartości regularyzatorów, liczności klas oraz epoki i~rzeczywiste kroki wynikające z~budżetu. Potwierdzić brak foldów obciętych czasowo. Każde odstępstwo opisać przed interpretacją efektu.
+\textbf{Do uzupełnienia:} identyfikatory badań, kompletność warunków, rzeczywiste indeksy foldów i~podzbiorów oraz etykiety rzadkie. Potwierdzić wagi wyznaczone wyłącznie z~treningu, kryteria wyboru stanu, wynik reguły kontroli i~diagnostykę niestabilności. Dla B zestawić liczności klas, epoki i~rzeczywiste kroki. Potwierdzić brak foldów obciętych czasowo. Każde odstępstwo opisać przed interpretacją efektu.
+
+\textbf{Dane wyboru wymagające weryfikacji źródłowej.} Poniższe konfiguracje i~ranking przeniesiono z~opisu metodyki. Wartości odpowiadają ustawieniom badań, lecz ich wybór wymaga powiązania z~oryginalnymi ocenami OOF, przed przedstawieniem go jako zweryfikowanego wyniku.
+
+\begin{table}[tbp]
+\centering\small
+\caption{Konfiguracje T używane w~badaniu~A.}
+\label{tab:konfiguracje-a}
+\begin{tabularx}{\linewidth}{Ycc}
+\toprule
+Zbiór & Indeks MLP & Indeks CatBoost \\
+\midrule
+Credit Card Fraud & 12 & \textit{brak} \\
+Santander & 8 & \textit{brak} \\
+Amazon & 2 & 23 \\
+\bottomrule
+\end{tabularx}
+\medskip
+\begin{tabularx}{\linewidth}{Yccc}
+\toprule
+Parametr CatBoost & Credit Card Fraud & Santander & Amazon \\
+\midrule
+Głębokość drzew & \textit{brak} & \textit{brak} & 9 \\
+Limit iteracji & \textit{brak} & \textit{brak} & 745 \\
+Tempo uczenia & \textit{brak} & \textit{brak} & 0,0210215 \\
+\texttt{l2\_leaf\_reg} & \textit{brak} & \textit{brak} & 0,234209 \\
+\texttt{bagging\_temperature} & \textit{brak} & \textit{brak} & 6,24354 \\
+\texttt{random\_strength} & \textit{brak} & \textit{brak} & 4,16510 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Do uzupełnienia:} konfiguracje T CatBoost dla Credit Card Fraud i~Santander Customer Satisfaction oraz dowody wyboru wszystkich konfiguracji z~tabeli~\ref{tab:konfiguracje-a}. Brakujące pola nie oznaczają wartości zerowych.
+
+Konfiguracja~21 MLP ma warstwy o~128 i~64 jednostkach, dropout 0,44360637128816327, zanik wag 0,007706343825607382 i~tempo uczenia 0,000583248659760873. Według dostępnego opisu wyboru dopuszczono trzech kandydatów: 21, 2 i~12. Konfiguracja~21 uzyskała średnią rangę 12,75 oraz 11.~miejsce w~pełnej puli 26 konfiguracji. Trzy najlepsze konfiguracje pełnego rankingu miały słaby zanik wag. Wybór odniesienia dotyczył zatem ograniczonej puli z~oboma regularyzatorami, a~nie najlepszego MLP bez tego ograniczenia.
+
+Oceny źródłowe obejmowały Adult, Credit Card Fraud, HIGGS, Amazon Employee Access, Santander Customer Satisfaction, Online Shoppers, Diabetes 130-US i~Helena. Zbiory B wyłączono, a~Covertype pominięto z~powodu niekompletnych lub obciętych przebiegów po zmianie doboru partii. \textbf{Do uzupełnienia:} oryginalna tabela OOF, tożsamość przebiegów i~potwierdzenie powyższych liczb. Historyczna selekcja przypisywała niezakończonym kandydatom dolne rangi, natomiast aktualna kontrola źródeł wymaga kompletu udanych konfiguracji. Nie ustalono jeszcze zgodności obu procedur na rzeczywistych danych źródłowych ani chronologii zatwierdzenia reguły wyboru.
+
+Po wyborze konfiguracji, a~przed uczeniem w~badaniu~B, wyprowadzono przewidywanie bezpośredniego zaniku. Iloczyn $\alpha\lambda\approx4{,}5\cdot10^{-6}$ prowadzi do czynników z~tabeli~\ref{tab:zanik-przewidywany}. Na tej podstawie sformułowano hipotezę, że różnice jakości po usunięciu zaniku będą małe względem zmienności między ziarnami. Jest to przewidywanie dla wybranej konfiguracji, nie wynik pomiaru ani hipoteza ustalona przed jej wyborem.
+
+\begin{table}[tbp]
+\centering\small
+\caption{Obliczony czynnik zaniku wag konfiguracji~21 przy pominięciu gradientu. Wartości są przewidywaniem analitycznym, a~nie pomiarem uczenia.}
+\label{tab:zanik-przewidywany}
+\begin{tabularx}{\linewidth}{Yrrr}
+\toprule
+Zbiór & Kroki & Czynnik & Zmniejszenie wag \\
+\midrule
+German Credit & 1000--1002 & 0,9955 & 0,45\% \\
+Ionosphere & 400 & 0,9982 & 0,18\% \\
+Bioresponse & 1800 & 0,9919 & 0,81\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Przewidywanie nie określa wpływu zaniku na całą trajektorię optymalizacji. Pomocniczym kryterium diagnostycznym jest stosunek norm wariantu z~zanikiem do wariantu bez zaniku w~przedziale $[0{,}98,1{,}00]$, dla stanu końcowego i~pomocniczo stanu wybranego osobno w~każdym wariancie. Kryterium wynika z~przewidywania po selekcji konfiguracji i~poprzedza uczenie w~B. Wniosek dla PB2 należy ograniczyć do tej konfiguracji i~budżetów. \textbf{Do uzupełnienia:} identyfikowalny zapis chronologii wyboru, przewidywania i~pierwszego treningu B.
 
 \subsection{Ważenie klas a jakość uporządkowania}
 \label{sec:mechanizmy-ap}
