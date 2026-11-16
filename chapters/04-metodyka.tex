@@ -2,7 +2,7 @@
 \section{Metodyka badań}
 \label{chap:metodyka}
 
-Pytania PB1--PB5 z~sekcji~\ref{sec:pytania-badawcze} wymagają dwóch rodzajów porównań. Ocenę jakości, korzyści ze strojenia i~kosztu obliczeń, czyli PB1, PB2 i~PB5, oparto na kompletnych procedurach predykcyjnych ocenianych na wspólnym teście. Ranking metod nie rozdziela jednak wpływu ważenia klas i~regularyzacji od pozostałych składników uczenia. Dlatego odpowiedzi na PB3 i~PB4 mają dostarczyć dwa badania kontrolowane, w~których zmienia się wskazane mechanizmy przy zachowaniu pozostałych warunków. Poniżej przedstawiono dane, podziały, strojenie, warunki raportowania i~metryki, a~następnie badania A i~B oraz zasady analizy, rozliczania kosztu i~interpretacji ograniczeń. Rozdział opisuje projekt badań, natomiast wybory dokonane na podstawie przebiegów oraz ich wyniki należą do rozdziałów wynikowych.
+Pytania PB1--PB5 z~sekcji~\ref{sec:pytania-badawcze} wymagają dwóch rodzajów porównań. Ocenę jakości, korzyści ze strojenia i~kosztu obliczeń, czyli PB1, PB2 i~PB5, oparto na kompletnych procedurach predykcyjnych ocenianych na wspólnym teście. Ranking metod nie rozdziela jednak wpływu ważenia klas i~regularyzacji od pozostałych składników uczenia. Dlatego odpowiedzi na PB3 i~PB4 mają dostarczyć dwa badania kontrolowane, w~których zmienia się wskazane mechanizmy przy zachowaniu pozostałych warunków. Kierunki badań A i~B określono w~projekcie pracy, a~ich konkretne konfiguracje dobiera się na podstawie wyników walidacyjnych badania głównego. Poniżej przedstawiono dane, podziały, strojenie, warunki raportowania i~metryki, a~następnie badania A i~B oraz zasady analizy, rozliczania kosztu i~interpretacji ograniczeń. Rozdział opisuje projekt badań, natomiast wybory dokonane na podstawie przebiegów oraz ich wyniki należą do rozdziałów wynikowych.
 
 \subsection{Projekt badania i jednostki analizy}
 \label{sec:projekt-badania}
@@ -14,7 +14,7 @@ PB3 wymaga rozdzielenia zmiany uporządkowania obserwacji od przesunięcia punkt
 \subsection{Dobór i audyt zbiorów danych}
 \label{sec:dane-audyt}
 
-Dwanaście zadań dobrano tak, aby uwzględnić różne liczności, typy cech i~liczby klas, a~także odmienne relacje szerokości tabeli do liczby przykładów. Rozmiary i~role zbiorów zestawiono w~tabeli~\ref{tab:rejestr-zadan}, której nazwy prowadzą do opisów źródłowych. Podane liczności dotyczą danych przed podziałem, a~liczby cech --- wejścia po wyłączeniu etykiety i~wskazanych identyfikatorów, przed przetwarzaniem właściwym metodzie. HIGGS oznacza podzbiór OpenML, natomiast Santander Customer Satisfaction obejmuje oznakowane dane treningowe konkursu.
+Dwanaście zadań dobrano tak, aby uwzględnić różne liczności, typy cech i~liczby klas, a~także odmienny stosunek liczby cech do liczby obserwacji. Rozmiary i~role zbiorów zestawiono w~tabeli~\ref{tab:rejestr-zadan}, której nazwy prowadzą do opisów źródłowych. Podane liczności dotyczą danych przed podziałem, a~liczby cech --- wejścia po wyłączeniu etykiety i~wskazanych identyfikatorów, przed przetwarzaniem właściwym metodzie. HIGGS oznacza podzbiór OpenML, natomiast Santander Customer Satisfaction obejmuje oznakowane dane treningowe konkursu.
 
 \begin{table}[tbp]
 \centering\small
@@ -22,7 +22,7 @@ Dwanaście zadań dobrano tak, aby uwzględnić różne liczności, typy cech i~
 \label{tab:rejestr-zadan}
 \begin{tabularx}{\linewidth}{@{}P{0.26\linewidth}rrcY@{}}
 \toprule
-Zbiór & Próbki & Cechy & Klasy & Rola w~projekcie \\
+Zbiór & Obserwacje & Cechy & Klasy & Rola w~projekcie \\
 \midrule
 \href{https://www.openml.org/d/1590}{Adult} & 48\,842 & 14 & 2 & Cechy mieszane \\
 \href{https://www.openml.org/d/1596}{Covertype} & 581\,012 & 54 & 7 & Duża liczność, wiele klas \\
@@ -42,18 +42,16 @@ Zbiór & Próbki & Cechy & Klasy & Rola w~projekcie \\
 
 Audyt zbiorów obejmuje znaczenie etykiety, populację predykcji, mapowanie klas, typy kolumn, braki, stałe cechy, duplikaty i~identyfikatory. Ocenia się również dostępność predyktorów w~chwili decyzji i~zależności między obserwacjami, które przesądzają o~sposobie podziału.
 
-Braki wartości występują w~trzech zbiorach, duplikaty cech w~siedmiu, a~stałe kolumny w~trzech. Zachowano wszystkie obserwacje, w~tym duplikaty, oraz stałe kolumny danych źródłowych, bez dodatkowego oczyszczania. Celem jest porównanie metod na pełnych zbiorach w~przyjętej postaci źródłowej, z~przetwarzaniem cech właściwym danej metodzie. Przy podziale po wierszach identyczne obserwacje mogą jednak trafić zarówno do treningu, jak i~do testu. Wyniki audytu dla poszczególnych zbiorów zestawiono w~załączniku~\ref{app:reguly-szczegolowe}.
+Braki wartości występują w~trzech zbiorach, powtórzone wektory cech w~siedmiu, a~stałe kolumny w~trzech. Zachowano wszystkie obserwacje, w~tym duplikaty, oraz stałe kolumny danych źródłowych, bez dodatkowego oczyszczania. Przed dopasowaniem modelu AutoGluon usuwa jednak kolumny stałe w~obrębie treningu foldu, a~w~badaniu~B --- danego podzbioru treningowego. Celem jest porównanie metod na pełnych zbiorach w~przyjętej postaci źródłowej, z~przetwarzaniem cech właściwym danej metodzie. Przy podziale po wierszach identyczne obserwacje mogą jednak trafić zarówno do treningu, jak i~do testu. Wyniki audytu dla poszczególnych zbiorów zestawiono w~załączniku~\ref{app:reguly-szczegolowe}.
 
 W~zbiorze Diabetes 130-US identyfikator pacjenta służy grupowaniu, a~identyfikatory pacjenta i~pobytu nie są predyktorami. Wersja danych Santander z~OpenML nie zawiera kolumny \texttt{ID}. Z~predyktorów Credit Card Fraud wyłączono \texttt{Time}, ponieważ początek skali czasu jest związany z~konkretnym oknem rejestracji. W~zbiorach Amazon Employee Access i~Covertype przyjęto podział stratyfikowany po wierszach. W~pierwszym ocena dotyczy kolejnych wierszy z~tej samej populacji, z~możliwością występowania znanych encji po obu stronach podziału. W~drugim dotyczy próbkowania w~obrębie dostępnego źródła przestrzennego. Wnioski o~nowych encjach lub obszarach wymagałyby odrębnych podziałów. Anonimowość cech zbioru Helena ogranicza ocenę ich znaczenia i~dostępności.
 
 \subsection{Podziały i przepływ informacji}
 \label{sec:podzialy}
 
-\label{sec:przygotowanie-procedura}
-
 Dla obserwacji traktowanych jako niezależne, o~jednakowym rozkładzie (ang. \textit{independent and identically distributed}, IID), wykorzystuje się pierwszy z~trzech podziałów stratyfikowanej walidacji krzyżowej, z~tasowaniem i~ziarnem~42. Około dwóch trzecich danych tworzy część rozwojową, przeznaczoną na uczenie i~walidację, a~jedna trzecia stanowi test. Wybrano szerokość porównania na dwunastu zadaniach zamiast powtarzania podziału zewnętrznego, ponieważ każde powtórzenie mnożyłoby koszt całego wyszukiwania. Wewnątrz części rozwojowej przyjęto osiem foldów i~jedno powtórzenie. Wyłączono automatyczne przechodzenie do powtarzanej walidacji dla małych zbiorów, aby zachować wspólny schemat oceny.
 
-Podstawą wyboru konfiguracji są predykcje dla obserwacji spoza treningu danego foldu (ang. \textit{out-of-fold}, OOF). Walidacja wpływa także na zachowany stan modelu: w~MLP i~FT-Transformerze kryterium wyboru epoki jest strata, a~w~TabNet --- AUC dla klasyfikacji binarnej lub strata logarytmiczna dla wieloklasowej. Uczenie kończy się po dziesięciu epokach bez poprawy. Różnica kryteriów jest częścią ocenianych procedur, a~choć etykiety walidacyjne nie uczestniczą w~obliczaniu gradientów, niezależną ocenę wybranego modelu zapewnia dopiero test zewnętrzny~\cite{cawley2010selection}. Przepływ informacji przedstawiono na rysunku~\ref{fig:podzial-selekcja}.
+Podstawą wyboru konfiguracji są predykcje dla obserwacji spoza treningu danego foldu (ang. \textit{out-of-fold}, OOF). Walidacja wpływa także na zachowany stan modelu: w~MLP i~FT-Transformerze kryterium wyboru epoki jest strata, a~w~TabNet --- AUC dla klasyfikacji binarnej lub strata logarytmiczna dla wieloklasowej. W~tych trzech lokalnych sieciach uczenie kończy się po dziesięciu epokach bez poprawy. Integracje natywne zachowują procedury bibliotek: TabM zatrzymuje uczenie po 16 epokach bez poprawy, ModernNCA po ponad 20, a~RealMLP stosuje zatrzymanie tylko w~części konfiguracji. CatBoost kończy uczenie po 50 iteracjach bez poprawy, natomiast XGBoost i~regresja logistyczna nie stosują zatrzymania walidacyjnego. Różnice te są częścią ocenianych procedur. Etykiety walidacyjne nie uczestniczą w~obliczaniu gradientów, ale niezależną ocenę wybranego modelu zapewnia dopiero test zewnętrzny~\cite{cawley2010selection}. Przepływ informacji przedstawiono na rysunku~\ref{fig:podzial-selekcja}.
 
 \begin{figure}[!htbp]\centering\small
 \input{figures/source/podzial-i-selekcja.tex}
@@ -61,7 +59,7 @@ Podstawą wyboru konfiguracji są predykcje dla obserwacji spoza treningu danego
 \label{fig:podzial-selekcja}
 \end{figure}
 
-W~zbiorze Diabetes 130-US jednostką podziału jest pacjent, gdyż jego pobyty mogą być do siebie podobne. Stratyfikację grupową zastosowano na obu poziomach, zachowując wszystkie pobyty osoby po tej samej stronie podziału. Kontrola obejmuje rozłączność pacjentów, obecność klas i~to, czy każda obserwacja trafia do walidacji dokładnie raz. Rzeczywiste udziały mogą odbiegać od nominalnych wskutek ograniczenia grupowego.
+W~zbiorze Diabetes 130-US jednostką podziału jest pacjent, gdyż jego pobyty mogą być do siebie podobne. Podział zewnętrzny jest stratyfikowany i~grupowy, natomiast wewnętrzne foldy grupowe z~tasowaniem zachowują rozłączność pacjentów bez stratyfikacji. Na obu poziomach wszystkie pobyty osoby pozostają po tej samej stronie podziału. Kontrola obejmuje rozłączność pacjentów, obecność klas i~to, czy każda obserwacja trafia do walidacji dokładnie raz. Rzeczywiste udziały mogą odbiegać od nominalnych wskutek ograniczenia grupowego.
 
 Wartości, typy cech i~mapowanie klas pozostają wspólne, natomiast przekształcenia powierzono implementacji danej metody. Ich wyuczone elementy dopasowuje się na treningu foldu, przed przetworzeniem walidacji i~testu, z~ustaloną obsługą braków oraz nieznanych kategorii.
 
@@ -76,14 +74,14 @@ Dla dziesięciu metod strojonych przyjęto konfigurację domyślną i~25 losowyc
 
 Rozmiar partii MLP, FT-Transformera i~TabNet zależy od treningowej części foldu. Strojenie obejmuje mnożnik $\{0{,}5;\,1;\,2\}$, domyślnie równy~1. W~TabNet znaczenie mają też liczności kategorii, a~ograniczenie pamięci FT-Transformera zależy od szerokości tabeli. Partia zmienia liczbę aktualizacji w~epoce, dlatego stanowi składnik procedury uczenia. Reguły wykonania podano w~sekcji~\ref{sec:partie-platformy}.
 
-Dla wyszukiwania ustalono ziarno~42. Ziarno zewnętrzne wpływa również na inicjalizację modeli, natomiast ziarna wewnętrzne określa biblioteka. Dla TabPFN ustalono ziarno inferencji~0. W~badaniach A i~B rozdzielono losowość uczenia od podziału i~przyjęto trzy sparowane ziarna: 0, 10 i~20. Odstęp~10 zapobiega powtórzeniu wartości po dodaniu numeru foldu. Zachowano podziały badania głównego. Trzy ziarna stanowią kompromis między oceną stabilności uczenia a~kosztem powtarzania wszystkich warunków A i~B. Opisują zmienność uczenia przy ustalonym podziale danych.
+W~badaniu głównym ziarno~42 ustala podział zewnętrzny i~losowanie konfiguracji, a~model foldu otrzymuje wartość~42 powiększoną o~numer foldu. Ziarno podziału wewnętrznego wyznacza biblioteka, natomiast ziarno inferencji TabPFN wynosi~0. W~badaniach A i~B losowość uczenia oddzielono od podziału danych: wartości 0, 10 i~20 pozwalają powtórzyć uczenie na tych samych podziałach, a~odstęp~10 zapobiega nakładaniu się ziaren po dodaniu numeru foldu. Trzy powtórzenia stanowią kompromis między kosztem a~oceną zmienności uczenia przy ustalonym podziale.
 
-Budżet pojedynczej konfiguracji wynosi 3600~s łącznie na foldy i~przygotowanie danych, zgodnie z~godzinną skalą ocen TabArena. Biblioteka kontroluje czas wewnątrz uczenia, więc wykonanie może przekroczyć przydział. W~sześciu uczonych metodach neuronowych budżet jest dodatkowym kryterium zakończenia. Poprawnie zatrzymany model pozostaje dopuszczony do oceny. Wspólny limit nominalny nie wyrównuje liczby aktualizacji ani pojemności przestrzeni strojenia.
+Budżet pojedynczej konfiguracji wynosi 3600~s łącznie na osiem foldów i~przetwarzanie wstępne AutoGluon, zgodnie z~godzinną skalą ocen TabArena. Wczytanie danych i~podział zewnętrzny pozostają poza tym limitem. AutoGluon dzieli pozostały czas między foldy, a~gdy prognoza czasu ich wykonania przekracza budżet, przerywa konfigurację jako nieudaną. Limit jest doradczy, dlatego pojedyncze natywne dopasowanie może przekroczyć przydział. W~sześciu uczonych metodach neuronowych budżet jest dodatkowym kryterium zakończenia. Poprawnie zatrzymany model pozostaje dopuszczony do oceny, lecz znacznik przyczyny zatrzymania zapisują tylko MLP, FT-Transformer i~TabNet, zgodnie z~sekcją~\ref{sec:artefakty-wznowienie}. Wspólny limit nominalny nie wyrównuje liczby aktualizacji ani pojemności przestrzeni strojenia.
 
 \subsection{Warunki raportowania D, T i T+E}
 \label{sec:warunki-raportowania}
 
-Dla konfiguracji ocenianej na ośmiu foldach predykcję testową wyznacza się przez uśrednienie prawdopodobieństw z~ośmiu modeli foldów, bez dodatkowego dopasowania wybranej konfiguracji na całej części rozwojowej. Ten sposób wykorzystania zapisanych predykcji jest inspirowany organizacją ocen w~TabArena~\cite{erickson2025tabarena}, z~zakresem i~wyjątkami przyjętymi w~tej pracy.
+Dla konfiguracji ocenianej na ośmiu foldach predykcję testową wyznacza się przez uśrednienie prawdopodobieństw z~ośmiu modeli foldów, bez dodatkowego dopasowania wybranej konfiguracji na całej części rozwojowej. Warunki i~wyjątki zestawiono w~tabeli~\ref{tab:warunki}. Ten sposób wykorzystania zapisanych predykcji jest inspirowany organizacją ocen w~TabArena~\cite{erickson2025tabarena}, z~zakresem i~wyjątkami przyjętymi w~tej pracy.
 
 \begin{table}[tbp]
 \centering\small
@@ -107,33 +105,32 @@ p_{\mathrm{T+E}}(x)=\sum_{c\in\mathcal{C}}\omega_c\bar p_c(x),
 \qquad \omega_c\geq0,\quad \sum_{c\in\mathcal{C}}\omega_c=1,
 \label{eq:zespol-konfiguracji}
 \end{equation}
-gdzie $\mathcal{C}$ jest zbiorem dopuszczonych konfiguracji. Wagi $\omega_c$ są wybierane na OOF przez zachłanne dołączanie konfiguracji do zespołu, zgodnie z~ideą selekcji z~biblioteki modeli Caruany i~współautorów~\cite{caruana2004ensemble}. Łączenie konfiguracji dodaje poziom agregacji do już istniejącego uśredniania foldów, a~zespół wewnętrzny TabM pozostaje częścią $p_{c,k}$. Dla KNN w~zadaniach IID w~miejsce $\bar p_c$ używana jest predykcja pojedynczego dopasowania, a~stały TabPFN występuje tylko w~D.
+gdzie $\mathcal{C}$ obejmuje udane konfiguracje danej metody na danym zbiorze. Wagi $\omega_c$ są wybierane na OOF przez zachłanne dołączanie konfiguracji do zespołu, zgodnie z~ideą selekcji z~biblioteki modeli Caruany i~współautorów~\cite{caruana2004ensemble}. Łączenie konfiguracji dodaje poziom agregacji do już istniejącego uśredniania foldów, a~zespół wewnętrzny TabM pozostaje częścią $p_{c,k}$. Dla KNN w~zadaniach IID w~miejsce $\bar p_c$ używana jest predykcja pojedynczego dopasowania, a~stały TabPFN występuje tylko w~D.
 
-W~użytej wersji biblioteki zachowywany jest najkrótszy prefiks trajektorii zachłannego wyboru osiągający najlepszą ocenę OOF. Ponowny wybór kandydata zwiększa jego udział, dlatego liczba różnych konfiguracji może być mniejsza od liczby kroków. Różnica T+E względem T mierzy korzyść z~tej dodatkowej procedury selekcji i~agregacji, przy wspólnym koszcie znalezienia kandydatów.
+W~użytej wersji biblioteki zachowywany jest najkrótszy prefiks trajektorii zachłannego wyboru osiągający najlepszą ocenę OOF. Ziarno~42 ustala wyłącznie losowe rozstrzyganie remisów, z~pierwszeństwem konfiguracji już obecnych w~zespole. Ponowny wybór kandydata zwiększa jego udział, dlatego liczba różnych konfiguracji może być mniejsza od liczby kroków. Różnica T+E względem T mierzy korzyść z~tej dodatkowej procedury selekcji i~agregacji, przy wspólnym koszcie znalezienia kandydatów.
 
-Przy jednakowej ocenie walidacyjnej kandydatów T wybiera się niższy indeks konfiguracji. Wybór T i~wag T+E następuje przed wykorzystaniem etykiet testowych do obliczenia metryk. Brak kompletu wymaganych dopasowań i~predykcji lub awaria konfiguracji domyślnej uniemożliwiają pełny raport. Konfiguracja, której uczenie zakończyło się poprawnie wskutek ograniczenia czasu, pozostaje dopuszczona do raportowania oraz wyboru T i~T+E, o~ile spełnia te same wymagania kompletności co pozostali kandydaci. Jawnie nieudane konfiguracje losowe mogą zostać pominięte w~wyborze dopiero po zakończeniu prób, a~ich liczba i~koszt pozostają częścią opisu kompletności.
+Remis ocen walidacyjnych rozstrzyga w~T niższy indeks konfiguracji, a~konfiguracja domyślna ma indeks~0. Wybór T i~wag T+E następuje przed wykorzystaniem etykiet testowych do obliczenia metryk. Brak kompletu wymaganych dopasowań i~predykcji lub awaria konfiguracji domyślnej uniemożliwiają pełny raport. Konfiguracja, której uczenie zakończyło się poprawnie wskutek ograniczenia czasu, pozostaje dopuszczona do raportowania oraz wyboru T i~T+E, o~ile spełnia te same wymagania kompletności co pozostali kandydaci. Jawnie nieudane konfiguracje losowe mogą zostać pominięte w~wyborze dopiero po zakończeniu prób, a~ich liczba i~koszt pozostają częścią opisu kompletności.
 
 Poziomy agregacji zestawiono w~tabeli~\ref{tab:poziomy-zespolow} i~na rysunku~\ref{fig:zespoly}.
 
 \begin{table}[tbp]
-\centering
+\centering\small
 \caption{Poziomy łączenia predykcji w~porównywanych procedurach.}
 \label{tab:poziomy-zespolow}
-\small
-\begin{tabularx}{\textwidth}{@{}P{0.22\textwidth}YY@{}}
+\begin{tabularx}{\linewidth}{@{}P{0.22\linewidth}YY@{}}
 \toprule
 Poziom & Łączone obiekty & Znaczenie dla badania \\
 \midrule
-Wewnętrzny & Podmodele ze współdzieleniem parametrów & Składnik architektury TabM~\cite{gorishniy2025tabm}. \\
-Foldy & Modele tej samej konfiguracji & Warunki D i T z~zespołem foldów już wykorzystują takie uśrednienie. \\
-Konfiguracje & Wyniki różnych kandydatów & T+E dodaje dobór wag na OOF, bez selekcji na teście. \\
+Wewnętrzny & Podmodele ze współdzieleniem parametrów & Składnik architektury TabM~\cite{gorishniy2025tabm} \\
+Foldy & Modele tej samej konfiguracji & Warunki D i T z~zespołem foldów już wykorzystują takie uśrednienie \\
+Konfiguracje & Wyniki różnych kandydatów & T+E dodaje dobór wag na OOF, bez selekcji na teście \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \begin{figure}[tbp]\centering\small
 \input{figures/source/poziomy-zespolow.tex}
-\caption{Wewnętrzny zespół, uśrednienie foldów i łączenie konfiguracji. Opracowanie własne na podstawie mechanizmu TabM~\cite{gorishniy2025tabm} i przyjętego protokołu.}
+\caption{Wewnętrzny zespół, uśrednienie foldów i~łączenie konfiguracji. Opracowanie własne na podstawie mechanizmu TabM~\cite{gorishniy2025tabm} i~przyjętego protokołu.}
 \label{fig:zespoly}
 \end{figure}
 
@@ -142,48 +139,50 @@ Konfiguracje & Wyniki różnych kandydatów & T+E dodaje dobór wag na OOF, bez 
 
 Dla dziewięciu zadań binarnych główną metryką wyboru jest ROC AUC, dla której większa wartość oznacza lepsze uporządkowanie, natomiast dla trzech zadań wieloklasowych przyjęto stratę logarytmiczną, dla której mniejsza wartość jest korzystniejsza:
 \begin{equation}
-L_{\log}=-\frac{1}{n}\sum_{i=1}^{n}\log p_{i,y_i}.
+L_{\log}=-\frac{1}{n}\sum_{i=1}^{n}\log p_{i,y_i},
 \label{eq:logloss-badanie}
 \end{equation}
-Wartość dotyczy prawdopodobieństwa przypisanego właściwej klasie. Przed obliczeniem miary należy zapewnić zgodność kolejności kolumn predykcji z~mapowaniem klas.
+gdzie $p_{i,y_i}$ oznacza prawdopodobieństwo przypisane właściwej klasie obserwacji~$i$, a~$n$ jest licznością ocenianego zbioru.
 
 W~raporcie podaje się także dokładność (ang. \textit{accuracy}), zrównoważoną dokładność (ang. \textit{balanced accuracy}), F1 w~wariancie makro i~ważonym, stratę logarytmiczną, metryki poszczególnych klas oraz wieloklasowe AUC w~schemacie jeden przeciw pozostałym (ang. \textit{one-vs-rest}), uśrednione makro, tam, gdzie jest określone. Główne etykiety decyzyjne powstają przez $\arg\max$ prawdopodobieństw.
 
-W~badaniu rzadkich klas jako podstawową miarę przyjęto średnią precyzję (AP), ponieważ przy niezrównoważeniu ocenę AUC warto uzupełnić o~perspektywę precyzji i~czułości~\cite{saito2015pr}. AP z~równania~\eqref{eq:srednia-precyzja} nie jest trapezowym polem pod krzywą precyzja--czułość. Wartość AP interpretuje się z~uwzględnieniem częstości klasy rzadkiej i~liczby jej przykładów w~teście. Rzadkie zdarzenie jest określone przez surową etykietę i~jej zapisane kodowanie. W~badaniu~A kolumna prawdopodobieństw i~metryka odpowiadają semantycznie wskazanej klasie rzadkiej. Techniczne nazwy pól raportu i~ich mapowanie na populacje oceny opisano w~rozdziale~\ref{chap:srodowisko}.
+W~badaniu~A jako podstawową miarę przyjęto średnią precyzję (AP), ponieważ przy niezrównoważeniu ocenę AUC warto uzupełnić o~perspektywę precyzji i~czułości~\cite{saito2015pr}. AP z~równania~\eqref{eq:srednia-precyzja} nie jest trapezowym polem pod krzywą precyzja--czułość. Wartość AP interpretuje się z~uwzględnieniem częstości klasy rzadkiej i~liczby jej przykładów w~teście. Rzadkie zdarzenie jest określone przez surową etykietę i~jej zapisane kodowanie. W~badaniu~A kolumna prawdopodobieństw i~metryka dotyczą klasy rzadkiej określonej przez etykietę zdarzenia.
 
 \subsection{Badanie A: ważenie klas i przesunięcie predykcji}
 \label{sec:projekt-wazenie}
 
-Punktem wyjścia badania~A jest równanie~\eqref{eq:optimum-wazenia}: w~modelu idealnym ważenie straty przesuwa logit prawdopodobieństwa klasy rzadkiej o~logarytm stosunku jej wagi do wagi klasy częstej, zachowując uporządkowanie obserwacji. PB3 dotyczy tego, na ile rzeczywiste MLP i~CatBoost odstępują od tego odniesienia. Zaprojektowano więc porównanie ważonego uczenia z~korektą predykcji modelu nieważonego bez ponownego uczenia, nawiązującą do reguł decyzji uwzględniających koszty błędów~\cite{elkan2001cost}. Komparator realizuje przesunięcie wynikające z~teorii, a~różnice względem niego pozwalają ocenić zmianę wykraczającą poza sam punkt pracy.
+Punktem wyjścia badania~A jest równanie~\eqref{eq:optimum-wazenia}: w~modelu idealnym ważenie straty przesuwa logit prawdopodobieństwa klasy rzadkiej o~logarytm stosunku jej wagi do wagi klasy częstej, zachowując uporządkowanie obserwacji. PB3 dotyczy tego, na ile rzeczywiste MLP i~CatBoost odstępują od tego odniesienia. Zaprojektowano więc porównanie ważonego uczenia z~korektą predykcji modelu nieważonego bez ponownego uczenia, nawiązującą do reguł decyzji uwzględniających koszty błędów~\cite{elkan2001cost}. Komparator realizuje przesunięcie wynikające z~teorii, a~różnice względem niego pozwalają ocenić zmianę wykraczającą poza sam punkt pracy. Hipoteza zakłada większe odstępstwo od samego przesunięcia w~CatBoost niż w~MLP, ponieważ wagi mogą zmieniać wybór podziałów i~strukturę drzew.
 
-Do badania wybrano MLP i~CatBoost oraz zbiory Credit Card Fraud, Santander Customer Satisfaction i~Amazon Employee Access. TabM pominięto, gdyż jego użyta implementacja nie obsługuje wag straty. Klasy rzadkie to odpowiednio \texttt{Class=1}, \texttt{TARGET=1} i~\texttt{target=0}, o~częstościach około 0,17\%, 4,0\% i~5,8\%. Wagi zależą wyłącznie od treningowej części foldu:
+Do badania wybrano MLP i~CatBoost oraz zbiory Credit Card Fraud, Santander Customer Satisfaction i~Amazon Employee Access. TabM pominięto, ponieważ jego natywna integracja nie ma ścieżki ważonej straty, a~jej dodanie zmieniłoby ocenianą procedurę. Klasy rzadkie to odpowiednio \texttt{Class=1}, \texttt{TARGET=1} i~\texttt{target=0}, o~częstościach około 0,17\%, 4,0\% i~5,8\%. Wagi zależą wyłącznie od treningowej części foldu:
 \begin{equation}
 w_c=\frac{N_{\mathrm{tr}}}{K n_{c,\mathrm{tr}}},
 \label{eq:wagi-klas}
 \end{equation}
-gdzie $N_{\mathrm{tr}}$ jest licznością treningu, $K$ liczbą klas, a~$n_{c,\mathrm{tr}}$ licznością klasy~$c$. Walidacja i~test zachowują oryginalny rozkład, a~metryki pozostają nieważone. Pozostałe hiperparametry pochodzą z~T badania głównego, wybranego przez maksimum ROC AUC na OOF, z~pierwszeństwem niższego indeksu przy remisie. MLP zachowuje automatyczny rozmiar partii z~wybranym mnożnikiem i~limit 100 epok z~regułą zatrzymania opisaną w~sekcji~\ref{sec:podzialy}. CatBoost kończy uczenie po 50 iteracjach bez poprawy. Wszystkie trzy ziarna wymagają wykonania bez obcięcia czasowego.
+gdzie $N_{\mathrm{tr}}$ jest licznością treningu, $K$ liczbą klas, a~$n_{c,\mathrm{tr}}$ licznością klasy~$c$. Walidacja i~test zachowują oryginalny rozkład, a~metryki pozostają nieważone. Pozostałe hiperparametry pochodzą z~T badania głównego, wybranego przez maksimum ROC AUC na OOF, z~pierwszeństwem niższego indeksu przy remisie. MLP zachowuje automatyczny rozmiar partii z~wybranym mnożnikiem i~limit 100 epok z~regułą zatrzymania opisaną w~sekcji~\ref{sec:podzialy}. CatBoost kończy uczenie po 50 iteracjach bez poprawy, jak w~badaniu głównym. Wszystkie trzy ziarna wymagają wykonania bez obcięcia czasowego.
 
 W~warunku ważonym stan modelu wybiera ważona strata walidacyjna z~wagami treningowymi, a~w~nieważonym --- strata nieważona. Dla MLP stratę ważoną dzieli się przez sumę wag przykładów walidacyjnych. Wybór kryterium ma znaczenie, ponieważ nieważona strata ocenia także przesunięcie prawdopodobieństw i~może preferować wcześniejszy stan modelu ważonego. Dlatego zapisuje się obie krzywe, a~przy dostatecznie częstej rozbieżności wyborów uruchamia kontrolę z~ważonym uczeniem i~nieważonym wyborem stanu. Porównanie to pozwala oddzielić zmianę kryterium od zmiany straty. Ocenę uzupełnia diagnostyka niestabilności, gdyż konfigurację T dobrano bez wag i~po ważeniu mogą pojawić się błędy numeryczne, wcześniejsze zatrzymanie lub większy rozrzut między ziarnami. Dokładne kryteria oraz reguły progów podano w~załączniku~\ref{app:reguly-szczegolowe}.
 
-Uporządkowanie oceniają AP, ROC AUC, korelacja rangowa Spearmana oraz udział par rzadki--częsty o~zmienionej kolejności. Odniesieniem jest zgodność predykcji między ziarnami bez ważenia. Główny próg maksymalizuje F1 na połączonych OOF osobno dla warunku i~ziarna, po czym przechodzi na średnią testowych predykcji foldów. Ocenę uzupełniają próg~0,5 oraz próg wybrany dla FPR nieprzekraczającego 1\% na OOF. Dla punktów pracy podaje się precyzję, czułość, F1, FP, FN, FPR i~udział alarmów, a~dla progu głównego także udział alarmów na OOF. Dobór progu ogranicza wpływ przesunięcia skali, lecz testowe F1 zależy również od przeniesienia progu na średnią foldów. Przy progu~0,5 ocenia się łączny skutek zmiany skali i~uporządkowania.
+Uporządkowanie oceniają AP, ROC AUC, korelacja rangowa Spearmana oraz udział par rzadki--częsty o~zmienionej kolejności. Odniesieniem jest zgodność predykcji między ziarnami bez ważenia.
+
+Trzy punkty pracy rozdzielają skutek zmiany skali od skutku zmiany uporządkowania. Główny próg maksymalizuje F1 na połączonych OOF osobno dla warunku i~ziarna, i~stosuje się go do średniej testowych predykcji foldów. Ocenę uzupełniają próg~0,5 oraz próg wybrany dla FPR nieprzekraczającego 1\% na OOF. Dla punktów pracy podaje się precyzję, czułość, F1, FP, FN, FPR i~udział alarmów, a~dla progu głównego także udział alarmów na OOF. Dobór progu ogranicza wpływ przesunięcia skali, lecz testowe F1 zależy również od przeniesienia progu na średnią foldów. Przy progu~0,5 ocenia się łączny skutek zmiany skali i~uporządkowania.
 
 Komparator bez dodatkowego uczenia ma postać
 \begin{equation}
 q(x)=\sigma\!\left(\operatorname{logit}p_u(x)+\log\frac{n_{\mathrm{cz}}}{n_{\mathrm{rz}}}\right),
 \label{eq:komparator-wazenia}
 \end{equation}
-gdzie $p_u$ oznacza nieważoną predykcję klasy rzadkiej, a~$n_{\mathrm{cz}}$ i~$n_{\mathrm{rz}}$ --- liczności klas w~części rozwojowej. Oznaczenie zachowuje sens także wtedy, gdy klasa rzadka ma kod~0. Transformacja zachowuje uporządkowanie w~dokładnej arytmetyce, co daje odniesienie dla AP i~ROC AUC. Jej ocenę uzupełniają strata logarytmiczna i~metryki przy progu~0,5. Zastosowanie korekty do średniej foldów jest przybliżeniem względem korekty przed uśrednieniem. Różnicę logitów progów zestawia się z~$\log(n_{\mathrm{cz}}/n_{\mathrm{rz}})$, a~rozkłady logitów i~udziały alarmów na OOF porównuje z~testowymi. Hipoteza zakłada większe odstępstwo od samego przesunięcia w~CatBoost niż w~MLP, ponieważ wagi mogą zmieniać wybór podziałów i~strukturę drzew.
+gdzie $p_u$ oznacza nieważoną predykcję klasy rzadkiej, a~$n_{\mathrm{cz}}$ i~$n_{\mathrm{rz}}$ --- liczności klas w~części rozwojowej. Oznaczenia odnoszą się do znaczenia klas, a~nie do ich kodów, co ma znaczenie w~danych Amazon Employee Access. Wagi straty oblicza się z~treningu foldu, a~przesunięcie komparatora z~liczności całej części rozwojowej. Transformacja zachowuje uporządkowanie w~dokładnej arytmetyce, co daje odniesienie dla AP i~ROC AUC. Jej ocenę uzupełniają strata logarytmiczna i~metryki przy progu~0,5. Zastosowanie korekty do średniej foldów jest przybliżeniem względem korekty przed uśrednieniem. Różnicę logitów progów zestawia się z~$\log(n_{\mathrm{cz}}/n_{\mathrm{rz}})$, a~rozkłady logitów i~udziały alarmów na OOF porównuje z~testowymi.
 
-Zakres obejmuje jeden schemat wag, jedną architekturę neuronową i~konfiguracje bez ponownego strojenia po ważeniu. Test zawiera 164 przykłady rzadkie w~danych transakcji kartowych, wobec 1002 w~danych klientów banku i~632 w~danych uprawnień pracowników. Przy 164 zdarzeniach w~danych transakcji kartowych ocena efektu jest szczególnie wrażliwa na wyniki pojedynczych rzadkich przypadków.
+Zakres obejmuje jeden schemat wag, jedną architekturę neuronową i~konfiguracje bez ponownego strojenia po ważeniu. Test zawiera 164 przykłady rzadkie w~danych transakcji kartowych, wobec 1002 w~danych klientów banku i~632 w~danych uprawnień pracowników, przez co ocena efektu w~pierwszym zbiorze jest szczególnie wrażliwa na wyniki pojedynczych zdarzeń.
 
 \subsection{Badanie B: regularyzacja i liczność treningu}
 \label{sec:projekt-regularyzacja}
 
-Kadra i~współautorzy~\cite{kadra2021regularization} ocenili MLP z~łącznie dobranymi technikami regularyzacji i~ich hiperparametrami. Wyniki takiej procedury uzasadniają badanie regularyzacji, lecz nie określają osobnego wkładu każdego składnika. W~badaniu głównym dropout i~zanik wag stroi się łącznie z~architekturą, tempem uczenia i~rozmiarem partii. Wynik wybranej konfiguracji nie pozwala więc przypisać poprawy konkretnemu regularyzatorowi. Aby odpowiedzieć na PB4, zaplanowano ablacje przy wspólnych pozostałych ustawieniach i~różnej liczności treningu. W~zbiorach German Credit, Ionosphere i~Bioresponse zaprojektowano układ $2\times2$: pełny MLP, wariant bez dropoutu, bez zaniku wag i~bez obu składników, przy wspólnych pozostałych parametrach. Dwa kontrasty zaniku pozwalają ocenić jego działanie z~dropoutem oraz bez niego.
+Kadra i~współautorzy~\cite{kadra2021regularization} ocenili MLP z~łącznie dobranymi technikami regularyzacji i~ich hiperparametrami. Wyniki takiej procedury uzasadniają badanie regularyzacji, lecz nie określają osobnego wkładu każdego składnika. W~badaniu głównym dropout i~zanik wag stroi się łącznie z~architekturą, tempem uczenia i~rozmiarem partii. Wynik wybranej konfiguracji nie pozwala więc przypisać poprawy konkretnemu regularyzatorowi. Aby odpowiedzieć na PB4, zaplanowano ablacje przy wspólnych pozostałych ustawieniach i~różnej liczności treningu. W~zbiorach German Credit, Ionosphere i~Bioresponse zaprojektowano układ $2\times2$: pełny MLP, wariant bez dropoutu, bez zaniku wag i~bez obu składników. Są to trzy najmniejsze zbiory badania, a~Bioresponse ma również najwięcej cech względem liczby obserwacji. Dwa kontrasty zaniku pozwalają ocenić jego działanie z~dropoutem oraz bez niego.
 
-Konfigurację odniesienia wybiera się spośród 26 kandydatów, wymagając dropoutu co najmniej~0,2 i~zaniku co najmniej~$10^{-3}$. Gdy kwalifikuje się mniej niż trzy konfiguracje, drugi próg obniża się do~$5\cdot10^{-4}$. Spośród dopuszczonych wybierana jest najmniejsza średnia ranga OOF na zbiorach badania głównego rozłącznych z~B. Remisy ocen otrzymują rangi średnie, a~remis średnich rozstrzyga niższy indeks. Progi zapewniają obecność usuwanych regularyzatorów, zaś wybór na innych zbiorach ogranicza dopasowanie procedury do zadań B. Jest to reguła wyboru odniesienia, które może zajmować dowolne miejsce w~pełnym rankingu MLP. W~obu badaniach A i~B konfiguracje wybiera się wyłącznie na podstawie walidacji badania głównego, bez użycia testu.
+Konfigurację odniesienia wybiera się spośród 26 kandydatów, wymagając dropoutu co najmniej~0,2 i~zaniku co najmniej~$10^{-3}$. Gdy kwalifikuje się mniej niż trzy konfiguracje, próg zaniku obniża się do~$5\cdot10^{-4}$. Spośród dopuszczonych wybiera się konfigurację o~najmniejszej średniej randze OOF. Do rankingu włącza się zbiory badania głównego rozłączne z~B, w~których wszyscy kandydaci zakończyli się powodzeniem przy pełnym budżecie uczenia. Remisy ocen otrzymują rangi średnie, a~remis średnich rozstrzyga niższy indeks. Progi zapewniają obecność usuwanych regularyzatorów, zaś wybór na innych zbiorach ogranicza dopasowanie procedury do zadań B. Jest to reguła wyboru odniesienia, które może zajmować dowolne miejsce w~pełnym rankingu MLP. W~obu badaniach A i~B konfiguracje wybiera się wyłącznie na podstawie walidacji badania głównego, bez użycia testu.
 
-Zagnieżdżone podzbiory obejmują 25\%, 50\% i~100\% treningu foldu, zachowując proporcje klas. W~obrębie ziarna warianty korzystają z~tych samych obserwacji, a~przekształcenia dopasowuje się na danym podzbiorze. Walidacja i~test pozostają pełne oraz niezmienione. Zmienność ziaren obejmuje więc dobór podzbioru i~losowość uczenia. Porównanie dotyczy liczności treningu, a~nie całkowitego budżetu etykietowania. Układ przedstawiono na rysunku~\ref{fig:podzbiory}, bez osobnego strojenia każdej komórki.
+Zagnieżdżone podzbiory obejmują 25\%, 50\% i~100\% treningu foldu, zachowując proporcje klas. W~obrębie ziarna warianty korzystają z~tych samych obserwacji, a~przekształcenia dopasowuje się na danym podzbiorze. Walidacja i~test pozostają pełne oraz niezmienione. Zmienność ziaren obejmuje więc dobór podzbioru i~losowość uczenia. Porównanie dotyczy liczności treningu, a~nie całkowitego budżetu etykietowania. Wspólna konfiguracja obowiązuje bez osobnego strojenia każdej komórki. Układ przedstawiono na rysunku~\ref{fig:podzbiory}.
 
 \begin{figure}[tbp]\centering\small
 \input{figures/source/zagniezdzone-podzbiory.tex}
@@ -191,27 +190,27 @@ Zagnieżdżone podzbiory obejmują 25\%, 50\% i~100\% treningu foldu, zachowują
 \label{fig:podzbiory}
 \end{figure}
 
-Partia jest stała dla zbioru: 64 dla German Credit i~Ionosphere oraz 128 dla Bioresponse. Budżet odpowiada 100 epokom pełnego treningu foldu, czyli odpowiednio 1000, 400 i~1800 aktualizacjom. Mniejsze podzbiory przechodzi się więcej razy, aby wyrównać nakład aktualizacji i~oddzielić jego wpływ od liczby przykładów. Zaokrąglenie do pełnej epoki daje 1002 kroki zamiast~1000 dla najmniejszego udziału w~danych kredytowych. Wyłączono zatrzymanie na podstawie walidacji, które wprowadzałoby dodatkowy regularyzator. Stan wybrany odpowiada pierwszemu minimum straty walidacyjnej, a~stan końcowy --- pełnemu budżetowi.
+Partia jest stała dla zbioru: 64 dla German Credit i~Ionosphere oraz 128 dla Bioresponse. Budżet odpowiada 100 epokom pełnego treningu foldu, czyli odpowiednio 1000, 400 i~1800 aktualizacjom. Dla mniejszych podzbiorów wykonuje się więcej epok, aby wyrównać nakład aktualizacji i~oddzielić jego wpływ od liczby przykładów. Zaokrąglenie do pełnej epoki daje 1002 kroki zamiast~1000 dla najmniejszego udziału w~danych kredytowych. Wyłączono zatrzymanie na podstawie walidacji, które wprowadzałoby dodatkowy regularyzator. Stan wybrany odpowiada pierwszemu minimum straty walidacyjnej, a~stan końcowy --- pełnemu budżetowi.
 
-Z~równania~\eqref{eq:adamw} wynika, że po pominięciu gradientu wagi są po $T$ krokach mnożone przez $(1-\alpha\lambda)^T$. Bezpośrednie działanie zaniku zależy zatem od iloczynu tempa uczenia, współczynnika zaniku i~liczby kroków. Nawet duże $\lambda$ może dawać małe zmniejszenie wag przy krótkim uczeniu. Dla wybranej konfiguracji czynnik oblicza się przed uczeniem w~B, a~następnie zestawia z~normą $L_2$ wszystkich parametrów, w~tym wyrazów wolnych. Porównanie obejmuje wariant pełny względem wariantu bez zaniku oraz wariant bez dropoutu względem wariantu bez obu składników, przy wspólnym ziarnie i~foldzie. Normy ocenia się dla stanu końcowego i~pomocniczo wybranego. Kryterium zgodności z~przewidywaniem ustala się po wyborze konfiguracji, przed uczeniem w~B.
+Z~równania~\eqref{eq:adamw} wynika, że po pominięciu gradientu wagi są po $T$ krokach mnożone przez $(1-\alpha\lambda)^T$. Bezpośrednie działanie zaniku zależy zatem od iloczynu tempa uczenia, współczynnika zaniku i~liczby kroków. Nawet duże $\lambda$ może dawać małe zmniejszenie wag przy krótkim uczeniu. Dla wybranej konfiguracji czynnik oblicza się przed uczeniem w~B, a~następnie zestawia z~normą $L_2$ wszystkich parametrów, w~tym wyrazów wolnych. Porównanie obejmuje wariant pełny względem wariantu bez zaniku oraz wariant bez dropoutu względem wariantu bez obu składników, przy wspólnym ziarnie i~foldzie. Normy ocenia się dla stanu końcowego i~pomocniczo wybranego. Zgodność z~przewidywaniem ocenia się za pomocą przedziału dla stosunku norm wariantu z~zanikiem do wariantu bez zaniku, wyznaczonego na podstawie przewidywanego czynnika.
 
 Luka generalizacji jest różnicą nieważonej straty walidacyjnej i~treningowej tej samej sieci w~trybie ewaluacji, z~wyłączonym dropoutem. Główna ocena luki dotyczy stanu końcowego, ponieważ wybór na walidacji może optymistycznie obciążać lukę stanu wybranego. Krzywe mają wspólną oś liczby aktualizacji, a~końcowa strata treningowa i~diagnostyka plateau służą kontroli niedouczenia. Zmniejszenie luki ocenia się łącznie z~obiema stratami i~testowym AUC, natomiast stratę testową zespołu ośmiu sieci analizuje się osobno. Luka stanu końcowego opisuje skutki pełnego budżetu uczenia, a~testowa ocena stanów wybranych obejmuje również walidacyjny wybór modelu do predykcji. Test Ionosphere liczy 117 obserwacji, wobec 334 dla German Credit i~1251 dla Bioresponse, co zwiększa znaczenie historii uczenia i~niepewności na najmniejszym zbiorze.
 
 \subsection{Analiza porównawcza i niepewność}
 \label{sec:analiza-plan}
 
-Pytaniom badawczym przyporządkowano porównania z~tabeli~\ref{tab:pytania-analiza}. Główny panel zestawia T dziesięciu metod strojonych z~odrębnie oznaczonym D stałego TabPFN. Każdy wynik należy do określonego zadania, metryki i~warunku.
+Pytaniom badawczym przyporządkowano porównania z~tabeli~\ref{tab:pytania-analiza}. Główne zestawienie obejmuje T dziesięciu metod strojonych z~odrębnie oznaczonym D stałego TabPFN.
 
 \begin{table}[tbp]
 \centering\small
 \caption{Powiązanie pytań badawczych z~porównaniami i~jednostkami analizy.}
 \label{tab:pytania-analiza}
-\begin{tabularx}{\linewidth}{P{0.09\linewidth}YY}
+\begin{tabularx}{\linewidth}{@{}P{0.09\linewidth}YY@{}}
 \toprule
 Pytanie & Porównanie i~miara & Jednostka i~granica wniosku \\
 \midrule
-PB1 & Wyniki wszystkich metod; kontrasty między procedurami & Zbiór; celowo wybrane zadania \\
-PB2 & D--T i~T--T+E; zmiana metryki oraz koszt & Ta sama para zbiór--metoda \\
+PB1 & Wyniki wszystkich metod, kontrasty między procedurami & Zbiór, celowo wybrane zadania \\
+PB2 & D--T i~T--T+E, zmiana metryki oraz koszt & Ta sama para zbiór--metoda \\
 PB3 & Ważenie i~przesunięcie logitu względem kontroli, AP, korelacja rangowa, próg F1 z~OOF i~próg 0,5 & Sparowane ziarna w~trzech zadaniach \\
 PB4 & Warianty $2\times2$ względem pełnej konfiguracji, AUC, strata, luka po budżecie i~norma parametrów & Wspólny podzbiór i~ziarno w~trzech zadaniach \\
 PB5 & Jakość oraz rozdzielone składniki kosztu & Zadanie, procedura i~określony sprzęt \\
@@ -219,21 +218,21 @@ PB5 & Jakość oraz rozdzielone składniki kosztu & Zadanie, procedura i~określ
 \end{tabularx}
 \end{table}
 
-Wybrano trzy kontrasty w~warunku~T: RealMLP\allowbreak{}--\allowbreak{}CatBoost, TabM\allowbreak{}--\allowbreak{}CatBoost i~ModernNCA\allowbreak{}--\allowbreak{}KNN. Dodatnia różnica oznacza korzyść pierwszej metody: $\Delta_{\mathrm{AUC}}=\mathrm{AUC}_A-\mathrm{AUC}_B$ oraz $\Delta_{\log}=L_{\log,B}-L_{\log,A}$. Korzyść ze strojenia i~łączenia konfiguracji opisują zmiany T względem D i~T+E względem T. Analiza jest opisowa: obejmuje różnice zadaniowe, medianę i~zakres, osobno dla AUC i~straty. Liczba kompletnych par i~nazwy pominiętych zadań określają zakres każdego porównania. Nie przewidziano testów istotności między zadaniami.
+Wybrano trzy kontrasty w~warunku~T: RealMLP\allowbreak{}--\allowbreak{}CatBoost, TabM\allowbreak{}--\allowbreak{}CatBoost i~ModernNCA\allowbreak{}--\allowbreak{}KNN. RealMLP i~TabM reprezentują dwa kierunki rozwoju sieci gęstych zestawione z~silnym odniesieniem drzewiastym, a~ModernNCA --- wyuczone sąsiedztwo porównywane z~klasycznym. Kontrast ModernNCA--KNN dotyczy całych procedur: KNN w~zadaniach IID dopasowuje przygotowanie cech i~model na całej części rozwojowej oraz z~tego jednego modelu wyznacza predykcję testową, natomiast ModernNCA uśrednia osiem modeli foldów. Dodatnia różnica oznacza korzyść pierwszej metody: $\Delta_{\mathrm{AUC}}=\mathrm{AUC}_{M_1}-\mathrm{AUC}_{M_2}$ oraz $\Delta_{\log}=L_{\log,M_2}-L_{\log,M_1}$. Korzyść ze strojenia i~łączenia konfiguracji opisują zmiany T względem D i~T+E względem T. Analiza jest opisowa: obejmuje różnice zadaniowe, medianę i~zakres, osobno dla AUC i~straty. Liczba kompletnych par i~nazwy pominiętych zadań określają zakres każdego porównania. Nie przewidziano testów istotności między zadaniami, ponieważ dwanaście celowo dobranych zbiorów nie jest próbą losową z~populacji problemów tabelarycznych, a~mała liczba zadań ogranicza moc porównań rangowych.
 
 Pomocniczy ranking obejmuje wspólne przecięcie zadań z~kompletem porównywanych wyników, oddzielnie dla klasyfikacji binarnej i~wieloklasowej. Remisy otrzymują rangi średnie, a~średnią rangę podaje się wraz z~licznością i~składem przecięcia, bez zastępowania braków ostatnim miejscem. Ranking uzupełnia oceny zadaniowe, gdyż jednakowe różnice rang mogą odpowiadać różnym różnicom jakości.
 
 Niepewność kontrastów i~zmian D--T oraz T--T+E opisuje sparowany bootstrap zapisanych predykcji: 2000 replik, ziarno~42 i~przedział percentylowy 95\%. Dla podziałów po wierszach losowanie ze zwracaniem odbywa się osobno w~każdej klasie. W~zbiorze Diabetes 130-US losuje się pacjentów wraz ze wszystkimi pobytami, bez warstwowania według etykiety pobytu. Te same repliki służą obu procedurom, przy ustalonych konfiguracjach i~wagach zespołu.
 
-Przedziały są warunkowe względem modeli i~podziału, a~przy warstwowaniu również liczności klas. Nie obejmują zmienności ponownego strojenia ani podziału zewnętrznego. W~zbiorach Amazon Employee Access i~Covertype dodatkowym ograniczeniem jest przybliżenie niezależności wierszy, nieuwzględniające zależności encji i~przestrzeni. Reguły analizy ustala się przed porównaniem wyników testowych metod. Dla A i~B zamrożenie reguł poprzedza pierwszy odczyt ich wyników testowych.
+Przedziały są warunkowe względem modeli i~podziału, a~przy warstwowaniu również liczności klas. Nie obejmują zmienności ponownego strojenia ani podziału zewnętrznego. W~zbiorach Amazon Employee Access i~Covertype dodatkowym ograniczeniem jest przybliżenie niezależności wierszy, nieuwzględniające zależności encji i~przestrzeni. Wybór konfiguracji i~wag zespołu korzysta wyłącznie z~wyników walidacyjnych, a~etykiety testowe służą jedynie ocenie. Reguły analizy badań A i~B ustalono przed rozpoczęciem ich uczenia.
 
-W~A i~B punktem wyjścia są trzy sparowane różnice, których średnia opisuje efekt interwencji, a~zakres pokazuje jego zmienność między ziarnami. Przedział dla średniej wyznacza się z~2000 wspólnych replik testu, losowanych w~obrębie klas z~ziarnem~42, tak aby wszystkie warunki i~ziarna oceniano na tych samych obserwacjach. Raportuje się przedział percentylowy 95\%, zachowując progi wybrane na OOF. Analiza ma charakter opisowy, bez testów istotności.
+W~A i~B punktem wyjścia są trzy sparowane różnice, których średnia opisuje efekt interwencji, a~zakres pokazuje jego zmienność między ziarnami. Przedział dla średniej wyznacza się z~2000 wspólnych replik testu, losowanych w~obrębie klas z~ziarnem~42, tak aby wszystkie warunki i~ziarna oceniano na tych samych obserwacjach. Raportuje się przedział percentylowy 95\%, zachowując progi wybrane na OOF.
 
 W~A główny kontrast zestawia ważenie z~brakiem wag, a~warunkowo także ważenie z~kontrolą oraz kontrolę z~brakiem wag. W~B porównuje się wariant pełny z~wariantami bez dropoutu i~bez zaniku, a~wariant bez dropoutu z~wariantem bez obu składników, bez odrębnego testu interakcji.
 
 Każda analiza uwzględnia braki i~awarie, ponieważ kompletne pary mogą pomijać najtrudniejsze zadania. Nieudanym uruchomieniom nie przypisuje się metryk. Znaczenie praktyczne różnic ocenia się na właściwej skali, wraz z~niepewnością i~kosztem. Bez kosztów aplikacyjnych nie ustalono wspólnej granicy użyteczności dla AUC, AP i~straty.
 
-\subsection{Koszt obliczeń i odtwarzalność}
+\subsection{Koszt obliczeń i skala badania}
 \label{sec:koszt-metodyka}
 
 Jedno zadanie konfiguracji oznacza ocenę pojedynczego zestawu hiperparametrów na ośmiu foldach, z~wyjątkami KNN i~stałego TabPFN opisanymi wcześniej. Dziesięć metod strojonych i~TabPFN dają łącznie $12\cdot10\cdot26+12=3132$ takich zadań. Nominalną skalę zestawiono w~tabeli~\ref{tab:skala-badania}, bez powtórzeń po awariach.
@@ -242,7 +241,7 @@ Jedno zadanie konfiguracji oznacza ocenę pojedynczego zestawu hiperparametrów 
 \centering\small
 \caption{Nominalna skala badania głównego i~badań uzupełniających.}
 \label{tab:skala-badania}
-\begin{tabularx}{\linewidth}{Yrr}
+\begin{tabularx}{\linewidth}{@{}Yrr@{}}
 \toprule
 Zakres & Jednostka & Liczba \\
 \midrule
@@ -258,9 +257,9 @@ Badanie B & Dopasowania GPU & 864 \\
 \end{tabularx}
 \end{table}
 
-Stała inferencja TabPFN należy do zadań konfiguracji, lecz nie do dopasowań sieci w~foldach. Badania uzupełniające dodają 1008 dopasowań neuronowych i~144 dopasowania CatBoost na CPU. Warunkowa kontrola A zwiększa zakres najwyżej o~18 ocen, czyli po~72 dopasowania GPU i~CPU. Komparator przesunięcia działa na gotowych predykcjach.
+Stałą inferencję TabPFN wlicza się do zadań konfiguracji, lecz nie do dopasowań sieci w~foldach. Badania uzupełniające dodają 1008 dopasowań neuronowych i~144 dopasowania CatBoost na CPU. Warunkowa kontrola A zwiększa zakres najwyżej o~18 ocen, czyli po~72 dopasowania GPU i~CPU. Komparator przesunięcia działa na gotowych predykcjach.
 
-Warunki D, T i~T+E współdzielą koszt wyszukiwania, dlatego rozlicza się go tylko raz. Oddzielnie podaje się czas dopasowania, rzeczywisty czas prób i~koszt predykcji. Sześć uczonych metod neuronowych korzysta z~GPU, a~odniesienia konwencjonalne z~CPU. Odtworzenie oceny wymaga identyfikacji danych, zależności i~sprzętu. Granice pomiarów czasu i~pamięci, w~tym odrębność pomiaru inferencji, opisano w~sekcji~\ref{sec:pomiary-platformy}.
+Warunki D, T i~T+E współdzielą koszt wyszukiwania, dlatego rozlicza się go tylko raz. Oddzielnie podaje się czas dopasowania, rzeczywisty czas prób i~koszt predykcji. Sześć uczonych metod neuronowych korzysta z~GPU, a~odniesienia konwencjonalne z~CPU. Odtworzenie oceny wymaga identyfikacji danych, zależności i~sprzętu. Granice pomiarów czasu i~pamięci, w~tym brak pomiaru pamięci podczas predykcji, opisano w~sekcji~\ref{sec:pomiary-platformy}.
 
 \subsection{Ograniczenia protokołu}
 \label{sec:ograniczenia-badania}

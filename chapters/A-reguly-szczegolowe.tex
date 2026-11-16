@@ -179,7 +179,7 @@ Wariant podstawowy i~rozszerzony wybiera się z~prawdopodobieństwem $1/2$. Waru
 \texttt{num\_emb\_type} & plr & stała \\
 \texttt{num\_emb\_lite} & tak & stała \\
 \texttt{batch\_size} & auto & stała reguła automatyczna \\
-\texttt{n\_epochs} & 200 & stała \\
+\texttt{n\_epochs} & 200 & maksimum, zatrzymanie po ponad 20 epokach bez poprawy \\
 \bottomrule\end{tabularx}\end{minipage}\par\medskip
 
 \par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
@@ -236,7 +236,7 @@ Braki występują w~trzech zbiorach: Adult (trzy kolumny), HIGGS (dziewięć) i~
 
 Amazon Employee Access nie zawiera braków ani duplikatów wierszy. Wszystkie dziewięć cech jest kategorycznych, a~największa liczba kategorii jednej cechy wynosi 7\,518. Diabetes 130-US obejmuje 71\,518 pacjentów, co uzasadnia podział grupowy opisany w~sekcji~\ref{sec:podzialy}.
 
-Przyjęto zachowanie duplikatów i~stałych kolumn we wszystkich zbiorach, bez dodatkowej deduplikacji ani ręcznego usuwania cech. Decyzja obejmuje również 9\,144 duplikaty cech w~Credit Card Fraud i~34 stałe kolumny w~Santander Customer Satisfaction. Dane traktuje się jako pełne źródło obserwacji, bez rozstrzygania na podstawie samej powtarzalności, czy dany przypadek jest błędem rejestracji. Przetwarzanie wykonywane przez poszczególne metody pozostaje częścią porównywanych procedur. Ocena odnosi się zatem do źródłowych populacji wierszy, z~zachowaniem występujących w~nich powtórzeń.
+Przyjęto zachowanie duplikatów i~stałych kolumn we wszystkich zbiorach, bez dodatkowej deduplikacji ani ręcznego usuwania cech. Decyzja obejmuje również 9\,144 duplikaty cech w~Credit Card Fraud i~34 stałe kolumny w~Santander Customer Satisfaction. Dane traktuje się jako pełne źródło obserwacji, bez rozstrzygania na podstawie samej powtarzalności, czy dany przypadek jest błędem rejestracji. Przed dopasowaniem modelu AutoGluon usuwa kolumny stałe w~treningu foldu lub w~podzbiorze treningowym badania~B. To przetwarzanie pozostaje częścią porównywanych procedur. Ocena odnosi się zatem do źródłowych populacji wierszy, z~zachowaniem występujących w~nich powtórzeń.
 
 Kontrola zgodności podziałów obejmuje przypadki wspólne między częściami podziału, rozłączność pacjentów w~danych szpitalnych, jednokrotny udział każdej obserwacji w~walidacji, a~dla Amazon Employee Access także powtarzalność encji między częściami.
 
@@ -247,7 +247,7 @@ Alarm dla klasy rzadkiej oznacza $p\geq t$. Kandydatami na próg są środki mi�
 
 Dla pomocniczego punktu FPR~1\% wybiera się najmniejszy próg z~tej samej rodziny, dla którego $\mathrm{FP}\leq\lfloor n_{\mathrm{cz,OOF}}/100\rfloor$. Równe wyniki otrzymują jednakową decyzję. Testowe FPR może przekroczyć 1\%, ponieważ próg pochodzi z~OOF, a~predykcja testowa ze średniej foldów. Punkt ten nie określa optymalnej decyzji wdrożeniowej bez kosztów błędów.
 
-Przy braku alarmów i~obecności rzadkich przykładów precyzja jest nieokreślona, a~czułość i~F1 wynoszą~0. F1 ma brak wartości dopiero przy zerowym mianowniku swojej definicji. W~korelacji Spearmana remisy otrzymują rangi średnie, a~stała predykcja pozostawia korelację nieokreśloną. Dla pary rzadki--częsty przeciwnym ścisłym porządkom przypisuje się~1, zmianie remisu na ścisły porządek lub odwrotnie --- $1/2$, a~zgodnym porządkom i~obustronnym remisom ---~0. Sumę dzieli się przez $n_{\mathrm{rz}}n_{\mathrm{cz}}$.
+Poniższa konwencja dotyczy analizy A i~B, natomiast raport badania głównego przypisuje precyzji, czułości i~F1 wartość zero przy zerowym mianowniku. Przy braku alarmów i~obecności rzadkich przykładów precyzja jest nieokreślona, a~czułość i~F1 wynoszą~0. F1 ma brak wartości dopiero przy zerowym mianowniku swojej definicji. W~korelacji Spearmana remisy otrzymują rangi średnie, a~stała predykcja pozostawia korelację nieokreśloną. Dla pary rzadki--częsty przeciwnym ścisłym porządkom przypisuje się~1, zmianie remisu na ścisły porządek lub odwrotnie --- $1/2$, a~zgodnym porządkom i~obustronnym remisom ---~0. Sumę dzieli się przez $n_{\mathrm{rz}}n_{\mathrm{cz}}$.
 
 Komparator oblicza się numerycznie jako $q=rp/(1-p+rp)$, gdzie $r=n_{\mathrm{cz}}/n_{\mathrm{rz}}$, zachowując końce 0 i~1. Zmiany remisów wskutek zaokrągleń wymagają odnotowania, gdyż niezmienność AP i~AUC dotyczy dokładnej arytmetyki. Transformacja progu tą samą funkcją zachowuje decyzje, ale ponowny wybór środka między przekształconymi wynikami może zmienić decyzje dla nowych obserwacji. Dla progów poza otwartym przedziałem $(0,1)$ logity i~ich różnice pozostają nieokreślone.
 

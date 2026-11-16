@@ -40,7 +40,11 @@ Zapisane znaczniki wskazują 80 udanych konfiguracji zawierających łącznie 43
 
 Sumy kontrolne danych w~132 rekordach źródłowych są zgodne z~profilem dwunastu zbiorów przedstawionym w~załączniku~\ref{app:audyt}. Każdy zbiór ma jedną tożsamość podziału wspólną dla wszystkich jedenastu metod. Potwierdza to zgodność identyfikatorów wejścia i~podziału w~eksporcie. Kontrola rozłączności pacjentów i~pokrycia OOF na poziomie obserwacji wymaga pierwotnych indeksów.
 
-Zestawienie łączy trzy wersje źródeł wykonawczych, obejmujące odpowiednio 70, 50 i~12 par zbiór--metoda. Wybór źródła opierał się na kolejności uruchomień, bez selekcji według metryk testowych. Sam eksport nie rozstrzyga zgodności zachowania tych wersji. \textbf{Do uzupełnienia:} zestawienie zmian między wersjami, potwierdzenie ich wpływu na procedury, rzeczywiste daty wykonania, sprzęt oraz historia ponowień. Odrębnie pozostaje do potwierdzenia wcześniejszy dostęp do wyników testowych, wskazany na początku sekcji.
+Wyniki scalono osobno dla każdej pary zbiór--metoda, wybierając uruchomienie o~najpóźniejszym czasie pierwszej próby, bez selekcji według metryk testowych. Wybrane uruchomienie musiało zawierać zakończone próby wszystkich kandydatów i~udaną konfigurację domyślną. Niekompletność nowszego źródła uniemożliwiała scalenie, bez powrotu do starszego. Warunki D, T i~T+E danej pary pochodzą z~tego samego źródła.
+
+Zestawienie łączy trzy wersje kodu. Pierwsza obejmuje 70 par: regresję logistyczną, KNN, XGBoost, CatBoost, RealMLP, ModernNCA i~TabM na dziesięciu zbiorach, których nie dotyczyły późniejsze zmiany obcinania budżetu i~doboru partii w~lokalnych sieciach. Wersja z~automatycznym doborem partii dostarczyła 12 par lokalnych MLP, FT-Transformera i~TabNet na czterech małych zbiorach, a~wersja końcowa --- 50 par obejmujących jedenaście metod. Zastąpiono 30 wcześniejszych wyników par zbiór--metoda. Ostatni przebieg, TabPFN dla Covertype, zakończono 16 listopada 2026~r.
+
+Od 9 listopada pracowało sześć równoległych procesów roboczych na współdzielonym GPU, bez rejestracji obciążenia urządzenia, a~komunikat braku pamięci podczas dopasowania RealMLP wymieniał dwanaście innych procesów na GPU~0. Stanowisko opisano w~sekcji~\ref{sec:wykonanie-kampanii}.
 
 \subsection{Jakość na poszczególnych zadaniach}
 \label{sec:wyniki-zadania}

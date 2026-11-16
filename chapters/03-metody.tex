@@ -47,7 +47,7 @@ Jako odniesienie dla rozbudowanych modeli wybrano regresję logistyczną, aby oc
 
 Podobieństwo do znanych przykładów stanowi alternatywę dla uczenia jednej parametrycznej reguły decyzyjnej. W~KNN zależy ono od metryki zadanej przestrzeni, a~liczba sąsiadów określa skalę uśredniania etykiet~\cite{cover1967nearest,sklearnNeighbors}. O~tym, które obserwacje znajdą się blisko siebie, rozstrzygają zatem także skalowanie i~kodowanie cech. Przy pełnym kodowaniu zero-jedynkowym bez dodatkowego skalowania dwa różne poziomy jednej cechy wnoszą do kwadratu odległości euklidesowej dokładnie~2. Tak zadana geometria traktuje pary różnych kategorii jednakowo.
 
-W~pracy nominalne kategorie KNN mają ustalone kodowanie zero-jedynkowe. Zestawienie z~ModernNCA pozwala ocenić, czy koszt uczenia przestrzeni podobieństwa i~zmiany agregacji znajduje uzasadnienie w~jakości predykcji. Dla obu metod, obok kosztu dopasowania, uwzględnia się koszt przechowywania i~odpytywania zbioru przykładów odniesienia. Sposób walidacji KNN, w~tym odrębne traktowanie powtarzających się pobytów pacjentów w~Diabetes, opisano w~sekcji~\ref{sec:przygotowanie-procedura}.
+W~pracy nominalne kategorie KNN mają ustalone kodowanie zero-jedynkowe. Zestawienie z~ModernNCA pozwala ocenić, czy koszt uczenia przestrzeni podobieństwa i~zmiany agregacji znajduje uzasadnienie w~jakości predykcji. Dla obu metod, obok kosztu dopasowania, uwzględnia się koszt przechowywania i~odpytywania zbioru przykładów odniesienia. Sposób walidacji KNN, w~tym odrębne traktowanie powtarzających się pobytów pacjentów w~Diabetes, opisano w~sekcji~\ref{sec:podzialy}.
 
 \subsubsection{XGBoost}
 \label{sec:xgboost}
