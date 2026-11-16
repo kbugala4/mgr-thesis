@@ -2,7 +2,7 @@
 \section{Wyniki badania porównawczego}
 \label{chap:wyniki}
 
-\textbf{Status rozdziału: szkielet do uzupełnienia po eksperymentach.} Nie zawiera wyników końcowej kampanii. Tabele są pustymi formularzami prezentacji, a~ramki wskazują docelowe ścieżki wykresów. Brak wartości nie oznacza zera, awarii ani niewykrycia różnicy. Po wykonaniu badania należy zastąpić instrukcje redakcyjne opisem obserwacji i~podać identyfikator uruchomienia oraz wersję analizy.
+Badanie główne zakończono dla dwunastu zbiorów i~jedenastu metod. Poniżej przedstawiono kompletność wykonania i~wyniki punktowe z~końcowego eksportu. Pozostałe analizy, w~tym niepewność oparta na predykcjach i~szczegółowe pomiary sprzętu, wymagają uzupełnienia na podstawie pierwotnych artefaktów.
 
 \subsection{Kompletność wykonania i odstępstwa}
 \label{sec:wyniki-kompletnosc}
@@ -10,62 +10,108 @@
 
 \textbf{Do uzupełnienia:} data i~identyfikator zatwierdzenia reguł analizy badania głównego oraz zgodna wersja analizy. Ustalić, czy przed ich zatwierdzeniem oglądano częściowe raporty z~metrykami testowymi i~jakich metod dotyczyły. Nie utożsamiać zatwierdzenia przed porównaniem wyników z~zatwierdzeniem przed automatycznym obliczeniem metryk testowych.
 
-\textbf{Do uzupełnienia:} daty kampanii, wersje kodu i~danych oraz konfiguracja sprzętu oraz liczby wykonanych, udanych, nieudanych i~przerwanych prób. Punktem odniesienia są nominalne liczby z~sekcji~\ref{sec:koszt-metodyka}, a~nie założenie pełnego sukcesu. Tabelę~\ref{tab:wyniki-pokrycie} należy rozwinąć dla każdej pary zbiór--metoda. Osobno wskazać stały TabPFN, dla którego planowana jest jedna konfiguracja i~wyłącznie D.
+Końcowe zestawienie zawiera 372 unikalne wyniki dla 132 par zbiór--metoda: po trzy warunki dla dziesięciu metod strojonych i~wyłącznie D dla TabPFN-3.5. Spośród 3132 nominalnych zadań konfiguracji 3097 zakończyło się powodzeniem, a~35 zakończyło się niepowodzeniem. Niepowodzenia dotyczą konfiguracji losowych i~nie powodują braku całych par zbiór--metoda. Wszystkie warunki raportowania przewidziane w~protokole są dostępne.\footnote{Podstawa zestawienia: końcowy eksport \texttt{final\_summary.csv}, SHA-256: \path{81797f29ee33bae270468320fe3c92b073d82a4d66da1038c565f8024272ca17}, oraz \texttt{final\_sources.csv}, SHA-256: \path{c5681fa9cbba83445385a76c80d70df32fe8b5044b9e4148e87b5a3183c6813d}.}
 
-\begin{table}[tbp]
-\centering\small
-\caption{Formularz kompletności kampanii; brak danych z~końcowego wykonania. Liczba kandydatów dotyczy różnych konfiguracji, a~nie liczby ponowionych prób.}
+\begin{table}[tbp]\centering\small
+\caption{Kompletność badania głównego według metod. Liczby dotyczą konfiguracji w~wybranych uruchomieniach, bez sumowania wcześniejszych ponowień.}
 \label{tab:wyniki-pokrycie}
-\begin{tabularx}{\linewidth}{YYYYY}
+\begin{tabularx}{\linewidth}{@{}Yrrrr@{}}
 \toprule
-Zbiór i~metoda & Planowane konfiguracje & Udane konfiguracje & Awarie i~przerwania & Dostępne warunki \\
+Metoda & Plan & Udane & Nieudane & \shortstack{Oznaczone jako\\skrócone} \\
 \midrule
-\multicolumn{5}{c}{Do uzupełnienia na podstawie indeksu, statusów i~historii prób.} \\
-\bottomrule
-\end{tabularx}
-\end{table}
+MLP & 312 & 312 & 0 & 12 \\
+TabNet & 312 & 312 & 0 & 15 \\
+FT-Transformer & 312 & 312 & 0 & 53 \\
+RealMLP & 312 & 311 & 1 & 0 \\
+ModernNCA & 312 & 312 & 0 & 0 \\
+TabM & 312 & 312 & 0 & 0 \\
+TabPFN-3.5 & 12 & 12 & 0 & 0 \\
+Regresja logistyczna & 312 & 312 & 0 & 0 \\
+KNN & 312 & 282 & 30 & 0 \\
+XGBoost & 312 & 312 & 0 & 0 \\
+CatBoost & 312 & 308 & 4 & 0 \\
+\midrule
+Łącznie & 3132 & 3097 & 35 & 80 \\
+\bottomrule\end{tabularx}\end{table}
 
-Należy opisać przyczyny braków, powtórzenia i~odstępstwa od zamrożonego protokołu. Nie zastępować braków arbitralnie niską metryką. Dla każdej analizy na podzbiorze kompletnych par podać jego skład oraz mianownik; wskazać, czy wykluczenia koncentrują się na trudniejszych zadaniach.
+W~34 przypadkach przyczyną niepowodzenia był limit czasu, a~w~jednym brak pamięci. KNN miał po dziesięć nieudanych konfiguracji dla Covertype, Amazon Employee Access i~Diabetes 130-US, CatBoost cztery dla Helena, a~RealMLP jedną dla Bioresponse. Wyników tych konfiguracji nie zastąpiono zerowymi metrykami. Zbiór kandydatów dostępnych dla T i~T+E jest więc w~tych parach mniejszy od nominalnych 26.
+
+Zapisane znaczniki wskazują 80 udanych konfiguracji zawierających łącznie 436 foldów skróconych czasowo. Dotyczy to 53 konfiguracji FT-Transformera, 15 TabNet i~12 MLP. Są to liczby jawnie oznaczonych przebiegów, a~nie dowód braku ograniczenia czasem w~pozostałych metodach. Zgodnie z~protokołem poprawnie zatrzymane konfiguracje pozostały w~puli wyboru.
+
+Sumy kontrolne danych w~132 rekordach źródłowych są zgodne z~profilem dwunastu zbiorów przedstawionym w~załączniku~\ref{app:audyt}. Każdy zbiór ma jedną tożsamość podziału wspólną dla wszystkich jedenastu metod. Potwierdza to zgodność identyfikatorów wejścia i~podziału w~eksporcie. Kontrola rozłączności pacjentów i~pokrycia OOF na poziomie obserwacji wymaga pierwotnych indeksów.
+
+Zestawienie łączy trzy wersje źródeł wykonawczych, obejmujące odpowiednio 70, 50 i~12 par zbiór--metoda. Wybór źródła opierał się na kolejności uruchomień, bez selekcji według metryk testowych. Sam eksport nie rozstrzyga zgodności zachowania tych wersji. \textbf{Do uzupełnienia:} zestawienie zmian między wersjami, potwierdzenie ich wpływu na procedury, rzeczywiste daty wykonania, sprzęt oraz historia ponowień. Odrębnie pozostaje do potwierdzenia wcześniejszy dostęp do wyników testowych, wskazany na początku sekcji.
 
 \subsection{Jakość na poszczególnych zadaniach}
 \label{sec:wyniki-zadania}
 
-\textbf{Do uzupełnienia:} wyniki wszystkich jedenastu procedur, bez wyboru przedstawiciela rodziny według testu. Panel główny obejmie T oraz odrębnie oznaczony stały TabPFN, zgodnie z~sekcją~\ref{sec:analiza-plan}. Tabele~\ref{tab:wyniki-binarne} i~\ref{tab:wyniki-wieloklasowe} celowo rozdzielają metryki o~różnych skalach i~kierunkach poprawy. Pełne D, T i~T+E oraz metryki pomocnicze należy udostępnić w~załączniku.
+W~tabelach~\ref{tab:wyniki-binarne} i~\ref{tab:wyniki-wieloklasowe} podano wyniki T, z~wyjątkiem stałego TabPFN-3.5 ocenianego w~D. Konfiguracje wybrano na walidacji, a~wartości w~tabelach dotyczą testu zewnętrznego. Są to oszacowania punktowe, bez wyznaczonych jeszcze przedziałów bootstrapowych.
 
-\begin{table}[tbp]
-\centering\small
-\caption{Formularz wyników dziewięciu zadań binarnych. ROC AUC: większa wartość oznacza lepszą jakość. Brak pomiarów.}
+\begin{table}[tbp]\centering\footnotesize
+\caption{Testowe ROC AUC, pierwsza grupa zadań binarnych. Większa wartość jest korzystniejsza.}
 \label{tab:wyniki-binarne}
-\begin{tabularx}{\linewidth}{YYYY}
-\toprule
-Zbiór & Metoda i~warunek & Testowe ROC AUC & Liczba obserwacji testowych \\
+\begin{tabularx}{\linewidth}{@{}Yrrrr@{}}
+\toprule Metoda & Adult & \shortstack{Credit Card\\Fraud} & HIGGS & \shortstack{Amazon Employee\\Access} \\
 \midrule
-\multicolumn{4}{c}{Do uzupełnienia z~wyrównanych predykcji i~raportu kampanii.} \\
-\bottomrule
-\end{tabularx}
-\end{table}
+MLP & 0,9141 & 0,9768 & 0,8087 & 0,8228 \\
+TabNet & 0,9141 & 0,9755 & 0,8099 & 0,8243 \\
+FT-Transformer & 0,9170 & 0,9825 & 0,8176 & 0,8481 \\
+RealMLP & 0,9301 & 0,9839 & 0,8212 & 0,8600 \\
+ModernNCA & 0,9287 & 0,9832 & 0,8209 & 0,8615 \\
+TabM & 0,9268 & 0,9809 & 0,8238 & 0,8419 \\
+TabPFN-3.5 & 0,9328 & 0,9889 & 0,8291 & 0,8693 \\
+Regresja logistyczna & 0,9058 & 0,9839 & 0,6791 & 0,8504 \\
+KNN & 0,8879 & 0,9602 & 0,7355 & 0,8250 \\
+XGBoost & 0,9279 & 0,9822 & 0,8125 & 0,8311 \\
+CatBoost & 0,9288 & 0,9824 & 0,8088 & 0,8728 \\
+\bottomrule\end{tabularx}\end{table}
 
-\begin{table}[tbp]
-\centering\small
-\caption{Formularz wyników Covertype, Diabetes i~Heleny. Strata logarytmiczna: mniejsza wartość oznacza lepszą jakość. Brak pomiarów.}
-\label{tab:wyniki-wieloklasowe}
-\begin{tabularx}{\linewidth}{YYYY}
-\toprule
-Zbiór & Metoda i~warunek & Testowa strata logarytmiczna & Liczba obserwacji testowych \\
+\begin{table}[tbp]\centering\footnotesize
+\caption{Testowe ROC AUC, pozostałe zadania binarne. Większa wartość jest korzystniejsza.}
+\label{tab:wyniki-binarne-dalsze}
+\begin{tabularx}{\linewidth}{@{}Yrrrrr@{}}
+\toprule Metoda & \shortstack{Santander\\Customer\\Satisfaction} & \shortstack{Online\\Shoppers} & \shortstack{German\\Credit} & Ionosphere & Bioresponse \\
 \midrule
-\multicolumn{4}{c}{Do uzupełnienia; zachować mapowanie i~kolejność klas.} \\
-\bottomrule
-\end{tabularx}
-\end{table}
+MLP & 0,8181 & 0,9236 & 0,7595 & 0,9810 & 0,8585 \\
+TabNet & 0,8205 & 0,9339 & 0,7497 & 0,9787 & 0,8485 \\
+FT-Transformer & 0,8286 & 0,9351 & 0,7496 & 0,9724 & 0,8463 \\
+RealMLP & 0,8381 & 0,9374 & 0,7606 & 0,9797 & 0,8644 \\
+ModernNCA & 0,8343 & 0,9356 & 0,7471 & 0,9752 & 0,8604 \\
+TabM & 0,8386 & 0,9376 & 0,7596 & 0,9860 & 0,8679 \\
+TabPFN-3.5 & 0,8425 & 0,9418 & 0,7851 & 0,9829 & 0,8814 \\
+Regresja logistyczna & 0,7966 & 0,9015 & 0,7632 & 0,9390 & 0,8511 \\
+KNN & 0,8092 & 0,8653 & 0,7541 & 0,9578 & 0,8382 \\
+XGBoost & 0,8372 & 0,9364 & 0,7628 & 0,9867 & 0,8777 \\
+CatBoost & 0,8367 & 0,9349 & 0,7717 & 0,9851 & 0,8734 \\
+\bottomrule\end{tabularx}\end{table}
+
+\begin{table}[tbp]\centering\footnotesize
+\caption{Testowa strata logarytmiczna dla zadań wieloklasowych. Mniejsza wartość jest korzystniejsza.}
+\label{tab:wyniki-wieloklasowe}
+\begin{tabularx}{\linewidth}{@{}Yrrr@{}}
+\toprule Metoda & Covertype & Diabetes 130-US & Helena \\
+\midrule
+MLP & 0,1347 & 0,8593 & 2,4957 \\
+TabNet & 0,2688 & 0,8779 & 2,5730 \\
+FT-Transformer & 0,0755 & 0,8595 & 2,4878 \\
+RealMLP & 0,0583 & 0,8516 & 2,4465 \\
+ModernNCA & 0,0630 & 0,8600 & 2,4590 \\
+TabM & 0,0633 & 0,8605 & 2,4906 \\
+TabPFN-3.5 & 0,0451 & 0,8429 & 2,2866 \\
+Regresja logistyczna & 0,6304 & 0,8680 & 2,8927 \\
+KNN & 0,2221 & 0,9037 & 3,2046 \\
+XGBoost & 0,0903 & 0,8559 & 2,6065 \\
+CatBoost & 0,1133 & 0,8524 & 2,5709 \\
+\bottomrule\end{tabularx}\end{table}
 
 \subsection{Uprzednio ustalone kontrasty}
 \label{sec:wyniki-kontrasty}
 
-\textbf{Do uzupełnienia po zamrożeniu analizy:} różnice RealMLP--CatBoost, TabM--CatBoost i~ModernNCA--KNN na każdym zadaniu, z~kierunkiem korzyści ustalonym w~sekcji~\ref{sec:analiza-plan}. Wskazać zakres niepewności, remisy, braki i~liczbę kompletnych porównań. Jeżeli zastosowano testy, podać wartości surowe i~skorygowane oraz uzasadnienie ich założeń. Nie interpretować braku istotności jako równoważności.
+\textbf{Do uzupełnienia po zamrożeniu analizy:} różnice RealMLP--CatBoost, TabM--CatBoost i~ModernNCA--KNN na każdym zadaniu, z~kierunkiem korzyści ustalonym w~sekcji~\ref{sec:analiza-plan}. Wskazać zakres niepewności, remisy, braki i~liczbę kompletnych porównań. Analiza zgodnie z~metodyką ma charakter opisowy, bez testów istotności.
 
 \plannedfigure
 {figures/ch06/kontrasty.pdf}
-{Miejsce na wykres uprzednio ustalonych kontrastów; wyniki nie zostały jeszcze uzyskane.}
+{Miejsce na wykres uprzednio ustalonych kontrastów; wykres do przygotowania na podstawie eksportu.}
 {fig:wyniki-kontrasty}
 {Oddzielne panele różnic AUC i~straty, trzy pary metod, dodatni kierunek korzyści pierwszej metody. Przedziały wyłącznie po zamrożeniu i~wykonaniu analizy.}
 
@@ -76,7 +122,7 @@ Zbiór & Metoda i~warunek & Testowa strata logarytmiczna & Liczba obserwacji tes
 
 \plannedfigure
 {figures/ch06/strojenie-i-zespoly.pdf}
-{Miejsce na porównanie D, T i~T+E; wyniki nie zostały jeszcze uzyskane.}
+{Miejsce na porównanie D, T i~T+E; wykres do przygotowania na podstawie eksportu.}
 {fig:wyniki-strojenie}
 {Pokazać sparowane zmiany na tych samych zadaniach. Rozdzielić AUC i~stratę, wskazać liczbę udanych konfiguracji i~jawnie oznaczyć wyjątek TabPFN.}
 
@@ -92,7 +138,7 @@ Zbiór & Metoda i~warunek & Testowa strata logarytmiczna & Liczba obserwacji tes
 
 \begin{table}[tbp]
 \centering\small
-\caption{Formularz kosztów procedur; brak pomiarów. Jednostką czasu będą sekundy, a~pamięci --- jawnie wskazane MiB lub GiB.}
+\caption{Formularz kosztów procedur; wykres do przygotowania. Jednostką czasu będą sekundy, a~pamięci --- jawnie wskazane MiB lub GiB.}
 \label{tab:wyniki-koszt}
 \begin{tabularx}{\linewidth}{YYYYY}
 \toprule
@@ -105,7 +151,7 @@ Zadanie, metoda i~warunek & Koszt wyszukiwania & Dopasowanie wybranych konfigura
 
 \plannedfigure
 {figures/ch06/jakosc-koszt.pdf}
-{Miejsce na wykres kompromisu jakości i~kosztu w~obrębie zadań; brak pomiarów.}
+{Miejsce na wykres kompromisu jakości i~kosztu w~obrębie zadań; wykres do przygotowania.}
 {fig:wyniki-koszt}
 {Osobny panel dla zadania. Zdefiniować oś kosztu i~warunek, oznaczyć CPU/GPU. Nie sumować kosztów D, T i~T+E jako niezależnych wyszukiwań.}
 

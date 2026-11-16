@@ -3,14 +3,14 @@
 \label{chap:mechanizmy}
 \sectionmark{Badania ważenia klas i regularyzacji}
 
-\textbf{Status rozdziału: szkielet do uzupełnienia po implementacji i~wykonaniu badań A oraz B.} Nie zawiera wyników interwencji ani dowodu ich skuteczności. Projekt opisano w~sekcjach~\ref{sec:projekt-wazenie} i~\ref{sec:projekt-regularyzacja}. Poniższe instrukcje określają wymagany materiał wynikowy zgodnie z~przyjętym projektem.
+\textbf{Status rozdziału: projekt i~konfiguracje uzupełnione, wyniki badań A oraz B do opracowania.} Nie zawiera wyników interwencji ani dowodu ich skuteczności. Projekt opisano w~sekcjach~\ref{sec:projekt-wazenie} i~\ref{sec:projekt-regularyzacja}. Poniższe instrukcje określają wymagany materiał wynikowy zgodnie z~przyjętym projektem.
 
 \subsection{Wykonane warunki i zgodność kontroli}
 \label{sec:mechanizmy-kontrole}
 
 \textbf{Do uzupełnienia:} identyfikatory badań, kompletność warunków, rzeczywiste indeksy foldów i~podzbiorów oraz etykiety rzadkie. Potwierdzić wagi wyznaczone wyłącznie z~treningu, kryteria wyboru stanu, wynik reguły kontroli i~diagnostykę niestabilności. Dla B zestawić liczności klas, epoki i~rzeczywiste kroki. Potwierdzić brak foldów obciętych czasowo. Każde odstępstwo opisać przed interpretacją efektu.
 
-\textbf{Dane wyboru wymagające weryfikacji źródłowej.} Poniższe konfiguracje i~ranking przeniesiono z~opisu metodyki. Wartości odpowiadają ustawieniom badań, lecz ich wybór wymaga powiązania z~oryginalnymi ocenami OOF, przed przedstawieniem go jako zweryfikowanego wyniku.
+Konfiguracje A z~tabeli~\ref{tab:konfiguracje-a} odpowiadają wyborom T zapisanym w~końcowym eksporcie badania głównego. Indeksy i~pełne parametry porównano z~planem wykonania A, a~parametry odniesienia B z~konfiguracją~21. Zgodność eksportu i~planu potwierdza kompletność ustawień, natomiast niezależne odtworzenie wyboru wymaga oryginalnych ocen OOF.
 
 \begin{table}[tbp]
 \centering\small
@@ -20,8 +20,8 @@
 \toprule
 Zbiór & Indeks MLP & Indeks CatBoost \\
 \midrule
-Credit Card Fraud & 12 & \textit{brak} \\
-Santander Customer Satisfaction & 8 & \textit{brak} \\
+Credit Card Fraud & 12 & 17 \\
+Santander Customer Satisfaction & 8 & 2 \\
 Amazon Employee Access & 2 & 23 \\
 \bottomrule
 \end{tabularx}
@@ -30,17 +30,15 @@ Amazon Employee Access & 2 & 23 \\
 \toprule
 Parametr CatBoost & Credit Card Fraud & Santander Customer Satisfaction & Amazon Employee Access \\
 \midrule
-Głębokość drzew & \textit{brak} & \textit{brak} & 9 \\
-Limit iteracji & \textit{brak} & \textit{brak} & 745 \\
-Tempo uczenia & \textit{brak} & \textit{brak} & 0,0210 \\
-Regularyzacja liści & \textit{brak} & \textit{brak} & 0,234 \\
-Temperatura próbkowania & \textit{brak} & \textit{brak} & 6,24 \\
-Siła losowości & \textit{brak} & \textit{brak} & 4,17 \\
+Głębokość drzew & 4 & 6 & 9 \\
+Limit iteracji & 147 & 558 & 745 \\
+Tempo uczenia & 0,0973 & 0,0773 & 0,021 \\
+Regularyzacja liści & 0,13 & 3,97 & 0,234 \\
+Temperatura próbkowania & 4,49 & 1,56 & 6,24 \\
+Siła losowości & 6,66 & 7,08 & 4,17 \\
 \bottomrule
 \end{tabularx}
 \end{table}
-
-\textbf{Do uzupełnienia:} konfiguracje T CatBoost dla Credit Card Fraud i~Santander Customer Satisfaction oraz dowody wyboru wszystkich konfiguracji z~tabeli~\ref{tab:konfiguracje-a}. Brakujące pola nie oznaczają wartości zerowych.
 
 Konfiguracja~21 MLP ma warstwy o~128 i~64 jednostkach, dropout 0,444, zanik wag $7{,}71\cdot10^{-3}$ i~tempo uczenia $5{,}83\cdot10^{-4}$. Według dostępnego opisu wyboru dopuszczono trzech kandydatów: 21, 2 i~12. Konfiguracja~21 uzyskała średnią rangę 12,75 oraz 11.~miejsce w~pełnej puli 26 konfiguracji. Trzy najlepsze konfiguracje pełnego rankingu miały słaby zanik wag. Wybór odniesienia dotyczył zatem ograniczonej puli z~oboma regularyzatorami, a~nie najlepszego MLP bez tego ograniczenia.
 
@@ -68,7 +66,7 @@ Przewidywanie nie określa wpływu zaniku na całą trajektorię optymalizacji. 
 \subsection{Ważenie klas a jakość uporządkowania}
 \label{sec:mechanizmy-ap}
 
-\textbf{Do uzupełnienia:} AP rzadkiej klasy dla obu warunków, osobno dla zbioru, metody i~ziarna. Tabelę~\ref{tab:mechanizmy-ap} należy uzupełnić wynikami sparowanymi, a~następnie średnią różnicą i~zakresem trzech różnic. Podać surową etykietę rzadką, częstość i~liczbę jej przykładów testowych. ROC AUC oraz strata logarytmiczna pozostają ocenami uzupełniającymi. Dodać korelacje rangowe predykcji ważonych i~nieważonych, udział niezgodnie uporządkowanych par rzadki--częsty oraz odniesienie w~postaci korelacji między ziarnami warunku nieważonego. AP komparatora z~przesunięciem logitu jest z~definicji równa AP warunku nieważonego.
+\textbf{Do uzupełnienia:} AP rzadkiej klasy dla obu warunków, osobno dla zbioru, metody i~ziarna. Tabelę~\ref{tab:mechanizmy-ap} należy uzupełnić wynikami sparowanymi, a~następnie średnią różnicą i~zakresem trzech różnic. Podać surową etykietę rzadką, częstość i~liczbę jej przykładów testowych. ROC AUC oraz strata logarytmiczna pozostają ocenami uzupełniającymi. Dodać korelacje rangowe predykcji ważonych i~nieważonych, udział niezgodnie uporządkowanych par rzadki--częsty oraz odniesienie w~postaci korelacji między ziarnami warunku nieważonego. W~dokładnej arytmetyce AP komparatora z~przesunięciem logitu jest równa AP warunku nieważonego. Należy sprawdzić ewentualne zmiany remisów numerycznych.
 
 \begin{table}[tbp]
 \centering\small

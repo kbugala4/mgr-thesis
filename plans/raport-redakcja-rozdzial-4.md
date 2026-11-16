@@ -161,3 +161,8 @@ Druga tabela konfiguracji w 7 ma kolumny zawijające tekst i pełne nazwy wszyst
 Autor rozstrzygnął otwarty punkt: duplikaty i stałe kolumny pozostają w danych. Nie wykonuje się dodatkowej deduplikacji ani ręcznej selekcji stałych cech na podstawie profilu. Nie interpretuje się samego powtórzenia jako błędu danych. Decyzję wpisano do rozdziału 4 i załącznika, w tym dla 9144 duplikatów Credit Card Fraud i 34 stałych kolumn Santander. Wcześniejsze punkty raportu wskazujące brak tej decyzji są już nieaktualne.
 
 Zachowano przyjęte wyłączenia identyfikatorów i Time, podziały grupowe oraz przetwarzanie właściwe metodom. Decyzja dotyczy braku dodatkowego oczyszczania, nie cofnięcia tych elementów protokołu. Nie stwierdzono, że zachowanie duplikatów dowodzi niezależności obserwacji. Kontrole zgodności danych i podziałów pozostają do udokumentowania. Nie zmieniono repozytorium eksperymentów ani trwających treningów.
+
+
+## Aktualizacja po zakończeniu badania głównego
+
+Aktualny stan opisuje [raport aktualizacji rozdziałów 4–7](raport-aktualizacja-po-badaniu-glownym.md). Zamknięto zgodność sum danych z eksportem oraz oba brakujące wybory CatBoost. Starsze stwierdzenia tego dokumentu o braku tych dowodów są historyczne. Niezależny audyt OOF, chronologia i wyniki A/B pozostają odrębnymi zagadnieniami.

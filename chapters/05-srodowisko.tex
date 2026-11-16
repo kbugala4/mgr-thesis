@@ -192,3 +192,8 @@ PyTorch & 2.13.0 \\
 Kampanię odtwarza się kolejno przez przygotowanie środowiska z~zamrożonych zależności, audyt i~przygotowanie danych, udostępnienie checkpointu oraz sprawdzenie GPU. Konfiguracja wskazuje rewizję, nazwę pliku i~sumę kontrolną wag. Powiązanie tych identyfikatorów z~manifestem wykonania rozróżnia modele korzystające z~tej samej wersji pakietu, lecz innych wag.
 
 Raporty odtwarza się z~manifestów, indeksów, historii prób i~predykcji. Na ich podstawie można następnie interpretować różnice, uwzględniając populację porównania i~zakres niepewności.
+
+
+Wyniki rozdzielonych uruchomień scala się osobno dla każdej pary zbiór--metoda. Wybierane jest najnowsze uruchomienie według czasu pierwszej zapisanej próby, a~nie według jakości testowej. Musi ono zawierać zakończone próby wszystkich kandydatów i~udaną konfigurację domyślną. Nie stosuje się powrotu do starszego uruchomienia w~razie niekompletności nowszego. Wyniki D, T i~T+E powstają z~jednego wybranego źródła danej pary. Eksport zachowuje identyfikator źródła, wersję kodu, sumę danych i~tożsamość podziału oraz wykaz zastąpionych uruchomień.
+
+Liczby konfiguracji i~foldów skróconych czasowo w~eksporcie pochodzą z~jawnego znacznika zatrzymania zapisanego przez model. Brak znacznika nie jest niezależnym potwierdzeniem wykonania pełnego budżetu. Weryfikacja przebiegów metod bez takiej informacji wymaga historii uczenia i~przydziałów czasu. Zbiorcze pliki CSV pozwalają odtworzyć tabele metryk i~pochodzenie wyników, lecz do bootstrapu predykcji, kontroli OOF i~badania zgodności wersji kodu potrzebne są także pierwotne artefakty.
