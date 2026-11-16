@@ -50,7 +50,7 @@ Wspólny test wymaga rozpoznania dokładnie tych samych danych i~obserwacji we w
 
 Zapis podziału zewnętrznego obejmuje identyfikatory wierszy, etykiety i~grupy pacjentów. Kolumny grupujące nie wchodzą do predyktorów. Moduł wykonawczy zachowuje rzeczywiste indeksy walidacji wewnętrznej, co umożliwia kontrolę pokrycia OOF i~rozłączności pacjentów również po usunięciu dopasowanych modeli.
 
-Aby połączyć predykcje, trzeba zachować zgodność obserwacji i~znaczenia kolumn, ponieważ macierze o~tych samych wymiarach mogą opisywać inne wiersze lub mieć odwróconą kolejność klas. Mapowanie klas pochodzi z~definicji przygotowanego zbioru i~towarzyszy wynikowi. Kontrola przy zapisie obejmuje etykiety, identyfikatory wierszy, wymiary macierzy oraz skończoność prawdopodobieństw i~ich zakres $[0,1]$. Suma wiersza musi zgadzać się z~jednością z~tolerancją bezwzględną $10^{-5}$, po czym prawdopodobieństwa podlegają renormalizacji. Przed zbudowaniem zespołu porównuje się etykiety i~identyfikatory wierszy OOF oraz testu. Moduł raportowania korzysta ze wspólnego mapowania klas bez osobnego porównania list klas między rekordami, toteż kontrola numeryczna nie wykrywa zamiany znaczenia kolumn.
+Aby połączyć predykcje, trzeba zachować zgodność obserwacji i~znaczenia kolumn, ponieważ macierze o~tych samych wymiarach mogą opisywać inne wiersze lub mieć odwróconą kolejność klas. Mapowanie klas pochodzi z~definicji przygotowanego zbioru i~towarzyszy wynikowi. Kontrola przy zapisie obejmuje etykiety, identyfikatory wierszy, wymiary macierzy oraz skończoność prawdopodobieństw i~ich zakres $[0,1]$. Dopuszczalne bezwzględne odchylenie sumy prawdopodobieństw w~wierszu od jedności wynosi $10^{-5}$. Po sprawdzeniu tego warunku prawdopodobieństwa podlegają renormalizacji. Przed zbudowaniem zespołu porównuje się etykiety i~identyfikatory wierszy OOF oraz testu. Moduł raportowania korzysta ze wspólnego mapowania klas bez osobnego porównania list klas między rekordami, toteż kontrola numeryczna nie wykrywa zamiany znaczenia kolumn.
 
 Metryki w~tabelach pracy przypisuje się według populacji, na której powstała predykcja. W~badaniu~A średnią precyzję odczytuje się dla kolumny klasy rzadkiej wskazanej przez mapowanie etykiet, także gdy klasa ma kod~0.
 
@@ -59,7 +59,7 @@ Raport badania głównego zapisuje nieokreślone AUC jako brak wartości, a~prec
 \subsection{Zapis wyników, awarie i wznowienie}
 \label{sec:artefakty-wznowienie}
 
-Wznowienie wymaga rozpoznania wyników zgodnych z~ustawieniami i~wejściem danego badania. Jego identyfikator jest sumą kontrolną kanonicznego zapisu pełnych ustawień, opisów danych, sumy kontrolnej kodu i~zależności, wersji pakietów, charakterystyki sprzętu oraz protokołu. Suma kodu obejmuje źródła wykonawcze, definicję projektu i~plik blokady zależności. Rewizji repozytorium nie zapisuje się automatycznie, więc wersję wykonawczą identyfikuje ta suma kontrolna. Ustawienia obejmują również ścieżki danych i~wyników, przez co przeniesienie danych pod inną ścieżkę tworzy nowy identyfikator badania.
+Wznowienie wymaga rozpoznania wyników zgodnych z~ustawieniami i~wejściem danego badania. Identyfikator badania jest sumą kontrolną kanonicznego zapisu pełnych ustawień, opisów danych, sumy kontrolnej kodu i~zależności, wersji pakietów, charakterystyki sprzętu oraz protokołu. Suma kodu obejmuje źródła wykonawcze, definicję projektu i~plik blokady zależności. Rewizji repozytorium nie zapisuje się automatycznie, więc wersję wykonawczą identyfikuje ta suma kontrolna. Ustawienia obejmują również ścieżki danych i~wyników, przez co przeniesienie danych pod inną ścieżkę tworzy nowy identyfikator badania.
 
 \begin{table}[!htbp]
 \centering\small
@@ -93,7 +93,7 @@ Metadane i~predykcje trafiają najpierw do plików tymczasowych, które po opró
 
 Awaria konfiguracji nie przerywa niezależnych zadań. Warunki pełnego raportu podano w~sekcji~\ref{sec:warunki-raportowania}. Wyniki D, T i~T+E danej pary zbiór--metoda pochodzą z~jednego kompletnego uruchomienia.
 
-Raport można odtworzyć z~zapisanych predykcji i~metadanych zestawionych w~tabeli~\ref{tab:artefakty}. Nowe predykcje wymagają ponownego dopasowania, ponieważ modele są usuwane po zakończeniu próby. Ponowne uczenie na GPU nie ma gwarancji bitowej powtarzalności.
+Raport można odtworzyć z~zapisanych predykcji i~metadanych zestawionych w~tabeli~\ref{tab:artefakty}. Nowe predykcje wymagają ponownego dopasowania, ponieważ modele są usuwane po zakończeniu próby. Ponowny trening na GPU nie ma gwarancji bitowej powtarzalności.
 
 \subsection{Dobór partii i ograniczenia pamięci}
 \label{sec:partie-platformy}
@@ -145,7 +145,7 @@ Pamięć PyTorch & Przydzielona i~zarezerwowana na urządzeniu~0 & Tylko dopasow
 
 Czas predykcji testowej zmierzono dla wszystkich metod, w~tym KNN i~TabPFN. Pamięć mierzono wyłącznie podczas dopasowania, jak przedstawiono w~tabeli~\ref{tab:zakres-pomiarow}. Jej pomiary pozostają w~rekordach konfiguracji, poza raportem zbiorczym, wraz z~informacją o~dostępności śledzenia. Brak pomiaru nie jest zerowym zużyciem. Pamięci podczas predykcji nie mierzono, dlatego ocenę kosztu inferencji KNN i~TabPFN, przechowujących zbiór odniesienia lub kontekst, ograniczono do czasu. Zewnętrzne pretrenowanie TabPFN pozostaje poza kosztem lokalnego wykonania.
 
-Platforma nie rejestruje obciążenia urządzenia przez inne procesy. Czasy dopasowania i~inferencji opisują więc koszt w~warunkach wykonania, a~niepowodzenie z~braku pamięci może wynikać także z~zajętości GPU przez inne procesy.
+Platforma nie rejestruje obciążenia GPU przez inne procesy. Zajętość urządzenia może wpływać zarówno na czas dopasowania i~inferencji, jak i~na występowanie niepowodzeń z~braku pamięci.
 
 \subsection{Weryfikacja poprawności platformy}
 \label{sec:kwalifikacja}
