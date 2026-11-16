@@ -83,7 +83,7 @@ Raport D/T/T+E & Wybory, wagi i~metryki & Odtworzenie porównania \\
 
 Dla każdego foldu lokalnych MLP, FT-Transformera i~TabNet zapisuje się efektywny rozmiar partii, a~dla TabNet także partii wirtualnej. Zapis obejmuje ponadto znacznik zatrzymania z~powodu budżetu, liczbę ukończonych epok, przydzielony czas i~czas dopasowania. Pozwala to odróżnić ustawienie konfiguracji od rzeczywistego przebiegu po zastosowaniu ograniczeń wykonania.
 
-Budżet 3600~s obejmuje całe zadanie konfiguracji, zgodnie z~sekcją~\ref{sec:strojenie}. AutoGluon przydziela foldom czas dynamicznie według pozostałego budżetu, a~gdy prognoza czasu pozostałych dopasowań go przekracza, przerywa konfigurację jako nieudaną. Limit ma charakter orientacyjny, dlatego pojedyncze natywne dopasowanie może przekroczyć przydział. Lokalne sieci zatrzymane przez budżet po co najmniej jednej ukończonej epoce wracają do najlepszego stanu i~pozostają dopuszczone w~badaniu głównym. MLP i~FT-Transformer mogą porzucić niepełną kolejną epokę, natomiast TabNet kończy bieżącą epokę. Brak ukończonej pierwszej epoki oznacza niepowodzenie.
+Budżet 3600~s obejmuje całe zadanie konfiguracji, zgodnie z~sekcją~\ref{sec:strojenie}. AutoGluon przydziela foldom czas dynamicznie według pozostałego budżetu, a~gdy prognoza czasu pozostałych dopasowań go przekracza, przerywa przetwarzaną konfigurację jako nieudaną. Limit ma charakter orientacyjny, dlatego pojedyncze natywne dopasowanie może przekroczyć przydział. Lokalne sieci zatrzymane przez budżet po co najmniej jednej ukończonej epoce wracają do najlepszego stanu i~pozostają dopuszczone w~badaniu głównym. MLP i~FT-Transformer mogą porzucić niepełną kolejną epokę, natomiast TabNet kończy bieżącą epokę. Brak ukończonej pierwszej epoki oznacza niepowodzenie.
 
 Znacznik zatrzymania przez budżet zapisują tylko te trzy lokalne sieci. TabM i~ModernNCA kończą pętlę epok według prognozy czasu i~przywracają najlepszy stan bez znacznika, a~RealMLP przekazuje budżet do własnej implementacji. Brak znacznika nie świadczy o~wykorzystaniu pełnego budżetu uczenia. Badania A i~B wymagają przebiegów bez obcięcia czasowego.
 
@@ -93,7 +93,7 @@ Metadane i~predykcje trafiają najpierw do plików tymczasowych, które po opró
 
 Awaria konfiguracji nie przerywa niezależnych zadań. Warunki pełnego raportu podano w~sekcji~\ref{sec:warunki-raportowania}. Wyniki D, T i~T+E danej pary zbiór--metoda pochodzą z~jednego kompletnego uruchomienia.
 
-Raport można odtworzyć z~zapisanych predykcji i~metadanych zestawionych w~tabeli~\ref{tab:artefakty}. Nowe predykcje wymagają ponownego dopasowania, ponieważ modele są usuwane po zakończeniu próby. Ponowny trening na GPU nie ma gwarancji bitowej powtarzalności.
+Raport można odtworzyć z~zapisanych predykcji i~metadanych zestawionych w~tabeli~\ref{tab:artefakty}. Nowe predykcje wymagają ponownego dopasowania, ponieważ modele są usuwane po zakończeniu próby. Ponowny trening na GPU, ze względu na jego naturalną charakterystykę sprzętową, nie ma gwarancji bitowej powtarzalności.
 
 \subsection{Dobór partii i ograniczenia pamięci}
 \label{sec:partie-platformy}
@@ -138,7 +138,7 @@ Miara & Zakres & Granica interpretacji \\
 \midrule
 Czas & Dopasowanie i~predykcja testowa, osobno wybór D/T/T+E & Wyszukiwanie współdzielone przez warunki \\
 RSS, pamięć rezydentna (ang. \textit{resident set size}) & Szczyt dla procesu i~procesów potomnych, próbki co 0,05~s & Tylko dopasowanie, bez całej maszyny \\
-Pamięć PyTorch & Przydzielona i~zarezerwowana na urządzeniu~0 & Tylko dopasowanie, bez wszystkich alokacji GPU \\
+Pamięć PyTorch & Przydzielona i~zarezerwowana na urządzeniu & Tylko dopasowanie, bez wszystkich alokacji GPU \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -163,7 +163,7 @@ Ze względu na czasowy budżet uczenia charakterystykę stanowiska powiązano z~
 
 Przestrzenie sześciu metod zdefiniowano w~repozytorium badania, a~przestrzenie KNN, RealMLP, ModernNCA i~TabM pochodzą z~TabArena~0.1.0.\footnote{Rewizja definicji przestrzeni: \path{79299f573975b45052803d8f26c350f10446e332}. Katalog źródłowy: \href{https://github.com/kbugala4/mgr-repo/tree/79299f573975b45052803d8f26c350f10446e332/configs/model}{konfiguracje modeli}.} Losowane wartości zastępują ustawienia bazowe metod lokalnych, natomiast w~integracjach natywnych jawne parametry nakłada się po losowaniu. O~wykonanym wariancie rozstrzyga zapisany efektywny zestaw parametrów.
 
-Środowisko odtwarza się w~systemie Linux x86-64 z~Pythonem~3.11 i~zależnościami z~pliku blokady. Wersje zestawiono w~tabeli~\ref{tab:wersje}. Użyto AutoGluon~1.6.3b20260918 z~gałęzi~1.6 wymaganej przez TabArena~0.1.0.
+Środowisko odtwarza się przy użyciu AutoGluon~1.6.3b20260918 z~gałęzi~1.6 wymaganej przez TabArena~0.1.0, a~pełny opis wersji zależności zestawiono w~tabeli~\ref{tab:wersje}
 
 \begin{table}[!htbp]
 \centering\small
