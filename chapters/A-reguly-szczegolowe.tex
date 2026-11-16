@@ -6,10 +6,8 @@
 
 Tabele podają ustawienia domyślne oraz rozkłady losowania kandydatów. $U[a,b]$ oznacza rozkład jednostajny, $U_{\mathbb Z}[a,b]$ jego odpowiednik całkowitoliczbowy, a~$\mathrm{LogU}[a,b]$ rozkład jednostajny logarytmu wartości. Wybór ze zbioru skończonego jest równomierny, o~ile nie zaznaczono inaczej. Ustawienia stałe nie podlegają losowaniu. Podane identyfikatory parametrów odpowiadają implementacjom, a~wartości dziesiętne zapisano z~kropką dla zgodności z~ich reprezentacją. Definicje lokalne i~ustawienia nadrzędne pochodzą z~rewizji wskazanej w~sekcji~\ref{sec:wykonanie-kampanii}, natomiast cztery natywne przestrzenie z~TabArena~0.1.0. Tabele opisują przestrzenie wejściowe, przed zależnymi od foldu ograniczeniami wykonania.
 
-\clearpage
-\subsubsection*{MLP}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: MLP.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: MLP.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
@@ -19,15 +17,13 @@ Tabele podają ustawienia domyślne oraz rozkłady losowania kandydatów. $U[a,b
 \texttt{batch\_size} & auto & stała \\
 \texttt{batch\_size\_multiplier} & 1 & wybór: [0.5, 1, 2] \\
 \texttt{epochs} & 100 & stała \\
-\texttt{weight\_decay} & 0.0001 & $\mathrm{LogU}[1e-06, 0.01]$ \\
-\bottomrule\end{tabularx}\end{table}
+\texttt{weight\_decay} & 0.0001 & $\mathrm{LogU}[10^{-6}, 0.01]$ \\
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
 Automatyczne partie i~ich korekty opisano w~sekcji~\ref{sec:partie-platformy}.
 
-\clearpage
-\subsubsection*{FT-Transformer}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: FT-Transformer.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: FT-Transformer.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
@@ -38,19 +34,17 @@ Automatyczne partie i~ich korekty opisano w~sekcji~\ref{sec:partie-platformy}.
 \texttt{ffn\_d\_hidden} & 256 & wybór: [128, 256, 512] \\
 \texttt{ffn\_dropout} & 0.1 & $U[0.0, 0.3]$ \\
 \texttt{residual\_dropout} & 0.0 & stała \\
-\texttt{learning\_rate} & 0.0001 & $\mathrm{LogU}[1e-05, 0.001]$ \\
+\texttt{learning\_rate} & 0.0001 & $\mathrm{LogU}[10^{-5}, 0.001]$ \\
 \texttt{batch\_size} & auto & stała \\
 \texttt{batch\_size\_multiplier} & 1 & wybór: [0.5, 1, 2] \\
 \texttt{epochs} & 100 & stała \\
-\texttt{weight\_decay} & 1e-05 & $\mathrm{LogU}[1e-06, 0.001]$ \\
-\bottomrule\end{tabularx}\end{table}
+\texttt{weight\_decay} & $10^{-5}$ & $\mathrm{LogU}[10^{-6}, 0.001]$ \\
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
 Automatyczne partie i~ich korekty opisano w~sekcji~\ref{sec:partie-platformy}.
 
-\clearpage
-\subsubsection*{TabNet}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: TabNet.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: TabNet.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
@@ -67,28 +61,22 @@ Automatyczne partie i~ich korekty opisano w~sekcji~\ref{sec:partie-platformy}.
 \texttt{batch\_size\_multiplier} & 1 & wybór: [0.5, 1, 2] \\
 \texttt{virtual\_batch\_size} & auto & stała \\
 \texttt{epochs} & 100 & stała \\
-\bottomrule\end{tabularx}\end{table}
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
 Automatyczne partie i~ich korekty opisano w~sekcji~\ref{sec:partie-platformy}.
 
-\clearpage
-\subsubsection*{Regresja logistyczna}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: Regresja logistyczna.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: Regresja logistyczna.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
 \texttt{C} & 1.0 & $\mathrm{LogU}[0.0001, 100.0]$ \\
 \texttt{max\_iter} & 1000 & stała \\
 \texttt{solver} & lbfgs & wybór: [lbfgs, saga] \\
-\bottomrule\end{tabularx}\end{table}
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
-
-
-\clearpage
-\subsubsection*{XGBoost}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: XGBoost.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: XGBoost.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
@@ -97,16 +85,12 @@ Automatyczne partie i~ich korekty opisano w~sekcji~\ref{sec:partie-platformy}.
 \texttt{learning\_rate} & 0.1 & $\mathrm{LogU}[0.01, 0.3]$ \\
 \texttt{subsample} & 0.8 & $U[0.6, 1.0]$ \\
 \texttt{colsample\_bytree} & 0.8 & $U[0.6, 1.0]$ \\
-\texttt{reg\_alpha} & biblioteczna (0) & $\mathrm{LogU}[1e-08, 10.0]$ \\
-\texttt{reg\_lambda} & biblioteczna (1) & $\mathrm{LogU}[1e-08, 10.0]$ \\
-\bottomrule\end{tabularx}\end{table}
+\texttt{reg\_alpha} & biblioteczna (0) & $\mathrm{LogU}[10^{-8}, 10.0]$ \\
+\texttt{reg\_lambda} & biblioteczna (1) & $\mathrm{LogU}[10^{-8}, 10.0]$ \\
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
-
-
-\clearpage
-\subsubsection*{CatBoost}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: CatBoost.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: CatBoost.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
@@ -116,14 +100,12 @@ Automatyczne partie i~ich korekty opisano w~sekcji~\ref{sec:partie-platformy}.
 \texttt{l2\_leaf\_reg} & 3.0 & $\mathrm{LogU}[0.01, 10.0]$ \\
 \texttt{random\_strength} & biblioteczna (1) & $U[0.0, 10.0]$ \\
 \texttt{bagging\_temperature} & automatyczna & $U[0.0, 10.0]$ \\
-\bottomrule\end{tabularx}\end{table}
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
 Automatyczne ustawienie temperatury próbkowania zależy od domyślnego rodzaju bootstrapu. Nie narzucono go w~konfiguracji D.
 
-\clearpage
-\subsubsection*{KNN}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: KNN.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: KNN.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
@@ -132,14 +114,12 @@ Automatyczne ustawienie temperatury próbkowania zależy od domyślnego rodzaju 
 \texttt{p} & 2 & wybór: 1, 1.5, 2 \\
 \texttt{scaler} & standard & wybór: standard, quantile \\
 \texttt{cat\_threshold} & $10^6$ & stała \\
-\bottomrule\end{tabularx}\end{table}
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
 Próg kodowania kategorii jest nadpisany wspólną wartością $10^6$, dlatego nie losuje się go z~oryginalnej przestrzeni TabArena. Ustawienie zapewnia kodowanie zero-jedynkowe kategorii w~przyjętych zadaniach. Efektywna liczba sąsiadów może być ograniczona licznością zbioru odniesienia.
 
-\clearpage
-\subsubsection*{RealMLP: architektura i optymalizacja}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: RealMLP: architektura i optymalizacja.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: RealMLP --- architektura i optymalizacja.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
@@ -157,14 +137,12 @@ Próg kodowania kategorii jest nadpisany wspólną wartością $10^6$, dlatego n
 \texttt{ls\_eps} & 0.1 & $\mathrm{LogU}[0.005,0.1]$ \\
 \texttt{ls\_eps\_sched} & stały & stała dla kandydatów: coslog4 \\
 \texttt{p\_drop\_sched} & flat\_cos & stała: flat\_cos \\
-\bottomrule\end{tabularx}\end{table}
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
 Domyślne wygładzanie etykiet zostaje wyłączone dla obu metryk wyboru użytych w~badaniu. Parametry architektury domyślnej wynikają z~trzech warstw o~szerokości 256. Stały harmonogram wygładzania w~D nie ma wpływu przy wyłączonym wygładzaniu.
 
-\clearpage
-\subsubsection*{RealMLP: osadzenia i budżet}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: RealMLP: osadzenia i budżet.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: RealMLP --- osadzenia i budżet.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
@@ -178,14 +156,12 @@ Domyślne wygładzanie etykiet zostaje wyłączone dla obu metryk wyboru użytyc
 \texttt{use\_early\_stopping} & nie & wariant podstawowy: nie, rozszerzony: tak \\
 \texttt{n\_ens} & 1 & stała dla kandydatów: 8 \\
 \texttt{ens\_av\_before\_softmax} & nie & stała: nie \\
-\bottomrule\end{tabularx}\end{table}
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
 Wariant podstawowy i~rozszerzony wybiera się z~prawdopodobieństwem $1/2$. Warunkowe ustawienia w~tabeli należą do tego samego wariantu i~nie są losowane niezależnie. Dla ponad 8192 cech implementacja ogranicza drugi wymiar osadzenia do~16. Pozostałe ustawienia pochodzą z~domyślnej procedury RealMLP-TD. Wewnętrzny zespół ośmiu sieci w~losowych kandydatach RealMLP jest dodatkowym składnikiem tej procedury, odrębnym od uśredniania foldów.
 
-\clearpage
-\subsubsection*{ModernNCA}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: ModernNCA.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: ModernNCA.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
@@ -204,14 +180,10 @@ Wariant podstawowy i~rozszerzony wybiera się z~prawdopodobieństwem $1/2$. Waru
 \texttt{num\_emb\_lite} & tak & stała \\
 \texttt{batch\_size} & auto & stała reguła automatyczna \\
 \texttt{n\_epochs} & 200 & stała \\
-\bottomrule\end{tabularx}\end{table}
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
-
-
-\clearpage
-\subsubsection*{TabM}
-\begin{table}[!htbp]\centering\footnotesize
-\caption{Ustawienia i przestrzeń strojenia: TabM.}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\footnotesize
+\captionof{table}{Ustawienia i przestrzeń strojenia: TabM.}
 \begin{tabularx}{\linewidth}{@{}P{0.32\linewidth}P{0.20\linewidth}Y@{}}
 \toprule Parametr & Domyślnie & Zakres i rozkład \\
 \midrule
@@ -230,37 +202,41 @@ Wariant podstawowy i~rozszerzony wybiera się z~prawdopodobieństwem $1/2$. Waru
 \texttt{gradient\_clipping\_norm} & 1 & stała \\
 \texttt{share\_training\_batches} & nie & stała \\
 \texttt{num\_emb\_type} & pwl & stała \\
-\bottomrule\end{tabularx}\end{table}
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
 Liczba przedziałów osadzeń jest ograniczona do liczności treningu pomniejszonej o~jeden. Domyślna liczba bloków zależy od obecności osadzeń numerycznych. Automatyczny rozmiar partii wynika z~liczności i~szerokości treningu.
 
-\clearpage
 \subsection*{Audyt danych przed uczeniem}
 \label{app:audyt}
 
-\textbf{Do uzupełnienia:} ilościowy audyt aktualnych przygotowanych danych. Brak wpisu nie oznacza braku wad danych. Nie potwierdzono lokalnie kompletnego profilu powiązanego z~aktualnymi sumami kontrolnymi. Tabela rozdziela pomiary braków, duplikatów cech i~całych wierszy z~etykietą, stałych kolumn oraz klasy najmniej licznej. Dla każdego zbioru należy dołączyć decyzję o~zachowaniu lub usunięciu duplikatów, z~uzasadnieniem dotyczącym populacji predykcji.
+Profil dwunastu przygotowanych zbiorów z~13 listopada 2026~r. identyfikuje każdą wersję danych sumą kontrolną SHA-256. Tabela~\ref{tab:audyt-danych} przedstawia zapisane w~nim pomiary przed uczeniem. Liczności obserwacji i~predyktorów odpowiadają tabeli~\ref{tab:rejestr-zadan}. Zgodność tych wersji z~wejściami ostatecznej kampanii wymaga porównania sum kontrolnych. Sam zgodny rozmiar tabeli ani wersja kodu nie rozstrzygają tożsamości danych.
 
-\begin{table}[!htbp]\centering\scriptsize
-\caption{Zakres audytu dwunastu zbiorów. Znak zapytania oznacza pomiar do uzupełnienia, a~nie wartość zerową.}
-\begin{tabularx}{\linewidth}{@{}P{0.28\linewidth}ccccY@{}}
+\par\medskip\noindent\begin{minipage}{\linewidth}\captionsetup{hypcap=false}\centering\scriptsize
+\captionof{table}{Profil przygotowanych danych. Braki oznaczają procent komórek predyktorów. Duplikaty podano oddzielnie dla cech (X) i~cech z~etykietą (X,y). Liczności są licznikami zapisanymi w~profilu.}
+\label{tab:audyt-danych}
+\begin{tabularx}{\linewidth}{@{}Yrrrrr@{}}
 \toprule
-Zbiór & Braki & Duplikaty & Stałe & Klasa rzadka & Decyzje \\
+Zbiór & Braki [\%] & \shortstack{Duplikaty\\X / (X,y)} & Stałe & \shortstack{Klasa najmniej\\liczna} & \shortstack{Liczność\\klasy} \\
 \midrule
-Adult & ? & ? & ? & ? & Do uzupełnienia \\
-Covertype & ? & ? & ? & ? & Podział po wierszach \\
-Credit Card Fraud & ? & ? & ? & 1 & Bez \texttt{Time} \\
-HIGGS, podzbiór & ? & ? & ? & ? & Do uzupełnienia \\
-Amazon Employee Access & ? & ? & ? & 0 & Podział po wierszach \\
-Santander Customer Satisfaction & ? & ? & ? & 1 & Źródło bez \texttt{ID} \\
-Online Shoppers & ? & ? & ? & ? & Do uzupełnienia \\
-Diabetes 130-US & ? & ? & ? & ? & Grupowanie pacjentów \\
-Helena & ? & ? & ? & ? & Do uzupełnienia \\
-German Credit & ? & ? & ? & ? & Do uzupełnienia \\
-Ionosphere & ? & ? & ? & ? & Do uzupełnienia \\
-Bioresponse & ? & ? & ? & ? & Do uzupełnienia \\
-\bottomrule\end{tabularx}\end{table}
+Adult & 0,9455 & 57 / 52 & 0 & $>$50K & 11687 \\
+Covertype & 0,0 & 0 / 0 & 0 & 4 & 2747 \\
+Credit Card Fraud & 0,0 & 9144 / 9144 & 0 & 1 & 492 \\
+HIGGS, podzbiór & 0,0003 & 25 / 25 & 0 & 0 & 46223 \\
+Amazon Employee Access & 0,0 & 0 / 0 & 0 & 0 & 1897 \\
+Santander Customer Satisfaction & 0,0 & 4940 / 4807 & 34 & 1.0 & 3008 \\
+Online Shoppers & 0,0 & 125 / 125 & 0 & True & 1908 \\
+Diabetes 130-US & 7,8197 & 0 / 0 & 2 & $<$30 & 11357 \\
+Helena & 0,0 & 4 / 4 & 0 & 10 & 111 \\
+German Credit & 0,0 & 0 / 0 & 0 & 2 & 300 \\
+Ionosphere & 0,0 & 1 / 1 & 1 & b & 126 \\
+Bioresponse & 0,0 & 0 / 0 & 0 & 0 & 1717 \\
+\bottomrule\end{tabularx}\end{minipage}\par\medskip
 
-Rejestr audytu powinien wskazywać wersję źródła, sumę kontrolną przygotowanych danych, liczności przed i~po wyłączeniach, pełny rozkład klas i~braki w~kolumnach. Kontrola duplikatów obejmuje także przypadki wspólne między częściami podziału i~grupy o~sprzecznych etykietach. Dla Diabetes 130-US wymaga się potwierdzenia rozłączności pacjentów oraz jednokrotnego udziału każdej obserwacji w~walidacji. Dla Amazon Employee Access należy określić powtarzalność encji między częściami. Same reguły podziału nie stanowią dowodu ich spełnienia w~przygotowanych danych.
+Braki występują w~trzech zbiorach: Adult (trzy kolumny), HIGGS (dziewięć) i~Diabetes 130-US (dziewięć). W~danych szpitalnych stałe są \texttt{examide} i~\texttt{citoglipton}, a~w~Ionosphere --- \texttt{feature\_1}. Profil Santander Customer Satisfaction wskazuje 34 stałe kolumny. Grupy identycznych cech o~sprzecznych etykietach występują w~Adult (5) i~Santander Customer Satisfaction (133). Zgodność etykiet pozostałych duplikatów nie eliminuje ryzyka powtarzania podobnych obserwacji między częściami podziału.
+
+Amazon Employee Access nie zawiera według profilu braków ani duplikatów wierszy. Wszystkie dziewięć cech jest kategorycznych, a~największa liczba kategorii jednej cechy wynosi 7518. Diabetes 130-US obejmuje 71\,518 pacjentów. Ta liczba nie potwierdza rozłączności pacjentów po podziale, którą należy sprawdzić niezależnie.
+
+\textbf{Do uzupełnienia:} porównanie sum kontrolnych profilu z~danymi kampanii oraz odtworzenie definicji liczników duplikatów na podstawie skryptu profilującego. Należy udokumentować decyzje o~zachowaniu lub usunięciu duplikatów i~stałych kolumn, kontrolę przypadków wspólnych między częściami podziału, rozłączność pacjentów oraz jednokrotny udział obserwacji w~walidacji. Dla Amazon Employee Access potrzebna jest także ocena powtarzalności encji. Profil opisuje właściwości danych, lecz nie zawiera wyników tych kontroli ani uzasadnień decyzji o~duplikatach.
 
 \subsection*{Progi decyzji i miary uporządkowania}
 \label{app:progi}

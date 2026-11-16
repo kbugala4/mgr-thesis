@@ -21,30 +21,30 @@
 Zbiór & Indeks MLP & Indeks CatBoost \\
 \midrule
 Credit Card Fraud & 12 & \textit{brak} \\
-Santander & 8 & \textit{brak} \\
-Amazon & 2 & 23 \\
+Santander Customer Satisfaction & 8 & \textit{brak} \\
+Amazon Employee Access & 2 & 23 \\
 \bottomrule
 \end{tabularx}
 \medskip
 \begin{tabularx}{\linewidth}{Yccc}
 \toprule
-Parametr CatBoost & Credit Card Fraud & Santander & Amazon \\
+Parametr CatBoost & Credit Card Fraud & Santander Customer Satisfaction & Amazon \\
 \midrule
 Głębokość drzew & \textit{brak} & \textit{brak} & 9 \\
 Limit iteracji & \textit{brak} & \textit{brak} & 745 \\
-Tempo uczenia & \textit{brak} & \textit{brak} & 0,0210215 \\
-\texttt{l2\_leaf\_reg} & \textit{brak} & \textit{brak} & 0,234209 \\
-\texttt{bagging\_temperature} & \textit{brak} & \textit{brak} & 6,24354 \\
-\texttt{random\_strength} & \textit{brak} & \textit{brak} & 4,16510 \\
+Tempo uczenia & \textit{brak} & \textit{brak} & 0,0210 \\
+Regularyzacja liści & \textit{brak} & \textit{brak} & 0,234 \\
+Temperatura próbkowania & \textit{brak} & \textit{brak} & 6,24 \\
+Siła losowości & \textit{brak} & \textit{brak} & 4,17 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \textbf{Do uzupełnienia:} konfiguracje T CatBoost dla Credit Card Fraud i~Santander Customer Satisfaction oraz dowody wyboru wszystkich konfiguracji z~tabeli~\ref{tab:konfiguracje-a}. Brakujące pola nie oznaczają wartości zerowych.
 
-Konfiguracja~21 MLP ma warstwy o~128 i~64 jednostkach, dropout 0,44360637128816327, zanik wag 0,007706343825607382 i~tempo uczenia 0,000583248659760873. Według dostępnego opisu wyboru dopuszczono trzech kandydatów: 21, 2 i~12. Konfiguracja~21 uzyskała średnią rangę 12,75 oraz 11.~miejsce w~pełnej puli 26 konfiguracji. Trzy najlepsze konfiguracje pełnego rankingu miały słaby zanik wag. Wybór odniesienia dotyczył zatem ograniczonej puli z~oboma regularyzatorami, a~nie najlepszego MLP bez tego ograniczenia.
+Konfiguracja~21 MLP ma warstwy o~128 i~64 jednostkach, dropout 0,444, zanik wag $7{,}71\cdot10^{-3}$ i~tempo uczenia $5{,}83\cdot10^{-4}$. Według dostępnego opisu wyboru dopuszczono trzech kandydatów: 21, 2 i~12. Konfiguracja~21 uzyskała średnią rangę 12,75 oraz 11.~miejsce w~pełnej puli 26 konfiguracji. Trzy najlepsze konfiguracje pełnego rankingu miały słaby zanik wag. Wybór odniesienia dotyczył zatem ograniczonej puli z~oboma regularyzatorami, a~nie najlepszego MLP bez tego ograniczenia.
 
-Oceny źródłowe obejmowały Adult, Credit Card Fraud, HIGGS, Amazon Employee Access, Santander Customer Satisfaction, Online Shoppers, Diabetes 130-US i~Helena. Zbiory B wyłączono, a~Covertype pominięto z~powodu niekompletnych lub obciętych przebiegów po zmianie doboru partii. \textbf{Do uzupełnienia:} oryginalna tabela OOF, tożsamość przebiegów i~potwierdzenie powyższych liczb. Historyczna selekcja przypisywała niezakończonym kandydatom dolne rangi, natomiast aktualna kontrola źródeł wymaga kompletu udanych konfiguracji. Nie ustalono jeszcze zgodności obu procedur na rzeczywistych danych źródłowych ani chronologii zatwierdzenia reguły wyboru.
+Oceny źródłowe obejmowały Adult, Credit Card Fraud, HIGGS, Amazon Employee Access, Santander Customer Satisfaction, Online Shoppers, Diabetes 130-US i~Helena. Zbiory B wyłączono zgodnie z~regułą rozłączności. Pominięcie Covertype stanowi odstępstwo od ogólnej reguły doboru źródeł z~rozdziału~\ref{chap:metodyka}. Według dostępnego opisu powodem były niekompletne lub obcięte przebiegi po zmianie doboru partii. Brakuje potwierdzenia, że kryterium kompletności ustalono przed selekcją, dlatego nie przedstawia się go jako uprzednio przyjętej reguły. \textbf{Do uzupełnienia:} oryginalna tabela OOF, tożsamość przebiegów i~potwierdzenie powyższych liczb. Historyczna selekcja przypisywała niezakończonym kandydatom dolne rangi, natomiast aktualna kontrola źródeł wymaga kompletu udanych konfiguracji. Nie ustalono jeszcze zgodności obu procedur na rzeczywistych danych źródłowych ani chronologii zatwierdzenia reguły wyboru.
 
 Po wyborze konfiguracji, a~przed uczeniem w~badaniu~B, wyprowadzono przewidywanie bezpośredniego zaniku. Iloczyn $\alpha\lambda\approx4{,}5\cdot10^{-6}$ prowadzi do czynników z~tabeli~\ref{tab:zanik-przewidywany}. Na tej podstawie sformułowano hipotezę, że różnice jakości po usunięciu zaniku będą małe względem zmienności między ziarnami. Jest to przewidywanie dla wybranej konfiguracji, nie wynik pomiaru ani hipoteza ustalona przed jej wyborem.
 
