@@ -146,7 +146,7 @@ gdzie $p_{i,y_i}$ oznacza prawdopodobieństwo przypisane właściwej klasie obse
 
 W~raporcie podaje się także dokładność (ang. \textit{accuracy}), zrównoważoną dokładność (ang. \textit{balanced accuracy}), F1 w~wariancie makro i~ważonym, stratę logarytmiczną, metryki poszczególnych klas oraz wieloklasowe AUC w~schemacie jeden przeciw pozostałym (ang. \textit{one-vs-rest}), uśrednione makro, tam, gdzie jest określone. Główne etykiety decyzyjne powstają przez $\arg\max$ prawdopodobieństw.
 
-W~badaniu~A jako podstawową miarę przyjęto średnią precyzję (AP), ponieważ przy niezrównoważeniu ocenę AUC warto uzupełnić o~perspektywę precyzji i~czułości~\cite{saito2015pr}. Co ważne, AP z~równania~\eqref{eq:srednia-precyzja} nie jest trapezowym polem pod krzywą precyzja--czułość. Wartość AP interpretuje się z~uwzględnieniem częstości klasy rzadkiej i~liczby jej przykładów w~teście. Metryki badania~A dotyczą klasy rzadkiej wskazanej znaczeniem etykiety, niezależnie od jej kodu.
+W~badaniu~A jako podstawową miarę przyjęto średnią precyzję (AP), ponieważ przy niezrównoważeniu ocenę AUC warto uzupełnić o~perspektywę precyzji i~czułości~\cite{saito2015pr}. Co istotne, AP z~równania~\eqref{eq:srednia-precyzja} nie jest trapezowym polem pod krzywą precyzja--czułość. Wartość AP interpretuje się z~uwzględnieniem częstości klasy rzadkiej i~liczby jej przykładów w~teście. Metryki badania~A dotyczą klasy rzadkiej wskazanej znaczeniem etykiety, niezależnie od jej kodu.
 
 \subsection{Badanie A: ważenie klas i przesunięcie predykcji}
 \label{sec:projekt-wazenie}
