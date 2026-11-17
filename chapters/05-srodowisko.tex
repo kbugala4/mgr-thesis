@@ -159,11 +159,7 @@ Kontrola podziału grupowego obejmuje rozłączność pacjentów, obecność kla
 \subsection{Środowisko wykonania}
 \label{sec:wykonanie-kampanii}
 
-Ze względu na czasowy budżet uczenia charakterystykę stanowiska powiązano z~identyfikatorem badania. Stacja miała cztery karty NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, po 95~GiB pamięci, 128 logicznych wątków CPU i~około 755~GiB RAM. Każde zadanie konfiguracji otrzymywało cztery wątki CPU, a~zadania metod neuronowych i~TabPFN również jedno GPU, widoczne jako urządzenie~0. Limit wątków obejmował biblioteki numeryczne, PyTorch, CatBoost i~XGBoost. Obliczenia prowadzono bezpośrednio w~systemie Linux~7.0 x86-64 z~glibc~2.39, sterownikiem NVIDIA~615.71.10, CUDA~13.0 i~Pythonem~3.11.15, bez kontenera.
-
-Przestrzenie sześciu metod zdefiniowano w~repozytorium badania, a~przestrzenie KNN, RealMLP, ModernNCA i~TabM pochodzą z~TabArena~0.1.0.\footnote{Rewizja definicji przestrzeni: \path{79299f573975b45052803d8f26c350f10446e332}. Katalog źródłowy: \href{https://github.com/kbugala4/mgr-repo/tree/79299f573975b45052803d8f26c350f10446e332/configs/model}{konfiguracje modeli}.} Losowane wartości zastępują ustawienia bazowe metod lokalnych, natomiast w~integracjach natywnych jawne parametry nakłada się po losowaniu. O~wykonanym wariancie rozstrzyga zapisany efektywny zestaw parametrów.
-
-Środowisko odtwarza z~pliku blokady zależności. Użyto AutoGluon~1.6.3b20260918 z~gałęzi~1.6 wymaganej przez TabArena~0.1.0, a~wersje pozostałych zależności zestawiono w~tabeli~\ref{tab:wersje}.
+Ze względu na czasowy budżet uczenia charakterystykę stanowiska powiązano z~identyfikatorem badania. Stacja miała cztery karty NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, po 95~GiB pamięci, 128 logicznych wątków CPU i~około 755~GiB RAM. Każde zadanie konfiguracji otrzymywało cztery wątki CPU, a~zadania metod neuronowych i~TabPFN również jedno GPU, widoczne jako urządzenie~0. Limit wątków obejmował biblioteki numeryczne, PyTorch, CatBoost i~XGBoost. Obliczenia prowadzono bezpośrednio w~systemie Linux~7.0 x86-64 z~glibc~2.39, sterownikiem NVIDIA~615.71.10, CUDA~13.0 i~Pythonem~3.11.15, bez kontenera. Wersje kluczowych bibliotek zestawiono w~tabeli~\ref{tab:wersje}.
 
 \begin{table}[!htbp]
 \centering\small
@@ -187,5 +183,7 @@ PyTorch & 2.13.0+cu130 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+Przestrzenie sześciu metod zdefiniowano w~repozytorium badania, a~przestrzenie KNN, RealMLP, ModernNCA i~TabM pochodzą z~TabArena~0.1.0. Losowane wartości zastępują ustawienia bazowe metod lokalnych, natomiast w~integracjach natywnych jawne parametry nakłada się po losowaniu. O~wykonanym wariancie rozstrzyga zapisany efektywny zestaw parametrów. Środowisko odtwarza się z~pliku blokady zależności. Użyto AutoGluon~1.6.3b20260918 z~gałęzi~1.6 wymaganej przez TabArena~0.1.0.
 
 Odtworzenie obliczeń obejmuje przygotowanie środowiska, danych, pobranie wag TabPFN i~sprawdzenie GPU. Konfiguracja TabPFN wskazuje rewizję, nazwę pliku i~sumę kontrolną wag, co rozróżnia modele korzystające z~tej samej wersji pakietu. Raporty odtwarza się z~zapisanych ustawień, wykazu zadań, historii prób i~predykcji.
